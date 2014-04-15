@@ -16,7 +16,7 @@ public class FirstActivity extends Activity {
 	Button firstButton, secondButton;
 	TextView localText;
 	 ListView list;
-	  String[] web = {
+	  String[] sessionName = {
 		  "Sessione 1",
 	      "Sessione 2",
 	      "Sessione 3",
@@ -60,7 +60,11 @@ public class FirstActivity extends Activity {
 	      R.drawable.ic_launcher,
 	      R.drawable.ic_launcher
 	  };
-	
+	  String[] upsamplingRate = {
+			  "44000",
+		      "48000"
+		  } ;
+	  
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	//TextView localText = new TextView(this);
@@ -76,14 +80,17 @@ public class FirstActivity extends Activity {
         
         Spinner spinner = (Spinner) findViewById(R.id.spinner1);
 	    // Create an ArrayAdapter using the string array and a default spinner layout
-	    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);
+	    //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, Android.);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.customspinnermenu, R.id.upsamplingRate, upsamplingRate);
 	    // Specify the layout to use when the list of choices appears
-	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    // Apply the adapter to the spinner
 	    spinner.setAdapter(adapter);
 	    
-	    CustomListSession adapter1 = new CustomListSession(FirstActivity.this, web, imageId);
+	    CustomListSession adapter1 = new CustomListSession(FirstActivity.this, sessionName, imageId);
 	    list=(ListView)findViewById(R.id.list);
 	    list.setAdapter(adapter1);
+	       
+	    
     }
 }
