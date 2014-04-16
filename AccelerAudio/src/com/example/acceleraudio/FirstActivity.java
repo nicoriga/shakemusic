@@ -1,6 +1,5 @@
 package com.example.acceleraudio;
 
-
 import com.example.acceleraudio.R;
 
 import android.app.Activity;
@@ -38,6 +37,28 @@ public class FirstActivity extends Activity {
 	      "Sessione 19",
 	      "Sessione 20"
 	  } ;
+	  String[] sessionDataMod = {
+			  "12/01/2014",
+		      "05/01/2014",
+		      "25/02/2014",
+		      "12/01/2014",
+		      "05/01/2014",
+		      "25/02/2014",
+		      "12/01/2014",
+		      "05/01/2014",
+		      "25/02/2014",
+		      "12/01/2014",
+		      "05/01/2014",
+		      "25/02/2014",
+		      "12/01/2014",
+		      "05/01/2014",
+		      "25/02/2014",
+		      "12/01/2014",
+		      "05/01/2014",
+		      "25/02/2014",
+		      "30/03/2014",
+		      "12/03/2014"
+		  } ;
 	  Integer[] imageId = {
 	      R.drawable.ic_launcher,
 	      R.drawable.ic_launcher,
@@ -67,9 +88,10 @@ public class FirstActivity extends Activity {
 	  
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	super.onCreate(savedInstanceState);
+    	setContentView(R.layout.landscape_main_layout);
+    	
     	//TextView localText = new TextView(this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.landscapelayoutmain);
         //localText.setText("Hello from a TextView");
         //firstButton = (Button) findViewById(R.id.button1);
         //secondButton = (Button) findViewById(R.id.button2);
@@ -79,15 +101,16 @@ public class FirstActivity extends Activity {
         //secondButton.setOnClickListener(new ButtonAction((TextView) findViewById(R.id.textView1), "bottone2"));
         
         Spinner spinner = (Spinner) findViewById(R.id.spinner1);
-	    // Create an ArrayAdapter using the string array and a default spinner layout
-	    //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, Android.);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.customspinnermenu, R.id.upsamplingRate, upsamplingRate);
-	    // Specify the layout to use when the list of choices appears
-	    //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	    // Apply the adapter to the spinner
-	    spinner.setAdapter(adapter);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.c_spinner_menu, R.id.upsamplingRate, upsamplingRate); // creo un custom adapter
+        //UpsamplingAdapter adapter = new UpsamplingAdapter(this,android.R.layout.simple_spinner_item, upsamplingRate);
+        //adapter.setDropDownViewResource(R.layout.c_spinner_menu);
+
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, R.layout.custom_spinner_list);
+        adapter.setDropDownViewResource(R.layout.customer_spinner);
+
+        spinner.setAdapter(adapter); // applico adapter allo spinner
 	    
-	    CustomListSession adapter1 = new CustomListSession(FirstActivity.this, sessionName, imageId);
+	    CustomListSession adapter1 = new CustomListSession(FirstActivity.this, sessionName, sessionDataMod, imageId);
 	    list=(ListView)findViewById(R.id.list);
 	    list.setAdapter(adapter1);
 	       
