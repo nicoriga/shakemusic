@@ -91,22 +91,12 @@ public class FirstActivity extends Activity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.landscape_main_layout);
     	
-    	//TextView localText = new TextView(this);
-        //localText.setText("Hello from a TextView");
-        //firstButton = (Button) findViewById(R.id.button1);
-        //secondButton = (Button) findViewById(R.id.button2);
-        
         //---------aggiunge il generatore di evento
         //firstButton.setOnClickListener(new ButtonAction((TextView) findViewById(R.id.textView1), "bottone1"));
-        //secondButton.setOnClickListener(new ButtonAction((TextView) findViewById(R.id.textView1), "bottone2"));
         
         Spinner spinner = (Spinner) findViewById(R.id.spinner1);
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.c_spinner_menu, R.id.upsamplingRate, upsamplingRate); // creo un custom adapter
-        //UpsamplingAdapter adapter = new UpsamplingAdapter(this,android.R.layout.simple_spinner_item, upsamplingRate);
-        //adapter.setDropDownViewResource(R.layout.c_spinner_menu);
-
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, R.layout.custom_spinner_list);
-        adapter.setDropDownViewResource(R.layout.customer_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.spinner_upsampling, R.id.upsamplingRate, upsamplingRate); // creo un custom adapter
+        adapter.setDropDownViewResource(R.layout.spinner_upsampling); //
 
         spinner.setAdapter(adapter); // applico adapter allo spinner
 	    
