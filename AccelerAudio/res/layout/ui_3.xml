@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/UI3editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI3textView1"
+        android:layout_alignBottom="@+id/UI3textView1"
+        android:layout_marginLeft="66dp"
+        android:layout_toRightOf="@+id/UI3textView1"
+        android:ems="10" />
+
+    <TextView
+        android:id="@+id/UI3textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="85dp"
+        android:layout_marginTop="64dp"
+        android:text="Nome Sessione"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+     <com.example.acceleraudio.VerticalProgressBar
+         android:id="@+id/UI2verticalBarX"
+         style="?android:attr/progressBarStyleHorizontal"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignLeft="@+id/UI3editText1"
+         android:layout_centerVertical="true"
+         android:minHeight="40dip"
+         android:minWidth="200dip"
+         android:progress="20" />
+
+     <com.example.acceleraudio.VerticalProgressBar
+         android:id="@+id/UI2verticalBarY"
+         style="?android:attr/progressBarStyleHorizontal"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignRight="@+id/UI3editText1"
+         android:layout_centerVertical="true"
+         android:minHeight="40dip"
+         android:minWidth="200dip"
+         android:progress="80" />
+
+     <com.example.acceleraudio.VerticalProgressBar
+         android:id="@+id/UI2verticalBarZ"
+         style="?android:attr/progressBarStyleHorizontal"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignTop="@+id/UI2verticalBarY"
+         android:layout_marginLeft="125dp"
+         android:layout_toRightOf="@+id/UI2verticalBarY"
+         android:minHeight="40dip"
+         android:minWidth="200dip"
+         android:progress="40" />
+
+     <Button
+         android:id="@+id/UI3button1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_below="@+id/UI2verticalBarY"
+         android:layout_marginTop="50dp"
+         android:layout_toLeftOf="@+id/UI2verticalBarZ"
+         android:text="Record" />
+
+     <Button
+         android:id="@+id/UI3button2"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignBaseline="@+id/UI3button1"
+         android:layout_alignBottom="@+id/UI3button1"
+         android:layout_toRightOf="@+id/UI3textView1"
+         android:text="Stop" />
+
+     <Button
+         android:id="@+id/UI3button3"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignBaseline="@+id/UI3button1"
+         android:layout_alignBottom="@+id/UI3button1"
+         android:layout_toRightOf="@+id/UI2verticalBarZ"
+         android:text="Pause" />
+
+     <TextView
+         android:id="@+id/textView1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignBaseline="@+id/UI3editText1"
+         android:layout_alignBottom="@+id/UI3editText1"
+         android:layout_alignRight="@+id/UI3button3"
+         android:text="Campioni Registrati"
+         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+     <EditText
+         android:id="@+id/editText1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignBaseline="@+id/textView1"
+         android:layout_alignBottom="@+id/textView1"
+         android:layout_marginLeft="27dp"
+         android:layout_toRightOf="@+id/textView1"
+         android:ems="10"
+         android:inputType="number" >
+
+         <requestFocus />
+     </EditText>
+    
+</RelativeLayout>
