@@ -48,35 +48,6 @@ public class VerticalProgressBar extends ProgressBar{
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (!isEnabled()) {
-            return false;
-        }
-
-        switch (event.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-
-            setSelected(true);
-            setPressed(true);
-            break;
-        case MotionEvent.ACTION_MOVE:
-            setProgress(getMax()
-                    - (int) (getMax() * event.getY() / getHeight()));
-            onSizeChanged(getWidth(), getHeight(), 0, 0);
-
-            break;
-        case MotionEvent.ACTION_UP:
-            setSelected(false);
-            setPressed(false);
-            break;
-
-        case MotionEvent.ACTION_CANCEL:
-            break;
-        }
-        return true;
-    }
-
-    @Override
     public synchronized void setProgress(int progress) {
 
         if (progress >= 0)
