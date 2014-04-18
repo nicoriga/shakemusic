@@ -1,18 +1,17 @@
-package com.example.acceleraudio;
+package com.acceleraudio;
 
 import com.example.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 public class SecondActivity extends Activity {
 	
-	Button firstButton, secondButton;
-	ListView list;
 	String[] upsamplingRate = {
 			  "44000",
 		      "48000"
@@ -29,6 +28,14 @@ public class SecondActivity extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter); // applico adapter allo spinner
 	       
-	    
+	    Button playSession = (Button) findViewById(R.id.UI2button1);
+	    playSession.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// avvio la quarta activity
+		    	Intent i = new Intent(v.getContext(), FourthActivity.class);
+		    	v.getContext().startActivity(i);
+			}
+		});
     }
 }

@@ -1,4 +1,4 @@
-package com.example.acceleraudio;
+package com.acceleraudio;
 
 import com.example.acceleraudio.R;
 
@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
  
 public class FirstActivity extends Activity {
 	
+	Button newSession, preferences;
 	ListView list;
 	String[] sessionName = {
 		  "Sessione 1",
@@ -86,17 +88,34 @@ public class FirstActivity extends Activity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_1);
     	
+    	newSession = (Button)findViewById(R.id.UI1button1);
+    	newSession.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				// avvio la terza activity
+		    	Intent i = new Intent(view.getContext(), ThirdActivity.class);
+		    	view.getContext().startActivity(i);
+			}
+		});
+    	
+    	preferences = (Button)findViewById(R.id.UI1button3);
+    	preferences.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				// avvio la quinta activity
+		    	Intent i = new Intent(view.getContext(), FifthActivity.class);
+		    	view.getContext().startActivity(i);
+			}
+		});
+    	
 	    CustomListSession adapter1 = new CustomListSession(this, sessionName, sessionDataMod, imageId);
 	    list=(ListView)findViewById(R.id.UI1listSession);
 	    list.setAdapter(adapter1);
 	    list.setOnItemClickListener(new OnItemClickListener() {
-		    	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		    		// avvio la seconda activity
-		    		Intent i = new Intent(view.getContext(), SecondActivity.class);
-		    		view.getContext().startActivity(i);
-		    	}
-	    	});
+		    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		    	// avvio la seconda activity
+		    	Intent i = new Intent(view.getContext(), SecondActivity.class);
+		    	view.getContext().startActivity(i);
+		    }
+	    });
 	       
-	    
     }
 }

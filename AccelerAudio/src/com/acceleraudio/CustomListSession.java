@@ -1,4 +1,6 @@
-package com.example.acceleraudio;
+package com.acceleraudio;
+
+import com.example.acceleraudio.R;
 
 import android.app.Activity;
 import android.view.LayoutInflater;

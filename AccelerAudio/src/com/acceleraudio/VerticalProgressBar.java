@@ -1,4 +1,4 @@
-package com.example.acceleraudio;
+package com.acceleraudio;
 
 import android.content.Context;
 import android.graphics.Canvas;
