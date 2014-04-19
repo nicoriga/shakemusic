@@ -1,9 +1,8 @@
-package com.acceleraudio;
+package com.acceleraudio.design;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.widget.ProgressBar;
 
 public class VerticalProgressBar extends ProgressBar{
@@ -45,35 +44,6 @@ public class VerticalProgressBar extends ProgressBar{
         c.rotate(-90);
         c.translate(-getHeight(), 0);
         super.onDraw(c);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (!isEnabled()) {
-            return false;
-        }
-
-        switch (event.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-
-            setSelected(true);
-            setPressed(true);
-            break;
-        case MotionEvent.ACTION_MOVE:
-            setProgress(getMax()
-                    - (int) (getMax() * event.getY() / getHeight()));
-            onSizeChanged(getWidth(), getHeight(), 0, 0);
-
-            break;
-        case MotionEvent.ACTION_UP:
-            setSelected(false);
-            setPressed(false);
-            break;
-
-        case MotionEvent.ACTION_CANCEL:
-            break;
-        }
-        return true;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.acceleraudio;
+package com.acceleraudio.activity;
 
 import com.example.acceleraudio.R;
 
