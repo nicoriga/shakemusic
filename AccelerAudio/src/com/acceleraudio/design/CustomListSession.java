@@ -1,5 +1,7 @@
 package com.acceleraudio.design;
 
+import java.util.ArrayList;
+
 import com.example.acceleraudio.R;
 
 import android.app.Activity;
@@ -14,6 +16,7 @@ public class CustomListSession extends ArrayAdapter<String>
 {
 	private final Activity context;
 	private final String[] sessionName;
+	private final ArrayList<String> sessionNameList;
 	private final String[] dateMod;
 	private final Integer[] imageId;
 	
@@ -24,6 +27,17 @@ public class CustomListSession extends ArrayAdapter<String>
 		this.sessionName = sessionName;
 		this.dateMod = dateMod;
 		this.imageId = imageId;
+		this.sessionNameList = null;
+	}
+	
+	public CustomListSession(Activity context,ArrayList<String> sessionNameList, String[] dateMod, Integer[] imageId) 
+	{
+		super(context, R.layout.list_session_layout, sessionNameList);
+		this.context = context;
+		this.sessionNameList = sessionNameList;
+		this.dateMod = dateMod;
+		this.imageId = imageId;
+		this.sessionName = null;
 	}
 	
 	@Override
@@ -31,10 +45,14 @@ public class CustomListSession extends ArrayAdapter<String>
 	{
 		LayoutInflater inflater = context.getLayoutInflater();
 		View rowView= inflater.inflate(R.layout.list_session_layout, null, true);
-		TextView txtTitle = (TextView) rowView.findViewById(R.id.txtNomeSessione);
+		
+		TextView txtName = (TextView) rowView.findViewById(R.id.txtNomeSessione);
 		TextView txtData = (TextView) rowView.findViewById(R.id.txtDataModifica);
 		ImageView imageView = (ImageView) rowView.findViewById(R.id.img);
-		txtTitle.setText(sessionName[position]);
+		
+		if(sessionName != null) txtName.setText(sessionName[position]);
+		if(sessionNameList != null) txtName.setText(sessionNameList.get(position));
+			
 		txtData.setText(dateMod[position]);
 		imageView.setImageResource(imageId[position]);
 		

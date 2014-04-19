@@ -20,7 +20,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         		+ "axis_z int not null, "
         		+ "upsampling int not null, "
         		+ "creation_date text not null, "
-        		+ "date_change text not null); ";
+        		+ "date_change text not null,"
+        		+ "sensor_data text not null); ";
         
         
     // Costruttore
@@ -28,13 +29,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     	super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
  
-    // Questo metodo viene chiamato durante la creazione del database
+    // Metodo chiamato durante la creazione del database
     @Override
     public void onCreate(SQLiteDatabase db) {
     	db.execSQL(DATABASE_CREATE);
     }
  
-    // Questo metodo viene chiamato durante l'upgrade del database
+    // Metodo chiamato durante l'upgrade del database
     @Override
     public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {             
     	db.execSQL("DROP TABLE IF EXISTS session");
