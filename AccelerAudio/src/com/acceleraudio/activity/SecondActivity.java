@@ -20,6 +20,12 @@ public class SecondActivity extends Activity {
 	
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
+    private Button listSession, playSession;
+    private EditText et_sessionName, et_result;
+    private TextView creation_date, date_change;
+    private CheckBox axis_x, axis_y, axis_z;
+    private Spinner spinner;
+    private int sessionId;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,21 +37,22 @@ public class SecondActivity extends Activity {
 ///////////////////////////////////////////////////////  
     	
     	Bundle b = getIntent().getExtras();
-    	int sessionId = b.getInt(DbAdapter.COLUMN_SESSIONID);
+    	sessionId = b.getInt(DbAdapter.COLUMN_SESSIONID);
     	 	
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
     	
-    	Button listSession = (Button) findViewById(R.id.UI1button1M);
-    	Button playSession = (Button) findViewById(R.id.UI2button1);
-    	EditText et_sessionName = (EditText)findViewById(R.id.UI2editText1);
-    	TextView creation_date = (TextView)findViewById(R.id.UI2textView2);
-    	TextView date_change = (TextView)findViewById(R.id.UI2textView3);
-    	CheckBox axis_x = (CheckBox)findViewById(R.id.UI2checkBox1);
-    	CheckBox axis_y = (CheckBox)findViewById(R.id.UI2checkBox2);
-    	CheckBox axis_z = (CheckBox)findViewById(R.id.UI2checkBox3);
-    	Spinner spinner = (Spinner) findViewById(R.id.UI2spinner1);
+    	listSession = (Button) findViewById(R.id.UI2button1M);
+    	playSession = (Button) findViewById(R.id.UI2button1);
+    	et_sessionName = (EditText)findViewById(R.id.UI2editText1);
+    	et_result = (EditText)findViewById(R.id.UI2editText2);
+    	creation_date = (TextView)findViewById(R.id.UI2textView2);
+    	date_change = (TextView)findViewById(R.id.UI2textView3);
+    	axis_x = (CheckBox)findViewById(R.id.UI2checkBox1);
+    	axis_y = (CheckBox)findViewById(R.id.UI2checkBox2);
+    	axis_z = (CheckBox)findViewById(R.id.UI2checkBox3);
+    	spinner = (Spinner) findViewById(R.id.UI2spinner1);
     	
     	/**** POPOLA LA LISTA DELLO SPINNER ****/
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);
@@ -66,6 +73,7 @@ public class SecondActivity extends Activity {
         
         // carico dati
         et_sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_NAME))); // carico il nome della sessione
+        et_result.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_SENSOR_DATA_X))); // TODO: da eliminare server solo per prova carico i dati registraati PROVA
         creation_date.setText(creation_date.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_CREATION_DATE))); // carico data creazione
         date_change.setText(date_change.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_DATE_CHANGE))); // carico data modifica
         axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_AXIS_X)).equals("1")); // asse x
@@ -97,6 +105,7 @@ public class SecondActivity extends Activity {
 			public void onClick(View v) {
 				// avvio la quarta activity
 		    	Intent i = new Intent(v.getContext(), FourthActivity.class);
+		    	i.putExtra(DbAdapter.COLUMN_SESSIONID, sessionId);
 		    	v.getContext().startActivity(i);
 			}
 		});

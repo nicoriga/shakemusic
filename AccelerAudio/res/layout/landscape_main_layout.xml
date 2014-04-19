@@ -82,7 +82,7 @@
         android:paddingLeft="50dp" />
 
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/UI2editText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/UI5textView1"
@@ -129,7 +129,7 @@
         android:layout_height="50dp"
         android:layout_alignBaseline="@+id/button1"
         android:layout_alignBottom="@+id/button1"
-        android:layout_alignRight="@+id/editText1"
+        android:layout_alignRight="@+id/UI2editText2"
         android:layout_marginRight="22dp"
         android:text="Esporta" />
 

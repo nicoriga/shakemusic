@@ -26,14 +26,15 @@ public class ThirdActivity extends Activity {
 	private Sensor accelerometro;
 	private final float rumore = (float) 1.0;
 	private float oldX, oldY, oldZ;
-	private Button startSession, stopSession;
-	private EditText nameSession;
+	private Button startSession, stopSession, pauseSession;
+	private EditText nameSession, rec_sample;
 	private VerticalProgressBar progressBarX , progressBarY, progressBarZ;
 	private ArrayList<Integer> 
 			data_x = new ArrayList<Integer>(), 
 			data_y = new ArrayList<Integer>(), 
 			data_z = new ArrayList<Integer>();
-	private DbAdapter dbAdapter; 
+	private DbAdapter dbAdapter;
+	private int sample = 0;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,11 +51,13 @@ public class ThirdActivity extends Activity {
 ///////////////////////////////////////////////////////
 
 		nameSession = (EditText) findViewById(R.id.UI3editText1);
+		rec_sample = (EditText) findViewById(R.id.UI3editText2);
     	startSession = (Button) findViewById(R.id.UI3button1);
     	stopSession = (Button) findViewById(R.id.UI3button2);
-    	progressBarX = (VerticalProgressBar) findViewById(R.id.UI2verticalBarX);
-    	progressBarY = (VerticalProgressBar) findViewById(R.id.UI2verticalBarY);
-    	progressBarZ = (VerticalProgressBar) findViewById(R.id.UI2verticalBarZ);
+    	pauseSession = (Button) findViewById(R.id.UI3button3);
+    	progressBarX = (VerticalProgressBar) findViewById(R.id.UI3verticalBarX);
+    	progressBarY = (VerticalProgressBar) findViewById(R.id.UI3verticalBarY);
+    	progressBarZ = (VerticalProgressBar) findViewById(R.id.UI3verticalBarZ);
     	progressBarX.setMax((int)accelerometro.getMaximumRange());
     	progressBarY.setMax((int)accelerometro.getMaximumRange());
     	progressBarZ.setMax((int)accelerometro.getMaximumRange());
@@ -71,6 +74,14 @@ public class ThirdActivity extends Activity {
 			}
 		});
     	
+    	/**** PAUSA LA REGISTRAZIONE ****/
+    	pauseSession.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				sensorManager.unregisterListener(mySensorEventListener);
+			}
+		});
+    	
     	/**** STOPPA LA REGISTRAZIONE ****/
     	stopSession.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -83,9 +94,17 @@ public class ThirdActivity extends Activity {
 			    	dbAdapter = new DbAdapter(v.getContext());
 			    	dbAdapter.open();
 			    	
+			    	String x = "";
+			    	String y = "";
+			    	String z = "";
+			    	
+			    	for (int value : data_x)   x += " " + value;
+			    	for (int value : data_y)   y += " " + value;
+			    	for (int value : data_z)   z += " " + value;
+			    	
 			    	// inserisco i dati della sessione nel database
 			    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-					dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", data_x.toString(), data_y.toString(), data_z.toString() );
+					dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", x, y, z );
 					
 					// chiudo la connessione al db
 					dbAdapter.close();
@@ -121,6 +140,9 @@ public class ThirdActivity extends Activity {
 	    			progressBarX.setProgress(0);
 	    			progressBarY.setProgress(0);
 	    			progressBarZ.setProgress(0);
+	    			
+	    			rec_sample.setText("" + sample);
+	    			
 	    			inizializzato = true;
 	    			
 	    		} else {
@@ -132,17 +154,29 @@ public class ThirdActivity extends Activity {
 	    			if (deltaX < rumore)
 	    				deltaX = (float) 0.0;
 	    			else
+	    			{
 	    				data_x.add((int)deltaX);
+	    				sample++;
+	    				rec_sample.setText("" + sample);
+	    			}
 	    			
 	    			if (deltaY < rumore)
 	    				deltaY = (float) 0.0;
 	    			else
+	    			{
 	    				data_y.add((int)deltaY);
+	    				sample++;
+	    				rec_sample.setText("" + sample);
+	    			}
 	    			
 	    			if (deltaZ < rumore)
 	    				deltaZ = (float) 0.0;
 	    			else
+	    			{
 	    				data_z.add((int)deltaZ);
+	    				sample++;
+	    				rec_sample.setText("" + sample);
+	    			}
 	    			
 	    			oldX = x;
 	    			oldY = y;

@@ -29,7 +29,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI2verticalBarX"
+         android:id="@+id/UI3verticalBarX"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
          android:progress="20" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI2verticalBarY"
+         android:id="@+id/UI3verticalBarY"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -51,13 +51,13 @@
          android:progress="80" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI2verticalBarZ"
+         android:id="@+id/UI3verticalBarZ"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_alignTop="@+id/UI2verticalBarY"
+         android:layout_alignTop="@+id/UI3verticalBarY"
          android:layout_marginLeft="125dp"
-         android:layout_toRightOf="@+id/UI2verticalBarY"
+         android:layout_toRightOf="@+id/UI3verticalBarY"
          android:minHeight="40dip"
          android:minWidth="200dip"
          android:progress="40" />
@@ -77,7 +77,7 @@
          android:layout_height="wrap_content"
          android:layout_alignBaseline="@+id/UI3button1"
          android:layout_alignBottom="@+id/UI3button1"
-         android:layout_toRightOf="@+id/UI2verticalBarZ"
+         android:layout_toRightOf="@+id/UI3verticalBarZ"
          android:text="Pause" />
 
      <TextView
@@ -91,7 +91,7 @@
          android:textAppearance="?android:attr/textAppearanceMedium" />
 
      <EditText
-         android:id="@+id/editText1"
+         android:id="@+id/UI3editText2"
          android:layout_width="80dp"
          android:layout_height="wrap_content"
          android:layout_alignBaseline="@+id/UI5textView1"
@@ -107,7 +107,7 @@
          android:id="@+id/UI3button1"
          android:layout_width="150dp"
          android:layout_height="wrap_content"
-         android:layout_below="@+id/UI2verticalBarY"
+         android:layout_below="@+id/UI3verticalBarY"
          android:layout_marginRight="29dp"
          android:layout_marginTop="51dp"
          android:layout_toLeftOf="@+id/UI5textView1"
