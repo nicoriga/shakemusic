@@ -38,16 +38,16 @@ public class FirstActivity extends Activity {
     	dbAdapter.open();
          
         /* inserisco record di prova 
-    	dbAdapter.createSession("sessione db 1", R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", "6214562621969612565452189764845664515" );
-    	dbAdapter.createSession("sessione db 2", R.drawable.ic_launcher, 1, 0, 1, 44000, "08/02/2014", "14/04/2014", "154351864154181428548341685431568" );
-    	dbAdapter.createSession("sessione db 3", R.drawable.ic_launcher, 0, 1, 1, 44000, "14/03/2014", "14/04/2014", "546518458435843818344215187431" );
-    	dbAdapter.createSession("sessione db 4", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "8486468468738515615695492519*7/97545856451556186/48132" );
-    	dbAdapter.createSession("sessione db 5", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "656516541856845151784754154512." );
-    	dbAdapter.createSession("sessione db 6", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "2512315645487453145156512534515314" );
-    	dbAdapter.createSession("sessione db 7", R.drawable.ic_launcher, 1, 0, 0, 48000, "15/04/2014", "14/04/2014", "3412564512334515531455612345351" );
-    	dbAdapter.createSession("sessione db 8", R.drawable.ic_launcher, 1, 0, 0, 44000, "05/04/2014", "14/04/2014", "2345516234551263844515623145862123453512341525643464" );
-    	dbAdapter.createSession("sessione db 9", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "1263545152345212345512384551253344552134682324551234521" );
-    	dbAdapter.createSession("sessione db 10", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "5213465123465516253421565213455123454652534315" );
+    	dbAdapter.createSession("sessione db 1", R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", "1231231", "1231231", "1231231" );
+    	dbAdapter.createSession("sessione db 2", R.drawable.ic_launcher, 1, 0, 1, 44000, "08/02/2014", "14/04/2014", "51615","51615", "51615" );
+    	dbAdapter.createSession("sessione db 3", R.drawable.ic_launcher, 0, 1, 1, 44000, "14/03/2014", "14/04/2014", "4536456","51615", "456456" );
+    	dbAdapter.createSession("sessione db 4", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "4535434","456456", "456456" );
+    	dbAdapter.createSession("sessione db 5", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "25424","456456", "51615" );
+    	dbAdapter.createSession("sessione db 6", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "2452456","51615", "456456" );
+    	dbAdapter.createSession("sessione db 7", R.drawable.ic_launcher, 1, 0, 0, 48000, "15/04/2014", "14/04/2014", "5645646","51615", "456456" );
+    	dbAdapter.createSession("sessione db 8", R.drawable.ic_launcher, 1, 0, 0, 44000, "05/04/2014", "14/04/2014", "54645452","456456", "51615" );
+    	dbAdapter.createSession("sessione db 9", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "25872785","51615", "456456" );
+    	dbAdapter.createSession("sessione db 10", R.drawable.ic_launcher, 1, 0, 0, 48000, "05/04/2014", "14/04/2014", "456456","456456", "51615" );
         */
     	
         // prelevo tutti i record 
