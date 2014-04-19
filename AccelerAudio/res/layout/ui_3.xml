@@ -28,7 +28,7 @@
         android:text="Nome Sessione"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-     <com.acceleraudio.VerticalProgressBar
+     <com.acceleraudio.design.VerticalProgressBar
          android:id="@+id/UI2verticalBarX"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
          android:minWidth="200dip"
          android:progress="20" />
 
-     <com.acceleraudio.VerticalProgressBar
+     <com.acceleraudio.design.VerticalProgressBar
          android:id="@+id/UI2verticalBarY"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
          android:minWidth="200dip"
          android:progress="80" />
 
-     <com.acceleraudio.VerticalProgressBar
+     <com.acceleraudio.design.VerticalProgressBar
          android:id="@+id/UI2verticalBarZ"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
