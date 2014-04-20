@@ -2,7 +2,7 @@
 
     <string name="app_name">AccelerAudio</string>
 	<string-array name="upsampling_array">
-        <item>44000</item>
+        <item>44100</item>
         <item>48000</item>
     </string-array>
     

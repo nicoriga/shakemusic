@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.acceleraudio"
+    package="com.malunix.acceleraudio"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -22,6 +22,7 @@
         <activity android:name="com.acceleraudio.activity.ThirdActivity"></activity>
         <activity android:name="com.acceleraudio.activity.FourthActivity"></activity>
         <activity android:name="com.acceleraudio.activity.FifthActivity"></activity>
+        <service android:name="com.acceleraudio.service.PlayerTrack"></service>
     </application>
 
 </manifest>

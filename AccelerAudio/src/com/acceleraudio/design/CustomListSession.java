@@ -2,7 +2,7 @@ package com.acceleraudio.design;
 
 import java.util.ArrayList;
 
-import com.example.acceleraudio.R;
+import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
 import android.view.LayoutInflater;

@@ -1,7 +1,8 @@
 package com.acceleraudio.activity;
 
 import com.acceleraudio.database.DbAdapter;
-import com.example.acceleraudio.R;
+import com.acceleraudio.util.Util;
+import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,7 +14,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 public class SecondActivity extends Activity {
@@ -37,7 +37,7 @@ public class SecondActivity extends Activity {
 ///////////////////////////////////////////////////////  
     	
     	Bundle b = getIntent().getExtras();
-    	sessionId = b.getInt(DbAdapter.COLUMN_SESSIONID);
+    	sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
     	 	
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
@@ -72,14 +72,14 @@ public class SecondActivity extends Activity {
         cursor.moveToFirst();
         
         // carico dati
-        et_sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_NAME))); // carico il nome della sessione
-        et_result.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_SENSOR_DATA_X))); // TODO: da eliminare server solo per prova carico i dati registraati PROVA
-        creation_date.setText(creation_date.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_CREATION_DATE))); // carico data creazione
-        date_change.setText(date_change.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_DATE_CHANGE))); // carico data modifica
-        axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_AXIS_X)).equals("1")); // asse x
-        axis_y.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_AXIS_Y)).equals("1")); // asse y
-        axis_z.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_AXIS_Z)).equals("1")); // asse z
-        SelectSpinnerItemByValue(spinner, cursor.getString( cursor.getColumnIndex(DbAdapter.COLUMN_UPSAMPLING)));
+        et_sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME))); // carico il nome della sessione
+        et_result.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))); // TODO: da eliminare server solo per prova carico i dati registraati PROVA
+        creation_date.setText(creation_date.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_CREATION_DATE))); // carico data creazione
+        date_change.setText(date_change.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE))); // carico data modifica
+        axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1")); // asse x
+        axis_y.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1")); // asse y
+        axis_z.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1")); // asse z
+        Util.SelectSpinnerItemByValue(spinner, cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
         
         // chiudo connessioni
         cursor.close();
@@ -105,25 +105,11 @@ public class SecondActivity extends Activity {
 			public void onClick(View v) {
 				// avvio la quarta activity
 		    	Intent i = new Intent(v.getContext(), FourthActivity.class);
-		    	i.putExtra(DbAdapter.COLUMN_SESSIONID, sessionId);
+		    	i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 		    	v.getContext().startActivity(i);
 			}
 		});
     }
     
-    /**** Seleziona item dello spinner in base al valore passato ****/
-    public static void SelectSpinnerItemByValue(Spinner spinner, String value)
-    {
-    	SpinnerAdapter adapter = spinner.getAdapter();
-        for (int position = 0; position < adapter.getCount(); position++)
-        {
-        	String v = adapter.getItem(position).toString();
-            if(v.equals(value))
-            {
-            	spinner.setSelection(position);
-                return;
-            }
-        }
-        
-    }
+    
 }
