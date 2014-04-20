@@ -65,8 +65,6 @@ public class FifthActivity extends Activity {
 		axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_AXIS_X)).equals("1")); // asse x
 		axis_y.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_AXIS_Y)).equals("1")); // asse y
 		axis_z.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_AXIS_Z)).equals("1")); // asse z
-		String sample_rate = cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_SAMPLE_RATE));
-		String upsampling = cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_UPSAMPLING));
 		Util.SelectSpinnerItemByValue(spinner1, cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_SAMPLE_RATE)));
 		Util.SelectSpinnerItemByValue(spinner2, cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_UPSAMPLING)));
 		
