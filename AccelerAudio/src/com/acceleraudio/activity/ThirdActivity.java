@@ -21,7 +21,7 @@ import android.widget.EditText;
 
 public class ThirdActivity extends Activity {
 	
-	private boolean inizializzato;
+	private boolean initialized;
 	private SensorManager sensorManager;
 	private Sensor accelerometro;
 	private final float rumore = (float) 1.0;
@@ -29,23 +29,25 @@ public class ThirdActivity extends Activity {
 	private Button startSession, stopSession, pauseSession;
 	private EditText nameSession, rec_sample;
 	private VerticalProgressBar progressBarX , progressBarY, progressBarZ;
-	private ArrayList<Integer> 
-			data_x = new ArrayList<Integer>(), 
-			data_y = new ArrayList<Integer>(), 
-			data_z = new ArrayList<Integer>();
+	private ArrayList<Float> 
+			data_x = new ArrayList<Float>(), 
+			data_y = new ArrayList<Float>(), 
+			data_z = new ArrayList<Float>();
 	private DbAdapter dbAdapter;
 	private int sample = 0;
+	public Intent intentRecord;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_3);
     	
-    	inizializzato = false;
+    	initialized = false;
     	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		accelerometro = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		
-		
+		dbAdapter = new DbAdapter(this);
+			
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
@@ -62,6 +64,11 @@ public class ThirdActivity extends Activity {
     	progressBarY.setMax((int)accelerometro.getMaximumRange());
     	progressBarZ.setMax((int)accelerometro.getMaximumRange());
     	
+    	progressBarX.setProgress(0);
+		progressBarY.setProgress(0);
+		progressBarZ.setProgress(0);
+		rec_sample.setText("" + sample);
+    	
 /////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
@@ -71,6 +78,8 @@ public class ThirdActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				sensorManager.registerListener(mySensorEventListener, accelerometro, SensorManager.SENSOR_DELAY_NORMAL);
+				//TODO: impostazioni per accelerometro intentRecord.putExtra(...);
+    			//startService(intentRecord);
 			}
 		});
     	
@@ -79,6 +88,7 @@ public class ThirdActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				sensorManager.unregisterListener(mySensorEventListener);
+				//stopService(intentRecord);
 			}
 		});
     	
@@ -86,36 +96,14 @@ public class ThirdActivity extends Activity {
     	stopSession.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(inizializzato){
-					
-					sensorManager.unregisterListener(mySensorEventListener);
-					
-					// apro la connessione al db
-			    	dbAdapter = new DbAdapter(v.getContext());
-			    	dbAdapter.open();
-			    	
-			    	String x = "";
-			    	String y = "";
-			    	String z = "";
-			    	
-			    	for (int value : data_x)   x += " " + value;
-			    	for (int value : data_y)   y += " " + value;
-			    	for (int value : data_z)   z += " " + value;
-			    	
-			    	// inserisco i dati della sessione nel database
-			    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-					dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", x, y, z );
-					
-					// chiudo la connessione al db
-					dbAdapter.close();
-				}
-				
+				saveAccelerometerData();
 				Intent i = new Intent(v.getContext(), FirstActivity.class);
 				v.getContext().startActivity(i);
 			}
 		});
     	
     }
+    
 
 /////////////////////////////////////////////////////////
 //////////////// Gestione Accelerometro /////////////////
@@ -127,15 +115,15 @@ public class ThirdActivity extends Activity {
 	        	float x = event.values[0];
 	    		float y = event.values[1];
 	    		float z = event.values[2];
-	    		if (!inizializzato) {
+	    		if (!initialized) {
 	    			
 	    			oldX = x;
 	    			oldY = y;
 	    			oldZ = z;
 	    			
-	    			data_x.add(0);
-	    			data_y.add(0);
-	    			data_z.add(0);
+	    			data_x.add(0f);
+	    			data_y.add(0f);
+	    			data_z.add(0f);
 	    			
 	    			progressBarX.setProgress(0);
 	    			progressBarY.setProgress(0);
@@ -143,7 +131,7 @@ public class ThirdActivity extends Activity {
 	    			
 	    			rec_sample.setText("" + sample);
 	    			
-	    			inizializzato = true;
+	    			initialized = true;
 	    			
 	    		} else {
 	    			
@@ -155,7 +143,7 @@ public class ThirdActivity extends Activity {
 	    				deltaX = (float) 0.0;
 	    			else
 	    			{
-	    				data_x.add((int)deltaX);
+	    				data_x.add(deltaX);
 	    				sample++;
 	    				rec_sample.setText("" + sample);
 	    			}
@@ -164,7 +152,7 @@ public class ThirdActivity extends Activity {
 	    				deltaY = (float) 0.0;
 	    			else
 	    			{
-	    				data_y.add((int)deltaY);
+	    				data_y.add(deltaY);
 	    				sample++;
 	    				rec_sample.setText("" + sample);
 	    			}
@@ -173,7 +161,7 @@ public class ThirdActivity extends Activity {
 	    				deltaZ = (float) 0.0;
 	    			else
 	    			{
-	    				data_z.add((int)deltaZ);
+	    				data_z.add(deltaZ);
 	    				sample++;
 	    				rec_sample.setText("" + sample);
 	    			}
@@ -195,5 +183,37 @@ public class ThirdActivity extends Activity {
 
         }
     };
+    
+/////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////    
+//////////////// Metodi Utili  //////////////////////////
+////////////////////////////////////////////////////////
+    
+    public void saveAccelerometerData(){
+    	if(initialized){
+			
+			//sensorManager.unregisterListener(mySensorEventListener);
+			//stopService(intentRecord);
+			
+			// apro la connessione al db
+	    	dbAdapter.open();
+	    	
+	    	String x = "";
+	    	String y = "";
+	    	String z = "";
+	    	
+	    	for (float value : data_x)   x += " " + value;
+	    	for (float value : data_y)   y += " " + value;
+	    	for (float value : data_z)   z += " " + value;
+	    	
+	    	// inserisco i dati della sessione nel database
+	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
+			dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", x, y, z );
+			
+			// chiudo la connessione al db
+			dbAdapter.close();
+		}
+    }
     
 }
