@@ -30,12 +30,12 @@ public class PlayerTrack extends IntentService{
     	
     	t = new Thread() {
             public void run() {
-            	// setta la priorità massia del thread
+            	// set process priority
                 setPriority(Thread.MAX_PRIORITY);
                 
-		    	 // setta dimensione buffer
+		    	 // set the buffer size
 		        int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-		        // crea oggetto audiotrack
+		        // create an audiotrack object
 		        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sound_rate, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrack.MODE_STREAM);
 		
 		        short samples[] = new short[buffsize];

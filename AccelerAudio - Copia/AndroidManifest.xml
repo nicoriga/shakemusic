@@ -1,0 +1,28 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.malunix.acceleraudio"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="19" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity android:screenOrientation="user" android:icon="@drawable/ic_launcher" android:name="com.acceleraudio.activity.FirstActivity" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="com.acceleraudio.activity.SecondActivity"></activity>
+        <activity android:name="com.acceleraudio.activity.ThirdActivity"></activity>
+        <activity android:name="com.acceleraudio.activity.FourthActivity"></activity>
+        <activity android:name="com.acceleraudio.activity.FifthActivity"></activity>
+        <service android:name="com.acceleraudio.service.PlayerTrack"></service>
+    </application>
+
+</manifest>

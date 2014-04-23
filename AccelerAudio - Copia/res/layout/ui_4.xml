@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/UI4imageView1"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="124dp"
+        android:layout_marginTop="85dp"
+        android:src="@drawable/ic_launcher" />
+
+    <Button
+        android:id="@+id/UI4button3"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@+id/UI4button2"
+        android:layout_alignBottom="@+id/UI4button2"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="55dp"
+        android:text="Pause" />
+
+    <SeekBar
+        android:id="@+id/UI4seekBar1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI4imageView1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/UI4button3"
+        android:layout_marginBottom="116dp" />
+
+    <Button
+        android:id="@+id/UI4button2"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI4button1"
+        android:layout_alignBottom="@+id/UI4button1"
+        android:layout_marginRight="71dp"
+        android:layout_toLeftOf="@+id/UI4button3"
+        android:text="Play" />
+
+    <TextView
+        android:id="@+id/UI5textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI4seekBar1"
+        android:layout_alignLeft="@+id/UI4seekBar1"
+        android:text="00:00"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/UI5textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI4seekBar1"
+        android:layout_alignRight="@+id/UI4seekBar1"
+        android:text="01:25"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/UI5Button01"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@+id/UI4textView1"
+        android:layout_alignBottom="@+id/UI4textView1"
+        android:layout_toRightOf="@+id/UI4button2"
+        android:text="Esporta" />
+
+    <TextView
+        android:id="@+id/UI4textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/UI4imageView1"
+        android:layout_toLeftOf="@+id/UI4button2"
+        android:text="Nome Sessione"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/UI4button1"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI4imageView1"
+        android:layout_alignLeft="@+id/UI4textView1"
+        android:text="Stop" />
+
+</RelativeLayout>
