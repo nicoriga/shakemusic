@@ -39,7 +39,7 @@ public class PlayerTrack extends IntentService{
 		        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sound_rate, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrack.MODE_STREAM);
 		
 		        short samples[] = new short[buffsize];
-		        int amp = 10000;
+		        int amp = 4000;
 		        double twopi = 8.*Math.atan(1.);
 		        double fr = 440.f;
 		        double ph = 0.0;
