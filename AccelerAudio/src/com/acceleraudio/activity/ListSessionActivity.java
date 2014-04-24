@@ -16,11 +16,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
  
-public class FirstActivity extends Activity {
+public class ListSessionActivity extends Activity {
 	
 	private Button newSession, preferences;
 	private ListView list;
-	//private String[] sessionName;
 	private ArrayList<Integer> sessionIdList = new ArrayList<Integer>();
 	private ArrayList<String> sessionNameList = new ArrayList<String>();
 	private String[] sessionDataMod;
@@ -70,6 +69,10 @@ public class FirstActivity extends Activity {
 		
 		cursor.close();
 		dbAdapter.close();
+		
+		// carico i dati nella listView
+		CustomListSession adapter1 = new CustomListSession(this, sessionNameList, sessionDataMod, imageId);
+	    list.setAdapter(adapter1);
     	
 /////////////////////////////////////////////////////////
 ///////////  aggiungo listener  /////////////////////////
@@ -77,29 +80,25 @@ public class FirstActivity extends Activity {
 		
     	newSession.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				// avvio la terza activity
-		    	Intent i = new Intent(view.getContext(), ThirdActivity.class);
+				// avvio la Recordactivity
+		    	Intent i = new Intent(view.getContext(), RecordActivity.class);
 		    	view.getContext().startActivity(i);
 			}
 		});
     	
     	preferences.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				// avvio la quinta activity
-		    	Intent i = new Intent(view.getContext(), FifthActivity.class);
+				// avvio la PreferencesActivity
+		    	Intent i = new Intent(view.getContext(), PreferencesActivity.class);
 		    	view.getContext().startActivity(i);
 			}
 		});
     	
-	    CustomListSession adapter1 = new CustomListSession(this, sessionNameList, sessionDataMod, imageId);
-	    list.setAdapter(adapter1);
 	    list.setOnItemClickListener(new OnItemClickListener() {
 		    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		    	// avvio la seconda activity
-		    	Intent i = new Intent(view.getContext(), SecondActivity.class);
+		    	// avvio la SessionInfoActivity activity
+		    	Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
 		    	i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(position));
-		    	
-		    	// Toast.makeText(getApplicationContext(), "Click ListItem Number " + sessionIdList.get(position), Toast.LENGTH_LONG).show();
 		    	
 		    	view.getContext().startActivity(i);
 		    }

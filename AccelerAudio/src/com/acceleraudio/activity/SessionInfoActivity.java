@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class SecondActivity extends Activity {
+public class SessionInfoActivity extends Activity {
 	
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
@@ -30,7 +30,7 @@ public class SecondActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_2);
+    	setContentView(R.layout.ui_2l);
 
 ////////////////////////////////////////////////////////
 ///////////// Prelevo dati dall'intent /////////////////
@@ -94,8 +94,9 @@ public class SecondActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// avvio la prima activity
-		    	Intent i = new Intent(v.getContext(), FirstActivity.class);
-		    	v.getContext().startActivity(i);
+		    	//Intent i = new Intent(v.getContext(), FirstActivity.class);
+		    	//v.getContext().startActivity(i);
+		    	finish(); // chiude la activity: simula il tasto back
 			}
 		});
         
@@ -104,7 +105,7 @@ public class SecondActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// avvio la quarta activity
-		    	Intent i = new Intent(v.getContext(), FourthActivity.class);
+		    	Intent i = new Intent(v.getContext(), PlayerActivity.class);
 		    	i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 		    	v.getContext().startActivity(i);
 			}

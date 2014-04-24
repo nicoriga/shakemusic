@@ -19,7 +19,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class ThirdActivity extends Activity {
+public class RecordActivity extends Activity {
 	
 	private boolean initialized;
 	private SensorManager sensorManager;
@@ -40,7 +40,7 @@ public class ThirdActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_3);
+    	setContentView(R.layout.ui_3l);
     	
     	initialized = false;
     	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -97,8 +97,9 @@ public class ThirdActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				saveAccelerometerData();
-				Intent i = new Intent(v.getContext(), FirstActivity.class);
-				v.getContext().startActivity(i);
+				//Intent i = new Intent(v.getContext(), ListSessionActivity.class);
+				//v.getContext().startActivity(i);
+				finish();
 			}
 		});
     	

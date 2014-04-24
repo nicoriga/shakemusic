@@ -1,6 +1,6 @@
 package com.acceleraudio.service;
 
-import com.acceleraudio.activity.FourthActivity;
+import com.acceleraudio.activity.PlayerActivity;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -15,7 +15,8 @@ public class PlayerTrack extends IntentService{
 	private Thread t;
 	private int sound_rate;
 	private boolean isRunning ;
-	private Integer[] sample = {10,500,1000,-1500,-1800,2100,2200};
+	private int[] sample = {50, 100, 400, 500, 150, 100 , 80};
+	private Object[] sampleList;
 	int x;
     
     public PlayerTrack (){
@@ -24,8 +25,10 @@ public class PlayerTrack extends IntentService{
     
     @Override
     protected void onHandleIntent(Intent intent) {
-    	x = intent.getIntExtra(FourthActivity.MUSIC_CURSOR, 0);
-    	sound_rate = intent.getIntExtra(FourthActivity.SOUND_RATE, 44100);
+    	sampleList = intent.getIntegerArrayListExtra(PlayerActivity.ACC_DATA).toArray();
+    	sample = copyList(sampleList);
+    	x = intent.getIntExtra(PlayerActivity.MUSIC_CURSOR, 0);
+    	sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 44100);
     	isRunning = true;
     	
     	t = new Thread() {
@@ -40,23 +43,24 @@ public class PlayerTrack extends IntentService{
 		
 		        short samples[] = new short[buffsize];
 		        int amp = 4000;
-		        double twopi = 8.*Math.atan(1.);
-		        double fr = 440.f;
-		        double ph = 0.0;
+		        double twoph = Math.PI*2; // 2pi grego
+		        double fr = 440.f; // frequenza
+		        double ph = 0.0; // pi greco
 		
-		        // start audio
+		        // avvia l'audio
 		        audioTrack.play();
 		  
-		        // synthesis loop
+		        // loop musicale
 		        while(isRunning){
-		        	amp = amp + sample[x];
-		        	fr =  440 + 440*sample[x];
+		        	//amp = amp;
+		        	// TODO: modificare la frequenza con i campioni prelevati dall'accelerometro
+		        	fr =  262 + sample[x];
 		        	for(int i=0; i < buffsize; i++){
 		        		samples[i] = (short) (amp*Math.sin(ph));
-		        		ph += twopi*fr/sound_rate;
+		        		ph += twoph*fr/sound_rate;
 		        	}
 		        	audioTrack.write(samples, 0, buffsize);
-		        	
+		        	x++;
 		        	if(x == sample.length) x = 0;
 		        }
 		        
@@ -89,7 +93,19 @@ public class PlayerTrack extends IntentService{
     	Toast.makeText(this, "service stop", Toast.LENGTH_SHORT).show();
     	
     	Intent intent = new Intent(NOTIFICATION);
-        intent.putExtra(FourthActivity.MUSIC_CURSOR, x);
+        intent.putExtra(PlayerActivity.MUSIC_CURSOR, x);
         sendBroadcast(intent);
+    }
+
+    public int[] copyList(Object[] obA)
+    {
+    	int[] intA = new int[obA.length];
+    	
+    	for(int i = 0; i < obA.length; i++)
+    	{
+    		intA[i] = (int) obA[i];
+    	}
+    	
+    	return intA;
     }
 }

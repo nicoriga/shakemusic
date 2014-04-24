@@ -16,7 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
 
-public class FifthActivity extends Activity {
+public class PreferencesActivity extends Activity {
 	
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
@@ -27,7 +27,7 @@ public class FifthActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_5);
+    	setContentView(R.layout.ui_5l);
 	    
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
@@ -111,15 +111,18 @@ public class FifthActivity extends Activity {
 ////////////////////////////////////////////////////////
     
     private void updateChange(View v){
-    	// apro la connessione al db
-    	dbAdapter = new DbAdapter(v.getContext());
-    	dbAdapter.open();
-    	
-    	// aggiorno i dati delle preferenze
-		dbAdapter.updatePreferences( (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt(spinner2.getSelectedItem().toString()), Integer.parseInt(spinner1.getSelectedItem().toString()), 1, 0);
-		
-		// chiudo la connessione al db
-		dbAdapter.close();
+    	if(v != null)
+    	{
+	    	// apro la connessione al db
+	    	dbAdapter = new DbAdapter(v.getContext());
+	    	dbAdapter.open();
+	    	
+	    	// aggiorno i dati delle preferenze
+			dbAdapter.updatePreferences( (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt(spinner2.getSelectedItem().toString()), Integer.parseInt(spinner1.getSelectedItem().toString()), 1, 0);
+			
+			// chiudo la connessione al db
+			dbAdapter.close();
+    	}
     }
 
 }

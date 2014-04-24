@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.acceleraudio.activity.FifthActivity" >
+    tools:context="com.acceleraudio.activity.PreferencesActivity" >
 
     <TextView
         android:id="@+id/UI5textView1"
