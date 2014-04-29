@@ -242,17 +242,17 @@ public class RecordTrackActivityBeta extends Activity {
 			// apro la connessione al db
 	    	dbAdapter.open();
 	    	
-	    	String x = "";
-	    	String y = "";
-	    	String z = "";
-	    	
-	    	for (float value : data_x)   x += " " + value;
-	    	for (float value : data_y)   y += " " + value;
-	    	for (float value : data_z)   z += " " + value;
-	    	
+	    	String x = ""; int n_x = 0;
+	    	String y = ""; int n_y = 0;
+	    	String z = ""; int n_z = 0;
+
+	    	for (float value : data_x){   x += " " + value; n_x++;}
+	    	for (float value : data_y){   y += " " + value; n_y++;}
+	    	for (float value : data_z){   z += " " + value; n_z++;}
+
 	    	// inserisco i dati della sessione nel database
 	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-			dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", x, y, z );
+			dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, x, y, z, n_x, n_y, n_z );
 			
 			// chiudo la connessione al db
 			dbAdapter.close();

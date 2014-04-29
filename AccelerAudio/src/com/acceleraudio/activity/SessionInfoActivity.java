@@ -30,7 +30,7 @@ public class SessionInfoActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_2l);
+    	setContentView(R.layout.ui_2);
 
 ////////////////////////////////////////////////////////
 ///////////// Prelevo dati dall'intent /////////////////
@@ -43,16 +43,16 @@ public class SessionInfoActivity extends Activity {
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
     	
-    	listSession = (Button) findViewById(R.id.UI2button1M);
-    	playSession = (Button) findViewById(R.id.UI2button1);
-    	et_sessionName = (EditText)findViewById(R.id.UI2editText1);
-    	et_result = (EditText)findViewById(R.id.UI2editText2);
-    	creation_date = (TextView)findViewById(R.id.UI2textView2);
-    	date_change = (TextView)findViewById(R.id.UI2textView3);
-    	axis_x = (CheckBox)findViewById(R.id.UI2checkBox1);
-    	axis_y = (CheckBox)findViewById(R.id.UI2checkBox2);
-    	axis_z = (CheckBox)findViewById(R.id.UI2checkBox3);
-    	spinner = (Spinner) findViewById(R.id.UI2spinner1);
+    	listSession = (Button) findViewById(R.id.UI2_B_listsession);
+    	playSession = (Button) findViewById(R.id.UI2_button_play);
+    	et_sessionName = (EditText)findViewById(R.id.UI2_editText_titolo_sessione);
+    	//et_result = (EditText)findViewById(R.id.UI2editText2);
+    	creation_date = (TextView)findViewById(R.id.UI2_textView_data_creazione);
+    	date_change = (TextView)findViewById(R.id.UI2_textView_data_Modifica);
+    	axis_x = (CheckBox)findViewById(R.id.UI2_checkBox_x);
+    	axis_y = (CheckBox)findViewById(R.id.UI2_checkBox_y);
+    	axis_z = (CheckBox)findViewById(R.id.UI2_checkBox_z);
+    	spinner = (Spinner) findViewById(R.id.UI2_spinner_upsampling);
     	
     	/**** POPOLA LA LISTA DELLO SPINNER ****/
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);
@@ -73,7 +73,7 @@ public class SessionInfoActivity extends Activity {
         
         // carico dati
         et_sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME))); // carico il nome della sessione
-        et_result.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))); // TODO: da eliminare server solo per prova carico i dati registraati PROVA
+        //et_result.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))); // TODO: da eliminare server solo per prova carico i dati registraati PROVA
         creation_date.setText(creation_date.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_CREATION_DATE))); // carico data creazione
         date_change.setText(date_change.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE))); // carico data modifica
         axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1")); // asse x
@@ -85,32 +85,34 @@ public class SessionInfoActivity extends Activity {
         cursor.close();
 		dbAdapter.close();
              	    
+    }
+    
+    @Override
+	public void onResume() {
+		super.onResume();
+		
 /////////////////////////////////////////////////////////
-//////////// aggiungo listener ai bottoni ///////////////
+////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
-        
-        /**** TORNA ALLA LISTA DELLE SESSIONI ****/
-        listSession.setOnClickListener(new View.OnClickListener() {
+
+		/**** TORNA ALLA LISTA DELLE SESSIONI ****/
+		listSession.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// avvio la prima activity
-		    	//Intent i = new Intent(v.getContext(), FirstActivity.class);
-		    	//v.getContext().startActivity(i);
-		    	finish(); // chiude la activity: simula il tasto back
+				finish(); // chiude la activity
 			}
 		});
-        
-        /**** AVVIA IL PLAYER MUSICALE ****/
-	    playSession.setOnClickListener(new View.OnClickListener() {
+				
+		/**** AVVIA IL PLAYER MUSICALE ****/
+		playSession.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// avvio la quarta activity
-		    	Intent i = new Intent(v.getContext(), PlayerActivity.class);
-		    	i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
-		    	v.getContext().startActivity(i);
+				// avvio la PlayerActivity
+				Intent i = new Intent(v.getContext(), PlayerActivity.class);
+				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
+				v.getContext().startActivity(i);
 			}
 		});
     }
-    
     
 }

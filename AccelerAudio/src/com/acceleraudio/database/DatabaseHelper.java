@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
          
 	private static final String DATABASE_NAME = "AccelerAudio.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 8;
  
     // stringa creazione del database
     private static final String DATABASE_CREATE_T_SESSION = ""
@@ -19,11 +19,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         		+ "axis_y int not null, "
         		+ "axis_z int not null, "
         		+ "upsampling int not null, "
-        		+ "creation_date text not null, "
-        		+ "date_change text not null,"
+        		+ "creation_date date not null, "
+        		+ "date_change date not null,"
         		+ "sensor_data_x text not null,"
         		+ "sensor_data_y text not null,"
-        		+ "sensor_data_z text not null); ";
+        		+ "sensor_data_z text not null,"
+        		+ "n_data_x int not null,"
+        		+ "n_data_y int not null,"
+        		+ "n_data_z int not null); ";
     private static final String DATABASE_CREATE_T_PREFERENCES = ""
     			+ "CREATE TABLE preferences ("
         		+ "_id integer primary key autoincrement,"

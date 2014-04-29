@@ -68,32 +68,46 @@ public class RecordActivity extends Activity {
 		progressBarY.setProgress(0);
 		progressBarZ.setProgress(0);
 		rec_sample.setText("" + sample);
+		
+		pauseSession.setEnabled(false);
+		stopSession.setEnabled(false);
     	
+    }
+    
+    @Override
+	public void onResume() {
+		super.onResume();
+		
 /////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
 
 		/**** AVVIA LA REGISTRAZIONE ****/
-    	startSession.setOnClickListener(new OnClickListener() {
+		startSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				sensorManager.registerListener(mySensorEventListener, accelerometro, SensorManager.SENSOR_DELAY_NORMAL);
 				//TODO: impostazioni per accelerometro intentRecord.putExtra(...);
-    			//startService(intentRecord);
+				//startService(intentRecord);
+				startSession.setEnabled(false);
+				pauseSession.setEnabled(true);
+				stopSession.setEnabled(true);
 			}
 		});
-    	
-    	/**** PAUSA LA REGISTRAZIONE ****/
-    	pauseSession.setOnClickListener(new OnClickListener() {
+		
+		/**** PAUSA LA REGISTRAZIONE ****/
+		pauseSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				sensorManager.unregisterListener(mySensorEventListener);
 				//stopService(intentRecord);
+				startSession.setEnabled(true);
+				pauseSession.setEnabled(false);
 			}
 		});
-    	
-    	/**** STOPPA LA REGISTRAZIONE ****/
-    	stopSession.setOnClickListener(new View.OnClickListener() {
+		
+		/**** STOPPA LA REGISTRAZIONE ****/
+		stopSession.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				saveAccelerometerData();
@@ -102,9 +116,7 @@ public class RecordActivity extends Activity {
 				finish();
 			}
 		});
-    	
     }
-    
 
 /////////////////////////////////////////////////////////
 //////////////// Gestione Accelerometro /////////////////
@@ -198,17 +210,17 @@ public class RecordActivity extends Activity {
 			// apro la connessione al db
 	    	dbAdapter.open();
 
-	    	String x = "";
-	    	String y = "";
-	    	String z = "";
+	    	String x = ""; int n_x = 0;
+	    	String y = ""; int n_y = 0;
+	    	String z = ""; int n_z = 0;
 
-	    	for (float value : data_x)   x += " " + value;
-	    	for (float value : data_y)   y += " " + value;
-	    	for (float value : data_z)   z += " " + value;
+	    	for (float value : data_x){   x += " " + value; n_x++;}
+	    	for (float value : data_y){   y += " " + value; n_y++;}
+	    	for (float value : data_z){   z += " " + value; n_z++;}
 
 	    	// inserisco i dati della sessione nel database
 	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-			dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", x, y, z );
+			dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, x, y, z, n_x, n_y, n_z );
 
 			// chiudo la connessione al db
 			dbAdapter.close();
