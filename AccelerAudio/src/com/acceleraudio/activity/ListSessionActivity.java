@@ -108,4 +108,22 @@ public class ListSessionActivity extends Activity {
 	    });
 
     }
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+	    
+	}
+	
+	// carica i dati quando viene ricreata l'activity
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	// salva i dati quando viene chiusa l'activity
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
 }
