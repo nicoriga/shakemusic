@@ -21,7 +21,7 @@ public class SessionInfoActivity extends Activity {
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
     private Button listSession, playSession;
-    private EditText et_sessionName, et_result;
+    private EditText et_sessionName;
     private TextView creation_date, date_change;
     private CheckBox axis_x, axis_y, axis_z;
     private Spinner spinner;
@@ -46,7 +46,6 @@ public class SessionInfoActivity extends Activity {
     	listSession = (Button) findViewById(R.id.UI2_B_listsession);
     	playSession = (Button) findViewById(R.id.UI2_button_play);
     	et_sessionName = (EditText)findViewById(R.id.UI2_editText_titolo_sessione);
-    	//et_result = (EditText)findViewById(R.id.UI2editText2);
     	creation_date = (TextView)findViewById(R.id.UI2_textView_data_creazione);
     	date_change = (TextView)findViewById(R.id.UI2_textView_data_Modifica);
     	axis_x = (CheckBox)findViewById(R.id.UI2_checkBox_x);

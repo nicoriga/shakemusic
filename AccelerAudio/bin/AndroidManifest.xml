@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.acceleraudio.activity.SessionInfoActivity"></activity>
-        <activity android:name="com.acceleraudio.activity.RecordActivity"></activity>
+        <activity android:name="com.acceleraudio.activity.RecordActivity" android:screenOrientation="landscape"></activity>
         <activity android:name="com.acceleraudio.activity.PlayerActivity"></activity>
         <activity android:name="com.acceleraudio.activity.PreferencesActivity"></activity>
         <service android:name="com.acceleraudio.service.PlayerTrack"></service>

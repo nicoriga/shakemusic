@@ -24,7 +24,7 @@ public class RecordActivity extends Activity {
 	private boolean initialized;
 	private SensorManager sensorManager;
 	private Sensor accelerometro;
-	private final float rumore = (float) 1.0;
+	private final float rumore = (float) 0.3;
 	private float oldX, oldY, oldZ;
 	private Button startSession, stopSession, pauseSession;
 	private EditText nameSession, rec_sample;

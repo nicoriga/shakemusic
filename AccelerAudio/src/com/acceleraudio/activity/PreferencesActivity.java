@@ -22,7 +22,6 @@ public class PreferencesActivity extends Activity {
     private Cursor cursor;
 	private Spinner spinner1, spinner2;
 	private CheckBox axis_x, axis_y, axis_z;
-	private Boolean load = false;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,19 +71,23 @@ public class PreferencesActivity extends Activity {
 		cursor.close();
 		dbAdapter.close();
 
-		load = true;
+    }
+    
+    @Override
+	public void onResume() {
+		super.onResume();
 		
 /////////////////////////////////////////////////////////
 ///////////  aggiungo listener  /////////////////////////
 ////////////////////////////////////////////////////////
-		
-		// TODO: migliorare gestione aggiornamento preferenze predefinite
-		
+
+// TODO: migliorare gestione aggiornamento preferenze predefinite
+
 		final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
-	        @Override
-	        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-	        	updateChange(buttonView);
-	        }
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				updateChange(buttonView);
+			}
 		};
 		axis_x.setOnCheckedChangeListener(axis_change);
 		axis_y.setOnCheckedChangeListener(axis_change);
@@ -93,23 +96,24 @@ public class PreferencesActivity extends Activity {
 		final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				if(load) updateChange(arg1);
+				updateChange(arg1);
 			}
-
+		
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
+			// TODO: Auto-generated method stub
 				
 			}
 		};
 		spinner1.setOnItemSelectedListener(spinner_change);
 		spinner2.setOnItemSelectedListener(spinner_change);
-    }
+	}
     
 /////////////////////////////////////////////////////////
 ///////////  metodi ausiliari  /////////////////////////
 ////////////////////////////////////////////////////////
     
+    // aggiorna le impostazioni nel database
     private void updateChange(View v){
     	if(v != null)
     	{
