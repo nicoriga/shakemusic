@@ -52,7 +52,6 @@ public class PlayerActivity extends Activity {
 ///////////////////////////////////////////////////////
 
 		sessionName = (TextView) findViewById(R.id.UI4textView1);
-		
 		play = (Button) findViewById(R.id.UI4button2);
 		pause = (Button) findViewById(R.id.UI4button3);
 		stop = (Button) findViewById(R.id.UI4button1);
@@ -97,54 +96,8 @@ public class PlayerActivity extends Activity {
 		sample.add(0);
 		sample.add(0);
 		sample.add(0);
-		sample.add(0);
-		
-    	
-/////////////////////////////////////////////////////////
-////////////aggiungo listener ai bottoni ///////////////
-////////////////////////////////////////////////////////
+		sample.add(0);  	
 
-    	/**** play music ****/
-    	play.setOnClickListener(new View.OnClickListener() {
-    		@Override
-			public void onClick(View v) {
-    			// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
-    			if(!inizialized)
-    			{
-	    			intentPlayer.putExtra(ACC_DATA, sample);
-	    			intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
-	    			intentPlayer.putExtra(SOUND_RATE, upsampling);
-	    			startService(intentPlayer);
-	    			inizialized = true;
-    			}
-			}
-		});
-    	
-    	/**** pause music ****/
-    	pause.setOnClickListener(new View.OnClickListener() {
-    		@Override
-			public void onClick(View v) {
-    			stopService(intentPlayer);
-    			inizialized = false;
-			}
-		});
-    	
-    	/**** stop music ****/
-    	stop.setOnClickListener(new View.OnClickListener() {
-    		@Override
-			public void onClick(View v) {
-    			stopService(intentPlayer);
-    			
-    			finish();
-			}
-		});
-    }
-    
-    @Override
-    public void onDestroy() {
-    	super.onDestroy();
-    	stopService(intentPlayer);
-    	inizialized = false;
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -161,6 +114,45 @@ public class PlayerActivity extends Activity {
     @Override
     protected void onResume() {
     	super.onResume();
+    	
+/////////////////////////////////////////////////////////
+////////////aggiungo listener ai bottoni ///////////////
+////////////////////////////////////////////////////////
+
+		/**** play music ****/
+		play.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
+				if(!inizialized)
+					{
+					intentPlayer.putExtra(ACC_DATA, sample);
+					intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
+					intentPlayer.putExtra(SOUND_RATE, upsampling);
+					startService(intentPlayer);
+					inizialized = true;
+				}
+			}
+		});
+		
+		/**** pause music ****/
+		pause.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				stopService(intentPlayer);
+				inizialized = false;
+			}
+		});
+		
+		/**** stop music ****/
+		stop.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				stopService(intentPlayer);
+				finish();
+			}
+		});
+    	
     	registerReceiver(receiver, new IntentFilter(PlayerTrack.NOTIFICATION));
     }
     
@@ -168,6 +160,13 @@ public class PlayerActivity extends Activity {
     protected void onPause() {
     	super.onPause();
     	unregisterReceiver(receiver);
+    }
+    
+    @Override
+    public void onDestroy() {
+    	super.onDestroy();
+    	stopService(intentPlayer);
+    	inizialized = false;
     }
 
 }

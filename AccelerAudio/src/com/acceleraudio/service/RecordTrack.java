@@ -21,7 +21,7 @@ public class RecordTrack extends IntentService{
 	private boolean initialized;
 	private SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 	private Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-	private final float rumore = (float) 1.0;
+	private final float rumore = (float) 0.3;
 	private float oldX, oldY, oldZ;
 	private ArrayList<Float> 
 			data_x = new ArrayList<Float>(), 
