@@ -4,14 +4,17 @@ import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.design.VerticalProgressBar;
+import com.acceleraudio.service.RecordTrack;
+import com.acceleraudio.service.provaService;
+import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
@@ -20,13 +23,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class RecordActivity extends Activity {
-
+public class RecordActivityBeta extends Activity {
+	
 	private boolean initialized, insertComplete = false;
 	private SensorManager sensorManager;
 	private Sensor accelerometro;
-	private final float rumore = (float) 0.3;
-	private float oldX, oldY, oldZ;
 	private Button startSession, stopSession, pauseSession;
 	private EditText nameSession, rec_sample;
 	private VerticalProgressBar progressBarX , progressBarY, progressBarZ;
@@ -35,21 +36,24 @@ public class RecordActivity extends Activity {
 			data_y = new ArrayList<Float>(), 
 			data_z = new ArrayList<Float>();
 	private DbAdapter dbAdapter;
-	private int sample = 0;
+	private int sample = 0, x = 0, y = 0, z = 0;
 	public Intent intentRecord;
 	private long sessionId;
-
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_3l);
     	
+    	// creo intent per avviare il servizio di registrazione
+    	intentRecord = new Intent(this, RecordTrack.class);
+    	
     	initialized = false;
     	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		accelerometro = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
+		
 		dbAdapter = new DbAdapter(this);
-
+			
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
@@ -73,13 +77,51 @@ public class RecordActivity extends Activity {
 		
 		pauseSession.setEnabled(false);
 		stopSession.setEnabled(false);
-		
-		////////////// TODO: dati di prova da eliminare
-		for(int xi = 0; xi < 1500; xi++) data_x.add(10f);
-    	for(int xi = 0; xi < 1500; xi++) data_y.add(10f);
-    	for(int xi = 0; xi < 1500; xi++) data_z.add(10f);
     	
+		//////////////TODO: dati di prova da eliminare
+		initialized = true;
+		for(int xi = 0; xi < 1500; xi++) data_x.add(10f);
+		for(int xi = 0; xi < 1500; xi++) data_y.add(10f);
+		for(int xi = 0; xi < 1500; xi++) data_z.add(10f);
     }
+    
+    private BroadcastReceiver receiverRecord = new BroadcastReceiver() {
+    	
+    	@Override
+        public void onReceive(Context context, Intent intent) {
+    		Bundle bundle = intent.getExtras();
+    		if (bundle != null) {
+    			String action = intent.getAction();
+    			if(action == RecordTrack.NOTIFICATION_RECORD)
+    			{
+	    			x = (int)bundle.getFloat(RecordTrack.AXIS_X_DATA, x);
+	    			y = (int)bundle.getFloat(RecordTrack.AXIS_Y_DATA, y);
+	    			z = (int)bundle.getFloat(RecordTrack.AXIS_Z_DATA, z);
+	    			rec_sample.setText("" + bundle.getInt(RecordTrack.SAMPLE_N_DATA));
+	    			progressBarX.setProgress(x);
+	    			progressBarY.setProgress(y);
+	    			progressBarZ.setProgress(z);
+    			}
+    		}
+        }
+    };
+    private BroadcastReceiver receiverStop = new BroadcastReceiver() {
+    	
+    	@Override
+        public void onReceive(Context context, Intent intent) {
+    		Bundle bundle = intent.getExtras();
+    		if (bundle != null) {
+    			String action = intent.getAction();
+				if(action == RecordTrack.NOTIFICATION_STOP)
+				{
+					data_x.addAll(Util.copyListFloat(bundle.getFloatArray(RecordTrack.AXIS_X_DATA)));
+					data_y.addAll(Util.copyListFloat(bundle.getFloatArray(RecordTrack.AXIS_Y_DATA)));
+					data_z.addAll(Util.copyListFloat(bundle.getFloatArray(RecordTrack.AXIS_Z_DATA)));
+					initialized = true;
+				}
+    		}
+        }
+    };
     
     @Override
 	public void onResume() {
@@ -93,8 +135,8 @@ public class RecordActivity extends Activity {
 		startSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sensorManager.registerListener(mySensorEventListener, accelerometro, SensorManager.SENSOR_DELAY_NORMAL);
 				//TODO: impostazioni per accelerometro intentRecord.putExtra(...);
+				startService(intentRecord);
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(true);
 				stopSession.setEnabled(true);
@@ -105,7 +147,7 @@ public class RecordActivity extends Activity {
 		pauseSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sensorManager.unregisterListener(mySensorEventListener);
+				stopService(intentRecord);
 				startSession.setEnabled(true);
 				pauseSession.setEnabled(false);
 			}
@@ -115,113 +157,42 @@ public class RecordActivity extends Activity {
 		stopSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sensorManager.unregisterListener(mySensorEventListener);
+				stopService(intentRecord);
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(false);
-				if(nameSession.getText().toString().length() > 0)
-				{
-					saveAccelerometerData();
-					// avvio la PlayerActivity
-					Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
-					i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
-					v.getContext().startActivity(i);
-					//finish();
-				}
-				else Toast.makeText(v.getContext(), "INSERISCI NOME SESSIONE", Toast.LENGTH_SHORT).show();
+				
+				// Verifica che siano stati presi dati dall'accelerometro
+				if(initialized)
+					if(nameSession.getText().toString().length() > 0)
+					{
+						saveAccelerometerData();
+						// avvio la PlayerActivity
+						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
+						i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
+						v.getContext().startActivity(i);
+					}
+					else Toast.makeText(v.getContext(), "INSERISCI NOME SESSIONE", Toast.LENGTH_SHORT).show();
+				else finish(); // se non ci sono dati chiude l'activity
 			}
 		});
+		
+		registerReceiver(receiverRecord, new IntentFilter(RecordTrack.NOTIFICATION_RECORD));
+		registerReceiver(receiverStop, new IntentFilter(RecordTrack.NOTIFICATION_STOP));
     }
     
     @Override
-	public void onPause() {
-		super.onPause();
-		
-		if (insertComplete) finish();
+    protected void onPause() {
+    	super.onPause();
+    	unregisterReceiver(receiverRecord);
+    	unregisterReceiver(receiverStop);
+    	if (insertComplete) finish();
     }
-
-/////////////////////////////////////////////////////////
-//////////////// Gestione Accelerometro /////////////////
-////////////////////////////////////////////////////////
-
-	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
-        public void onSensorChanged(SensorEvent event) {
-        	if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-	        	float x = event.values[0];
-	    		float y = event.values[1];
-	    		float z = event.values[2];
-	    		if (!initialized) {
-
-	    			oldX = x;
-	    			oldY = y;
-	    			oldZ = z;
-
-	    			data_x.add(0f);
-	    			data_y.add(0f);
-	    			data_z.add(0f);
-
-	    			progressBarX.setProgress(0);
-	    			progressBarY.setProgress(0);
-	    			progressBarZ.setProgress(0);
-
-	    			rec_sample.setText("" + sample);
-
-	    			initialized = true;
-
-	    		} else {
-
-	    			float deltaX = Math.abs(oldX - x);
-	    			float deltaY = Math.abs(oldY - y);
-	    			float deltaZ = Math.abs(oldZ - z);
-
-	    			if (deltaX < rumore)
-	    				deltaX = (float) 0.0;
-	    			else
-	    			{
-	    				data_x.add(deltaX);
-	    				sample++;
-	    				rec_sample.setText("" + sample);
-	    			}
-
-	    			if (deltaY < rumore)
-	    				deltaY = (float) 0.0;
-	    			else
-	    			{
-	    				data_y.add(deltaY);
-	    				sample++;
-	    				rec_sample.setText("" + sample);
-	    			}
-
-	    			if (deltaZ < rumore)
-	    				deltaZ = (float) 0.0;
-	    			else
-	    			{
-	    				data_z.add(deltaZ);
-	    				sample++;
-	    				rec_sample.setText("" + sample);
-	    			}
-
-	    			oldX = x;
-	    			oldY = y;
-	    			oldZ = z;
-
-	    			progressBarX.setProgress((int)deltaX);
-	    			progressBarY.setProgress((int)deltaY);
-	    			progressBarZ.setProgress((int)deltaZ);	
-	    		}
-        	}
-        }
         
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // TODO Auto-generated method stub
-
-        }
-    };
     
 /////////////////////////////////////////////////////////    
-//////////////// Metodi Utili  //////////////////////////
+////////////////Metodi Utili  //////////////////////////
 ////////////////////////////////////////////////////////
-    
+
     public void saveAccelerometerData(){
     	if(initialized){
 

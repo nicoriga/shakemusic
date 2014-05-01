@@ -12,6 +12,7 @@ import android.hardware.SensorManager;
 
 public class RecordTrack extends IntentService{
 	
+	public static final String NOTIFICATION = "com.acceleraudio.service.recordtrack";
 	public static final String NOTIFICATION_RECORD = "com.acceleraudio.service.recordtrack.record";
 	public static final String NOTIFICATION_STOP = "com.acceleraudio.service.recordtrack.stop";
 	public static final String SAMPLE_N_DATA = "recordtrack.sample_n_data";
@@ -19,42 +20,19 @@ public class RecordTrack extends IntentService{
 	public static final String AXIS_Y_DATA = "recordtrack.axis_y_data";
 	public static final String AXIS_Z_DATA = "recordtrack.axis_z_data";
 	private boolean initialized;
-	private SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-	private Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-	private final float rumore = (float) 0.3;
+	private SensorManager sensorManager;
+	private Sensor accelerometer;
+	private final float rumore = 0.3f;
 	private float oldX, oldY, oldZ;
 	private ArrayList<Float> 
 			data_x = new ArrayList<Float>(), 
 			data_y = new ArrayList<Float>(), 
 			data_z = new ArrayList<Float>();
 	private int sample = 0;
-	private Intent intent = new Intent(NOTIFICATION_RECORD);;
-    
-    public RecordTrack (){
-    	super("RecordTrack");
-    }
-    
-    @Override
-    protected void onHandleIntent(Intent intent) {
-    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-    	initialized = false;
-    	sample = 0;
-    }
-    
-    @Override
-    public void onDestroy() {
-    	super.onDestroy();
-    	
-    	Intent intent = new Intent(NOTIFICATION_STOP);
-        // TODO: inviare i dati registrati
-    	intent.putExtra(RecordTrack.AXIS_X_DATA, data_x);
-    	intent.putExtra(RecordTrack.AXIS_Y_DATA, data_y);
-    	intent.putExtra(RecordTrack.AXIS_Z_DATA, data_z);
-        sendBroadcast(intent);
-    }
-    
-    final SensorEventListener mySensorEventListener = new SensorEventListener() { 
+	private Intent intent;
+	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
         public void onSensorChanged(SensorEvent event) {
+        	intent = new Intent(NOTIFICATION_RECORD);
         	if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 	        	float x = event.values[0];
 	    		float y = event.values[1];
@@ -65,18 +43,9 @@ public class RecordTrack extends IntentService{
 	    			oldY = y;
 	    			oldZ = z;
 	    			
-	    			
 	    			data_x.add(0f);
 	    			data_y.add(0f);
 	    			data_z.add(0f);
-	    			
-	    			/*
-	    			ThirdActivity.progressBarX.setProgress(0);
-	    			progressBarY.setProgress(0);
-	    			progressBarZ.setProgress(0);
-	    			
-	    			rec_sample.setText("" + sample);
-	    			*/
 	    			
 	    			initialized = true;
 	    			
@@ -125,11 +94,6 @@ public class RecordTrack extends IntentService{
 	    			oldY = y;
 	    			oldZ = z;
 	    			
-	    			/*
-	    			progressBarX.setProgress((int)deltaX);
-	    			progressBarY.setProgress((int)deltaY);
-	    			progressBarZ.setProgress((int)deltaZ);	
-	    			*/
 	    		}
         	}
         }
@@ -140,4 +104,31 @@ public class RecordTrack extends IntentService{
 
         }
     };
+    
+    public RecordTrack (){
+    	super("RecordTrack");
+    }
+    
+    @Override
+    protected void onHandleIntent(Intent intent) {
+    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    	initialized = false;
+    	sample = 0;
+    }
+    
+    @Override
+    public void onDestroy() {
+    	super.onDestroy();
+    	sensorManager.unregisterListener(mySensorEventListener);
+    	
+    	intent = new Intent(NOTIFICATION_STOP);
+        // TODO: inviare i dati registrati
+    	intent.putExtra(RecordTrack.AXIS_X_DATA, data_x);
+    	intent.putExtra(RecordTrack.AXIS_Y_DATA, data_y);
+    	intent.putExtra(RecordTrack.AXIS_Z_DATA, data_z);
+        sendBroadcast(intent);
+    }
+    
 }

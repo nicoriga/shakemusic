@@ -89,14 +89,16 @@ public class ListSessionActivity extends Activity {
 ///////////  aggiungo listener  /////////////////////////
 ////////////////////////////////////////////////////////
 
+		/**** Avvia l'activity per registrare una nuova session ****/
 		newSession.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				// avvio la Recordactivity
-				Intent i = new Intent(view.getContext(), RecordActivity.class);
+				Intent i = new Intent(view.getContext(), RecordActivityBeta.class);
 				view.getContext().startActivity(i);
 			}
 		});
 		
+		/**** avvia l'activity per modificare le preferenze predefinite ****/
 		preferences.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				// avvio la PreferencesActivity
@@ -105,6 +107,7 @@ public class ListSessionActivity extends Activity {
 			}
 		});
 		
+		/**** avvia l'activity per vedere le info sulla sessione ****/
 		list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// avvio la SessionInfoActivity activity
