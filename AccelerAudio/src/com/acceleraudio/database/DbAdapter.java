@@ -102,6 +102,18 @@ public class DbAdapter {
      
 	    return values;
 	}
+	
+	private ContentValues createContentValuesSession(String name, int axis_x, int axis_y, int axis_z, int upsampling, String date_change) {
+		ContentValues values = new ContentValues();
+		values.put( T_SESSION_NAME, name );
+	    values.put( T_SESSION_AXIS_X, axis_x );
+	    values.put( T_SESSION_AXIS_Y, axis_y );
+	    values.put( T_SESSION_AXIS_Z, axis_z );
+	    values.put( T_SESSION_UPSAMPLING, upsampling );
+	    values.put( T_SESSION_DATE_CHANGE, date_change );
+     
+	    return values;
+	}
          
 	// inserisci nuova sessione
 	public long createSession(String name, int image, int axis_x, int axis_y, int axis_z, int upsampling,  String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) {
@@ -114,6 +126,12 @@ public class DbAdapter {
 			ContentValues updateValues = createContentValuesPreferences(axis_x, axis_y, axis_z, upsampling, sample_rate, max_minutes, max_seconds);
 			return database.update(DATABASE_TABLE_PREFERENCES, updateValues, T_PREFERENCES_ID + "= 1", null) > 0;
 		}
+		
+	// aggiorna record info sessione 
+	public boolean updateSession( long sessionID, String name, int axis_x, int axis_y, int axis_z, int upsampling) {
+		ContentValues updateValues = createContentValuesSession(name, axis_x, axis_y, axis_z, upsampling, getDate());
+		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
+	}
 	
 	// aggiorna record sessione
 	public boolean updateSession( long sessionID, String name, int image, int axis_x, int axis_y, int axis_z, int upsampling, String creation_date, String date_change, String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) {

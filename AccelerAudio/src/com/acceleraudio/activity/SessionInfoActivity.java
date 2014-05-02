@@ -8,13 +8,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class SessionInfoActivity extends Activity {
 	
@@ -91,6 +97,49 @@ public class SessionInfoActivity extends Activity {
 		super.onResume();
 		
 /////////////////////////////////////////////////////////
+////////////aggiungo listener cambio info ///////////////
+////////////////////////////////////////////////////////
+		
+		et_sessionName.addTextChangedListener(new TextWatcher() {
+		      @Override
+		      public void onTextChanged(CharSequence s, int start, int before, int count) {
+		      }
+		      
+		      @Override
+		      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		      }
+
+		      @Override
+		      public void afterTextChanged(Editable s) {
+		    	  updateChange(et_sessionName);
+		      }
+		    });
+		
+		final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				updateChange(buttonView);
+			}
+		};
+		axis_x.setOnCheckedChangeListener(axis_change);
+		axis_y.setOnCheckedChangeListener(axis_change);
+		axis_z.setOnCheckedChangeListener(axis_change);
+		
+		final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				updateChange(arg1);
+			}
+		
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO: Auto-generated method stub
+				
+			}
+		};
+		spinner.setOnItemSelectedListener(spinner_change);
+		
+/////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
 
@@ -113,5 +162,25 @@ public class SessionInfoActivity extends Activity {
 			}
 		});
     }
+    
+/////////////////////////////////////////////////////////
+///////////  metodi ausiliari  /////////////////////////
+////////////////////////////////////////////////////////
+
+	// aggiorna le impostazioni nel database
+		private void updateChange(View v){
+		if(v != null)
+		{
+			// apro la connessione al db
+			dbAdapter = new DbAdapter(v.getContext());
+			dbAdapter.open();
+			
+			// aggiorno i dati delle preferenze
+			dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt(spinner.getSelectedItem().toString()));
+			
+			// chiudo la connessione al db
+			dbAdapter.close();
+		}
+	}
     
 }

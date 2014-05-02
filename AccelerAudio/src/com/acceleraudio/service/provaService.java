@@ -16,7 +16,6 @@ public class provaService extends IntentService{
 	public static final String AXIS_Y_DATA = "recordtrack.axis_y_data";
 	public static final String AXIS_Z_DATA = "recordtrack.axis_z_data";
 	
-	private boolean initialized;
 	private SensorManager sensorManager;
     
     public provaService (){

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.design.VerticalProgressBar;
 import com.acceleraudio.service.RecordTrack;
-import com.acceleraudio.service.provaService;
 import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
@@ -14,6 +13,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -39,6 +39,8 @@ public class RecordActivityBeta extends Activity {
 	private int sample = 0, x = 0, y = 0, z = 0;
 	public Intent intentRecord;
 	private long sessionId;
+	private boolean axis_x, axis_y, axis_z;
+	private int sample_rate;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,8 +77,31 @@ public class RecordActivityBeta extends Activity {
 		progressBarZ.setProgress(0);
 		rec_sample.setText("" + sample);
 		
+		rec_sample.setEnabled(false);
 		pauseSession.setEnabled(false);
 		stopSession.setEnabled(false);
+		
+//////////////////////////////////////////////////////////
+/// prelevo dati dal database, impostazioni predefinite///
+//////////////////////////////////////////////////////////
+
+		// apro la connessione al db
+		dbAdapter = new DbAdapter(this);
+		dbAdapter.open();
+		
+		// prelevo record by ID 
+		Cursor cursor = dbAdapter.fetchAllPreferences();
+		cursor.moveToFirst();
+		
+		// imposto preferenze
+		axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_AXIS_X)).equals("1"); // asse x
+		axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_AXIS_Y)).equals("1"); // asse y
+		axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_PREFERENCES_AXIS_Z)).equals("1"); // asse z
+		sample_rate = cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING));
+		
+		// chiudo connessioni
+		cursor.close();
+		dbAdapter.close();
     	
 		//////////////TODO: dati di prova da eliminare
 		initialized = true;
@@ -212,7 +237,7 @@ public class RecordActivityBeta extends Activity {
 
 	    	// inserisco i dati della sessione nel database
 	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, x_sb.toString(), y_sb.toString(), z_sb.toString(), n_x, n_y, n_z );
+	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), sample_rate, x_sb.toString(), y_sb.toString(), z_sb.toString(), n_x, n_y, n_z );
 	    	insertComplete = true;
 	    	
 			// chiudo la connessione al db
