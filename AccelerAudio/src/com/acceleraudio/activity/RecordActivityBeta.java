@@ -3,16 +3,12 @@ package com.acceleraudio.activity;
 import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
-import com.acceleraudio.design.VerticalProgressBar;
 import com.acceleraudio.service.RecordTrack;
-import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -21,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class RecordActivityBeta extends Activity {
@@ -29,15 +26,12 @@ public class RecordActivityBeta extends Activity {
 	private SensorManager sensorManager;
 	private Sensor accelerometro;
 	private Button startSession, stopSession, pauseSession;
-	private EditText nameSession, rec_sample;
-	private VerticalProgressBar progressBarX , progressBarY, progressBarZ;
-	private ArrayList<Float> 
-			data_x = new ArrayList<Float>(), 
-			data_y = new ArrayList<Float>(), 
-			data_z = new ArrayList<Float>();
+	protected static EditText nameSession, rec_sample;
+	private static ProgressBar progressBarX , progressBarY, progressBarZ;
+	public static ArrayList<Float> data_x, data_y, data_z;
 	private DbAdapter dbAdapter;
-	private int sample = 0, x = 0, y = 0, z = 0;
-	public Intent intentRecord;
+	public static int sample, x, y, z;
+	private Intent intentRecord;
 	private long sessionId;
 	private boolean axis_x, axis_y, axis_z;
 	private int sample_rate;
@@ -55,7 +49,14 @@ public class RecordActivityBeta extends Activity {
 		accelerometro = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		
 		dbAdapter = new DbAdapter(this);
-			
+		
+		data_x = new ArrayList<Float>();
+		data_y = new ArrayList<Float>();
+		data_z = new ArrayList<Float>();
+		sample = 0;
+		x = 0;
+		y = 0;
+		z = 0;
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
@@ -65,19 +66,22 @@ public class RecordActivityBeta extends Activity {
     	startSession = (Button) findViewById(R.id.UI3button1);
     	stopSession = (Button) findViewById(R.id.UI3button2);
     	pauseSession = (Button) findViewById(R.id.UI3button3);
-    	progressBarX = (VerticalProgressBar) findViewById(R.id.UI3verticalBarX);
-    	progressBarY = (VerticalProgressBar) findViewById(R.id.UI3verticalBarY);
-    	progressBarZ = (VerticalProgressBar) findViewById(R.id.UI3verticalBarZ);
-    	progressBarX.setMax((int)accelerometro.getMaximumRange());
-    	progressBarY.setMax((int)accelerometro.getMaximumRange());
-    	progressBarZ.setMax((int)accelerometro.getMaximumRange());
+    	progressBarX = (ProgressBar) findViewById(R.id.UI3verticalBarX);
+    	progressBarY = (ProgressBar) findViewById(R.id.UI3verticalBarY);
+    	progressBarZ = (ProgressBar) findViewById(R.id.UI3verticalBarZ);
+    	//progressBarX.setMax((int)accelerometro.getMaximumRange());
+    	//progressBarY.setMax((int)accelerometro.getMaximumRange());
+    	//progressBarZ.setMax((int)accelerometro.getMaximumRange());
+    	progressBarX.setMax(15);
+    	progressBarY.setMax(15);
+    	progressBarZ.setMax(15);
     	
     	progressBarX.setProgress(0);
 		progressBarY.setProgress(0);
 		progressBarZ.setProgress(0);
 		rec_sample.setText("" + sample);
 		
-		rec_sample.setEnabled(false);
+		//rec_sample.setEnabled(false);
 		pauseSession.setEnabled(false);
 		stopSession.setEnabled(false);
 		
@@ -105,11 +109,19 @@ public class RecordActivityBeta extends Activity {
     	
 		//////////////TODO: dati di prova da eliminare
 		initialized = true;
-		for(int xi = 0; xi < 1500; xi++) data_x.add(10f);
-		for(int xi = 0; xi < 1500; xi++) data_y.add(10f);
-		for(int xi = 0; xi < 1500; xi++) data_z.add(10f);
+		for(int xi = 0; xi < 500; xi++) data_x.add(10f);
+		for(int xi = 0; xi < 500; xi++) data_y.add(10f);
+		for(int xi = 0; xi < 500; xi++) data_z.add(10f);
+		
     }
     
+    public static void updateSample(){
+			rec_sample.setText("" + sample);
+			progressBarX.setProgress(x);
+			progressBarY.setProgress(y);
+			progressBarZ.setProgress(z);
+	}
+    /*
     private BroadcastReceiver receiverRecord = new BroadcastReceiver() {
     	
     	@Override
@@ -147,7 +159,7 @@ public class RecordActivityBeta extends Activity {
     		}
         }
     };
-    
+    */
     @Override
 	public void onResume() {
 		super.onResume();
@@ -161,10 +173,10 @@ public class RecordActivityBeta extends Activity {
 			@Override
 			public void onClick(View v) {
 				//TODO: impostazioni per accelerometro intentRecord.putExtra(...);
-				startService(intentRecord);
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(true);
 				stopSession.setEnabled(true);
+				startService(intentRecord);
 			}
 		});
 		
@@ -172,9 +184,9 @@ public class RecordActivityBeta extends Activity {
 		pauseSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				stopService(intentRecord);
 				startSession.setEnabled(true);
 				pauseSession.setEnabled(false);
+				stopService(intentRecord);
 			}
 		});
 		
@@ -182,16 +194,16 @@ public class RecordActivityBeta extends Activity {
 		stopSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				stopService(intentRecord);
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(false);
 				
+				stopService(intentRecord);
 				// Verifica che siano stati presi dati dall'accelerometro
 				if(initialized)
-					if(nameSession.getText().toString().length() > 0)
+					if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
 					{
 						saveAccelerometerData();
-						// avvio la PlayerActivity
+						// avvio la SessionInfoActivity
 						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
 						i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
 						v.getContext().startActivity(i);
@@ -201,15 +213,15 @@ public class RecordActivityBeta extends Activity {
 			}
 		});
 		
-		registerReceiver(receiverRecord, new IntentFilter(RecordTrack.NOTIFICATION_RECORD));
-		registerReceiver(receiverStop, new IntentFilter(RecordTrack.NOTIFICATION_STOP));
+		//registerReceiver(receiverRecord, new IntentFilter(RecordTrack.NOTIFICATION_RECORD));
+		//registerReceiver(receiverStop, new IntentFilter(RecordTrack.NOTIFICATION_STOP));
     }
     
     @Override
     protected void onPause() {
     	super.onPause();
-    	unregisterReceiver(receiverRecord);
-    	unregisterReceiver(receiverStop);
+    	//unregisterReceiver(receiverRecord);
+    	//unregisterReceiver(receiverStop);
     	if (insertComplete) finish();
     }
         

@@ -4,114 +4,106 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-     <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3verticalBarX"
-         style="?android:attr/progressBarStyleHorizontal"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignLeft="@+id/UI3editText1"
-         android:layout_centerVertical="true"
-         android:minHeight="40dip"
-         android:minWidth="200dip"
-         android:progress="20" />
+    <Button
+        android:id="@+id/UI3button1"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/UI3textView1"
+        android:text="Record" />
 
-     <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3verticalBarY"
-         style="?android:attr/progressBarStyleHorizontal"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignRight="@+id/UI3editText1"
-         android:layout_centerVertical="true"
-         android:minHeight="40dip"
-         android:minWidth="200dip"
-         android:progress="80" />
+    <Button
+        android:id="@+id/UI3button2"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3button1"
+        android:layout_alignRight="@+id/UI3textView1"
+        android:text="Stop" />
 
-     <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3verticalBarZ"
-         style="?android:attr/progressBarStyleHorizontal"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignTop="@+id/UI3verticalBarY"
-         android:layout_marginLeft="125dp"
-         android:layout_toRightOf="@+id/UI3verticalBarY"
-         android:minHeight="40dip"
-         android:minWidth="200dip"
-         android:progress="40" />
+    <ProgressBar
+        android:id="@+id/UI3verticalBarZ"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/UI3button3"
+        android:layout_marginLeft="44dp"
+        android:layout_toRightOf="@+id/UI3textView1"
+        android:minHeight="40dip"
+        android:minWidth="200dip"
+        android:progress="40" />
 
-     <Button
-         android:id="@+id/UI3button2"
-         android:layout_width="80dp"
-         android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI3button1"
-         android:layout_alignBottom="@+id/UI3button1"
-         android:layout_toRightOf="@+id/UI3textView1"
-         android:text="Stop" />
+    <ProgressBar
+        android:id="@+id/UI3verticalBarY"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI3verticalBarZ"
+        android:layout_below="@+id/UI3verticalBarZ"
+        android:minHeight="40dip"
+        android:minWidth="200dip"
+        android:progress="80" />
 
-     <TextView
-         android:id="@+id/UI3textView1"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI3editText1"
-         android:layout_alignBottom="@+id/UI3editText1"
-         android:layout_alignRight="@+id/UI3button3"
-         android:text="Campioni Registrati"
-         android:textAppearance="?android:attr/textAppearanceMedium" />
+    <ProgressBar
+        android:id="@+id/UI3verticalBarX"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI3verticalBarY"
+        android:layout_below="@+id/UI3verticalBarY"
+        android:minHeight="40dip"
+        android:minWidth="200dip"
+        android:progress="20" />
 
-     <EditText
-         android:id="@+id/UI3editText1"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI3textView1"
-         android:layout_alignBottom="@+id/UI3textView1"
-         android:layout_alignLeft="@+id/UI3button2"
-         android:layout_marginLeft="25dp"
-         android:ems="10" >
-     
-     	<requestFocus />
-     </EditText>
+    <TextView
+        android:id="@+id/UI3textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3button3"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="66dp"
+        android:text="Campioni Registrati"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-     <TextView
-         android:id="@+id/UI3textView1"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_above="@+id/UI3verticalBarX"
-         android:layout_alignParentLeft="true"
-         android:layout_marginBottom="31dp"
-         android:layout_marginLeft="28dp"
-         android:text="Nome Sessione"
-         android:textAppearance="?android:attr/textAppearanceMedium" />
+    <EditText
+        android:id="@+id/UI3editText2"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3verticalBarZ"
+        android:layout_alignLeft="@+id/UI3verticalBarZ"
+        android:clickable="false"
+        android:ems="10"
+        android:inputType="number" />
 
-     <EditText
-         android:id="@+id/UI3editText2"
-         android:layout_width="80dp"
-         android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI3textView1"
-         android:layout_alignBottom="@+id/UI3textView1"
-         android:layout_alignParentRight="true"
-         android:layout_marginRight="34dp"
-         android:clickable="false"
-         android:ems="10"
-         android:inputType="number" >
+    <Button
+        android:id="@+id/UI3button3"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3button2"
+        android:layout_toLeftOf="@+id/UI3verticalBarZ"
+        android:text="Pause" />
 
-     </EditText>
+    <TextView
+        android:id="@+id/UI3textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3editText2"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="18dp"
+        android:layout_marginLeft="58dp"
+        android:text="Nome Sessione"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-     <Button
-         android:id="@+id/UI3button1"
-         android:layout_width="150dp"
-         android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
-         android:layout_marginBottom="27dp"
-         android:layout_marginLeft="44dp"
-         android:layout_toRightOf="@+id/UI3button2"
-         android:text="Record" />
+    <EditText
+        android:id="@+id/UI3editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI3textView1"
+        android:layout_alignBottom="@+id/UI3textView1"
+        android:layout_alignRight="@+id/UI3verticalBarZ"
+        android:ems="10" >
 
-     <Button
-         android:id="@+id/UI3button3"
-         android:layout_width="80dp"
-         android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI3button1"
-         android:layout_alignBottom="@+id/UI3button1"
-         android:layout_alignRight="@+id/UI3verticalBarZ"
-         android:text="Pause" />
-    
+        <requestFocus />
+    </EditText>
+
 </RelativeLayout>
