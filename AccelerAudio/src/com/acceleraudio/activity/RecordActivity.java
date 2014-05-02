@@ -42,7 +42,7 @@ public class RecordActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_3l);
+    	setContentView(R.layout.ui_3);
     	
     	initialized = false;
     	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);

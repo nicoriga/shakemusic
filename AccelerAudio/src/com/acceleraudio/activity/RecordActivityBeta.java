@@ -43,7 +43,7 @@ public class RecordActivityBeta extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_3l);
+    	setContentView(R.layout.ui_3);
     	
     	// creo intent per avviare il servizio di registrazione
     	intentRecord = new Intent(this, RecordTrack.class);

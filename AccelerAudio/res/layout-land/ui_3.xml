@@ -4,30 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/UI3editText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI3textView1"
-        android:layout_alignBottom="@+id/UI3textView1"
-        android:layout_marginLeft="66dp"
-        android:layout_toRightOf="@+id/UI3textView1"
-        android:ems="10">
-    	
-    	<requestFocus />
-    </EditText>
-
-    <TextView
-        android:id="@+id/UI3textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="85dp"
-        android:layout_marginTop="64dp"
-        android:text="Nome Sessione"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
      <com.acceleraudio.design.VerticalProgressBar
          android:id="@+id/UI3verticalBarX"
          style="?android:attr/progressBarStyleHorizontal"
@@ -71,17 +47,8 @@
          android:layout_toRightOf="@+id/UI3textView1"
          android:text="Stop" />
 
-     <Button
-         android:id="@+id/UI3button3"
-         android:layout_width="80dp"
-         android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI3button1"
-         android:layout_alignBottom="@+id/UI3button1"
-         android:layout_toRightOf="@+id/UI3verticalBarZ"
-         android:text="Pause" />
-
      <TextView
-         android:id="@+id/UI5textView1"
+         android:id="@+id/UI3textView1"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignBaseline="@+id/UI3editText1"
@@ -91,26 +58,60 @@
          android:textAppearance="?android:attr/textAppearanceMedium" />
 
      <EditText
+         android:id="@+id/UI3editText1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignBaseline="@+id/UI3textView1"
+         android:layout_alignBottom="@+id/UI3textView1"
+         android:layout_alignLeft="@+id/UI3button2"
+         android:layout_marginLeft="25dp"
+         android:ems="10" >
+     
+     	<requestFocus />
+     </EditText>
+
+     <TextView
+         android:id="@+id/UI3textView1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_above="@+id/UI3verticalBarX"
+         android:layout_alignParentLeft="true"
+         android:layout_marginBottom="31dp"
+         android:layout_marginLeft="28dp"
+         android:text="Nome Sessione"
+         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+     <EditText
          android:id="@+id/UI3editText2"
          android:layout_width="80dp"
          android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI5textView1"
-         android:layout_alignBottom="@+id/UI5textView1"
-         android:layout_marginLeft="27dp"
-         android:layout_toRightOf="@+id/UI5textView1"
+         android:layout_alignBaseline="@+id/UI3textView1"
+         android:layout_alignBottom="@+id/UI3textView1"
+         android:layout_alignParentRight="true"
+         android:layout_marginRight="34dp"
          android:clickable="false"
          android:ems="10"
          android:inputType="number" >
+
      </EditText>
 
      <Button
          android:id="@+id/UI3button1"
          android:layout_width="150dp"
          android:layout_height="wrap_content"
-         android:layout_below="@+id/UI3verticalBarY"
-         android:layout_marginRight="29dp"
-         android:layout_marginTop="51dp"
-         android:layout_toLeftOf="@+id/UI5textView1"
+         android:layout_alignParentBottom="true"
+         android:layout_marginBottom="27dp"
+         android:layout_marginLeft="44dp"
+         android:layout_toRightOf="@+id/UI3button2"
          android:text="Record" />
+
+     <Button
+         android:id="@+id/UI3button3"
+         android:layout_width="80dp"
+         android:layout_height="wrap_content"
+         android:layout_alignBaseline="@+id/UI3button1"
+         android:layout_alignBottom="@+id/UI3button1"
+         android:layout_alignRight="@+id/UI3verticalBarZ"
+         android:text="Pause" />
     
 </RelativeLayout>
