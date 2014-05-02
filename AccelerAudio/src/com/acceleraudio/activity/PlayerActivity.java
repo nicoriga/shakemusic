@@ -35,7 +35,7 @@ public class PlayerActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_4l);
+    	setContentView(R.layout.ui_4);
     	
     	// creo intent per avviare il servizio di riproduzione audio
     	intentPlayer = new Intent(this, PlayerTrack.class);
@@ -165,7 +165,7 @@ public class PlayerActivity extends Activity {
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	stopService(intentPlayer);
+    	//stopService(intentPlayer);
     	inizialized = false;
     }
 

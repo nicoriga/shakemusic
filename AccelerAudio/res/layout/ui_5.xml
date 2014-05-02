@@ -7,17 +7,6 @@
     tools:context="com.acceleraudio.activity.PreferencesActivity" >
 
     <TextView
-        android:id="@+id/UI5textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="286dp"
-        android:layout_marginTop="44dp"
-        android:text="Opzioni di Registrazione Predefinite"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
         android:id="@+id/UI5textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,16 +24,6 @@
         android:layout_alignLeft="@+id/UI5textView2"
         android:layout_below="@+id/UI5textView2"
         android:text="X" />
-
-    <TextView
-        android:id="@+id/UI5textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI5timePicker1"
-        android:layout_alignLeft="@+id/UI5checkBox3"
-        android:layout_marginLeft="38dp"
-        android:text="Freuenza di Campionamento"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/UI5textView5"
@@ -88,21 +67,38 @@
         android:layout_alignLeft="@+id/UI5textView4"
         android:layout_below="@+id/UI5textView4" />
 
-    <CheckBox
-        android:id="@+id/UI5checkBox3"
+    <TextView
+        android:id="@+id/UI5textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/UI5textView5"
-        android:layout_marginLeft="107dp"
-        android:layout_toRightOf="@+id/UI5checkBox2"
-        android:text="Z" />
+        android:layout_alignLeft="@+id/UI5timePicker1"
+        android:layout_below="@+id/UI5timePicker1"
+        android:layout_marginTop="39dp"
+        android:text="Freuenza di Campionamento"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/UI5textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Opzioni di Registrazione Predefinite"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <CheckBox
         android:id="@+id/UI5checkBox2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/UI5textView5"
-        android:layout_alignRight="@+id/UI5timePicker1"
+        android:layout_centerHorizontal="true"
         android:text="Y" />
+
+    <CheckBox
+        android:id="@+id/UI5checkBox3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI5textView5"
+        android:layout_toRightOf="@+id/UI5textView3"
+        android:text="Z" />
 
 </RelativeLayout>

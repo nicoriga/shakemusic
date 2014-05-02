@@ -26,7 +26,7 @@ public class PreferencesActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_5l);
+    	setContentView(R.layout.ui_5);
 	    
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////

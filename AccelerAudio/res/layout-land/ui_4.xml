@@ -44,7 +44,7 @@
         android:text="Play" />
 
     <TextView
-        android:id="@+id/UI5textView1"
+        android:id="@+id/UI4textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/UI4seekBar1"
@@ -52,17 +52,8 @@
         android:text="00:00"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/UI5textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI4seekBar1"
-        android:layout_alignRight="@+id/UI4seekBar1"
-        android:text="01:25"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
     <Button
-        android:id="@+id/UI5Button01"
+        android:id="@+id/UI4ButtonEsporta"
         android:layout_width="80dp"
         android:layout_height="50dp"
         android:layout_alignBaseline="@+id/UI4textView1"
@@ -83,9 +74,18 @@
         android:id="@+id/UI4button1"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/UI4imageView1"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="500dp"
+        android:layout_above="@+id/UI4seekBar1"
+        android:layout_alignRight="@+id/UI4textView1"
         android:text="Stop" />
+
+    <TextView
+        android:id="@+id/UI4textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/UI4seekBar1"
+        android:layout_below="@+id/UI4button3"
+        android:layout_marginTop="30dp"
+        android:text="01:25"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
