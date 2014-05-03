@@ -55,25 +55,15 @@
         android:progress="20" />
 
     <TextView
-        android:id="@+id/UI3textView1"
+        android:id="@+id/UI3textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/UI3button3"
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="66dp"
-        android:text="Campioni Registrati"
+        android:text="Campioni Registrati:"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/UI3editText2"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI3verticalBarZ"
-        android:layout_alignLeft="@+id/UI3verticalBarZ"
-        android:clickable="false"
-        android:ems="10"
-        android:inputType="number" />
 
     <Button
         android:id="@+id/UI3button3"
@@ -83,27 +73,34 @@
         android:layout_toLeftOf="@+id/UI3verticalBarZ"
         android:text="Pause" />
 
-    <TextView
-        android:id="@+id/UI3textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI3editText2"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="18dp"
-        android:layout_marginLeft="58dp"
-        android:text="Nome Sessione"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
     <EditText
         android:id="@+id/UI3editText1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI3textView1"
-        android:layout_alignBottom="@+id/UI3textView1"
-        android:layout_alignRight="@+id/UI3verticalBarZ"
-        android:ems="10" >
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="14dp"
+        android:layout_toRightOf="@+id/UI3textView1"
+        android:ems="10" />
 
-        <requestFocus />
-    </EditText>
+    <TextView
+        android:id="@+id/UI3textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI3editText1"
+        android:layout_alignBottom="@+id/UI3editText1"
+        android:layout_alignParentLeft="true"
+        android:text="Nome Sessione"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/UI3textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/UI3verticalBarZ"
+        android:layout_marginTop="85dp"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

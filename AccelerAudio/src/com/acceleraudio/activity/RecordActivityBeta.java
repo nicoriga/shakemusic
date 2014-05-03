@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class RecordActivityBeta extends Activity {
@@ -26,7 +27,8 @@ public class RecordActivityBeta extends Activity {
 	private SensorManager sensorManager;
 	private Sensor accelerometro;
 	private Button startSession, stopSession, pauseSession;
-	protected static EditText nameSession, rec_sample;
+	protected static EditText nameSession;
+	protected static TextView  rec_sample;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
 	public static ArrayList<Float> data_x, data_y, data_z;
 	private DbAdapter dbAdapter;
@@ -62,7 +64,7 @@ public class RecordActivityBeta extends Activity {
 ///////////////////////////////////////////////////////
 
 		nameSession = (EditText) findViewById(R.id.UI3editText1);
-		rec_sample = (EditText) findViewById(R.id.UI3editText2);
+		rec_sample = (TextView) findViewById(R.id.UI3textView3);
     	startSession = (Button) findViewById(R.id.UI3button1);
     	stopSession = (Button) findViewById(R.id.UI3button2);
     	pauseSession = (Button) findViewById(R.id.UI3button3);
