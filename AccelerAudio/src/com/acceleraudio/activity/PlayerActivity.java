@@ -31,6 +31,7 @@ public class PlayerActivity extends Activity {
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
 	public Intent intentPlayer;
+	private static String[] data_x, data_y, data_z;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,10 @@ public class PlayerActivity extends Activity {
 		
 		// carico dati
 		sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
-		cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X));
+		data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
+		data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
+		data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
+		//TODO: si potrebbe togliere il numero dei sample presente nel database.
 		axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1");
 		axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1");
 		axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
@@ -80,23 +84,15 @@ public class PlayerActivity extends Activity {
 		cursor.close();
 		dbAdapter.close();
 		
-		// dati di prova
-		sample.add(10);
-		sample.add(50);
-		sample.add(100);
-		sample.add(150);
-		sample.add(80);
-		sample.add(30);
-		sample.add(0);
-		sample.add(0);
-		sample.add(0);
-		sample.add(0);
-		sample.add(0);
-		sample.add(0);
-		sample.add(0);
-		sample.add(0);
-		sample.add(0);
-		sample.add(0);  	
+		if(axis_x)
+			for(int i = 0; i<data_x.length; i++)
+				if(data_x[i].length()>0)sample.add((int)(Float.parseFloat(data_x[i])));
+		if(axis_y)
+			for(int i = 0; i<data_y.length; i++)
+				if(data_y[i].length()>0)sample.add((int)(Float.parseFloat(data_y[i])));
+		if(axis_z)
+			for(int i = 0; i<data_z.length; i++)
+				if(data_z[i].length()>0)sample.add((int)(Float.parseFloat(data_z[i])));
 
     }
 

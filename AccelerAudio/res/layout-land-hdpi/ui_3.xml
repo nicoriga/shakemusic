@@ -103,30 +103,48 @@
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <RadioButton
-        android:id="@+id/UI3_radioButton2"
+    <RadioGroup
+        android:id="@+id/UI3_orientation"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignBottom="@+id/UI3button2"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/UI3button2"
-        android:text="Landscape" />
+        android:layout_alignTop="@+id/UI3verticalBarZ"
+        android:orientation="vertical" >
+                
+	    <RadioButton
+	        android:id="@+id/UI3_land"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Landscape" 
+	        android:checked="true" />
+	
+	    
+	    <RadioButton
+	        android:id="@+id/UI3_port"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Portrait" />
 
-    <RadioButton
-        android:id="@+id/UI3_radioButton1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI3verticalBarY"
-        android:layout_alignLeft="@+id/UI3_radioButton2"
-        android:text="Portrait" />
-
+	</RadioGroup>
+    
     <TextView
         android:id="@+id/UI3_timeRemaining"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/UI3button1"
         android:layout_alignBottom="@+id/UI3button1"
-        android:layout_alignLeft="@+id/UI3_radioButton2"
+        android:layout_alignLeft="@+id/UI3_orientation"
         android:text="0"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/UI3_save"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/UI3editText1"
+        android:text="Salva" />
 
 </RelativeLayout>

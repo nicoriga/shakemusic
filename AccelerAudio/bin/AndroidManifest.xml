@@ -24,7 +24,7 @@
         <activity android:name="com.acceleraudio.activity.PreferencesActivity"></activity>
         <service android:name="com.acceleraudio.service.PlayerTrack"></service>
         <service android:name="com.acceleraudio.service.RecordTrack"></service>
-        <activity android:name="com.acceleraudio.activity.RecordActivityBeta" android:screenOrientation="landscape"></activity>
+        <activity android:name="com.acceleraudio.activity.RecordActivityBeta"></activity>
         <service android:name="com.acceleraudio.service.provaService"></service>
     </application>
 

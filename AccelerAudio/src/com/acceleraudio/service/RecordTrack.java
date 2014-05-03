@@ -11,7 +11,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.CountDownTimer;
 import android.widget.Toast;
 
 public class RecordTrack extends IntentService{
@@ -20,9 +19,11 @@ public class RecordTrack extends IntentService{
 	public static final String NOTIFICATION_RECORD = "com.acceleraudio.service.recordtrack.record";
 	public static final String NOTIFICATION_STOP = "com.acceleraudio.service.recordtrack.stop";
 	public static final String SAMPLE_N_DATA = "recordtrack.sample_n_data";
+	public static final String SENSOR_DELAY = "recordtrack.sensorDelay";
 	public static final String AXIS_X_DATA = "recordtrack.axis_x_data";
 	public static final String AXIS_Y_DATA = "recordtrack.axis_y_data";
 	public static final String AXIS_Z_DATA = "recordtrack.axis_z_data";
+	public static final String TIME_REMAINING = "recordtrack.timeRemaining";
 	private boolean initialized, isRecording;
 	private SensorManager sensorManager;
 	private Sensor accelerometer;
@@ -96,7 +97,7 @@ public class RecordTrack extends IntentService{
 	    			
 	    			oldX = x;
 	    			oldY = y;
-	    			oldZ = z;
+	    			oldZ = z;	
 	    			
 	    		}
         	}
@@ -108,26 +109,17 @@ public class RecordTrack extends IntentService{
 
         }
     };
-    final CountDownTimer countDownTimer = new CountDownTimer(30000, 1000) {
-	     public void onTick(long millisUntilFinished) {
-	    	 RecordActivityBeta.updateRemainingTime("" + millisUntilFinished / 1000);
-	     }
 
-	     public void onFinish() {
-	    	 RecordActivityBeta.updateRemainingTime("done!");
-	    	 isRecording = false;
-	    	 RecordActivityBeta.finishTime();
-	     }
-	  };
-	  
     public RecordTrack (){
     	super("RecordTrack");
     }
     
     @Override
-    protected void onHandleIntent(Intent intent) {	
+    protected void onHandleIntent(Intent intent) {
     	initialized = false;
     	isRecording = true;
+    	intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL);
+   	  
     	t = new Thread() {
             public void run() {
             	// setta la priorità massia del thread
@@ -136,8 +128,6 @@ public class RecordTrack extends IntentService{
 		    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		    	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-		    	
-		    	countDownTimer.start();
 		    	  
 		    	while(isRecording){}
             }
@@ -148,7 +138,7 @@ public class RecordTrack extends IntentService{
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "start recording", Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent,flags,startId);
     }
     
@@ -164,7 +154,7 @@ public class RecordTrack extends IntentService{
     		e.printStackTrace();
     	}
     	
-    	Toast.makeText(this, "service stop", Toast.LENGTH_SHORT).show();
+    	Toast.makeText(this, "stop recording", Toast.LENGTH_SHORT).show();
     	
     }
     
