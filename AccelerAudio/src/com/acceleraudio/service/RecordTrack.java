@@ -11,6 +11,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.CountDownTimer;
 import android.widget.Toast;
 
 public class RecordTrack extends IntentService{
@@ -31,7 +32,6 @@ public class RecordTrack extends IntentService{
 			data_x = new ArrayList<Float>(), 
 			data_y = new ArrayList<Float>(), 
 			data_z = new ArrayList<Float>();
-	private int sample = 0;
 	private Thread t;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
@@ -64,15 +64,10 @@ public class RecordTrack extends IntentService{
 	    			else
 	    			{
 	    				data_x.add(deltaX);
-	    				sample++;
 	    				RecordActivityBeta.sample++;
 	    				RecordActivityBeta.x = (int)deltaX;
 	    				RecordActivityBeta.data_x.add(deltaX);
 	    				RecordActivityBeta.updateSample();
-	    				/*
-	    		        intent.putExtra(RecordTrack.AXIS_X_DATA, deltaX);
-	    		        intent.putExtra(RecordTrack.SAMPLE_N_DATA, sample);
-	    		        sendBroadcast(intent);*/
 	    			}
 	    			
 	    			if (deltaY < rumore)
@@ -80,16 +75,11 @@ public class RecordTrack extends IntentService{
 	    			else
 	    			{
 	    				data_y.add(deltaY);
-	    				sample++;
 
 	    				RecordActivityBeta.sample++;
 	    				RecordActivityBeta.y = (int)deltaY;
 	    				RecordActivityBeta.data_y.add(deltaY);
 	    				RecordActivityBeta.updateSample();
-	    				/*
-	    				intent.putExtra(RecordTrack.AXIS_Y_DATA, deltaY);
-	    				intent.putExtra(RecordTrack.SAMPLE_N_DATA, sample);
-	    		        sendBroadcast(intent);*/
 	    			}
 	    			
 	    			if (deltaZ < rumore)
@@ -97,16 +87,11 @@ public class RecordTrack extends IntentService{
 	    			else
 	    			{
 	    				data_z.add(deltaZ);
-	    				sample++;
 	    				
 	    				RecordActivityBeta.sample++;
 	    				RecordActivityBeta.z = (int)deltaZ;
 	    				RecordActivityBeta.data_z.add(deltaZ);
 	    				RecordActivityBeta.updateSample();
-	    				/*
-	    				intent.putExtra(RecordTrack.AXIS_Z_DATA, deltaZ);
-	    				intent.putExtra(RecordTrack.SAMPLE_N_DATA, sample);
-	    		        sendBroadcast(intent);*/
 	    			}
 	    			
 	    			oldX = x;
@@ -123,7 +108,18 @@ public class RecordTrack extends IntentService{
 
         }
     };
-    
+    final CountDownTimer countDownTimer = new CountDownTimer(30000, 1000) {
+	     public void onTick(long millisUntilFinished) {
+	    	 RecordActivityBeta.updateRemainingTime("" + millisUntilFinished / 1000);
+	     }
+
+	     public void onFinish() {
+	    	 RecordActivityBeta.updateRemainingTime("done!");
+	    	 isRecording = false;
+	    	 RecordActivityBeta.finishTime();
+	     }
+	  };
+	  
     public RecordTrack (){
     	super("RecordTrack");
     }
@@ -131,7 +127,6 @@ public class RecordTrack extends IntentService{
     @Override
     protected void onHandleIntent(Intent intent) {	
     	initialized = false;
-    	sample = 0;
     	isRecording = true;
     	t = new Thread() {
             public void run() {
@@ -142,6 +137,8 @@ public class RecordTrack extends IntentService{
 		    	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		    	
+		    	countDownTimer.start();
+		    	  
 		    	while(isRecording){}
             }
     	};
@@ -169,12 +166,6 @@ public class RecordTrack extends IntentService{
     	
     	Toast.makeText(this, "service stop", Toast.LENGTH_SHORT).show();
     	
-    	/*Intent intent = new Intent(NOTIFICATION_STOP);
-        // TODO: inviare i dati registrati
-    	intent.putExtra(RecordTrack.AXIS_X_DATA, data_x);
-    	intent.putExtra(RecordTrack.AXIS_Y_DATA, data_y);
-    	intent.putExtra(RecordTrack.AXIS_Z_DATA, data_z);
-        sendBroadcast(intent);*/
     }
     
 }

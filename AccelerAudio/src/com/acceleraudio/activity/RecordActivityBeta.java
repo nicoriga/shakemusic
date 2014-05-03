@@ -7,11 +7,8 @@ import com.acceleraudio.service.RecordTrack;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,11 +21,9 @@ import android.widget.Toast;
 public class RecordActivityBeta extends Activity {
 	
 	private boolean initialized, insertComplete = false;
-	private SensorManager sensorManager;
-	private Sensor accelerometro;
-	private Button startSession, stopSession, pauseSession;
+	private static Button startSession, stopSession, pauseSession;
 	protected static EditText nameSession;
-	protected static TextView  rec_sample;
+	protected static TextView  rec_sample, time_remaining;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
 	public static ArrayList<Float> data_x, data_y, data_z;
 	private DbAdapter dbAdapter;
@@ -47,8 +42,6 @@ public class RecordActivityBeta extends Activity {
     	intentRecord = new Intent(this, RecordTrack.class);
     	
     	initialized = false;
-    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		accelerometro = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		
 		dbAdapter = new DbAdapter(this);
 		
@@ -59,12 +52,14 @@ public class RecordActivityBeta extends Activity {
 		x = 0;
 		y = 0;
 		z = 0;
+		
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
 		nameSession = (EditText) findViewById(R.id.UI3editText1);
 		rec_sample = (TextView) findViewById(R.id.UI3textView3);
+		time_remaining = (TextView) findViewById(R.id.UI3_timeRemaining);
     	startSession = (Button) findViewById(R.id.UI3button1);
     	stopSession = (Button) findViewById(R.id.UI3button2);
     	pauseSession = (Button) findViewById(R.id.UI3button3);
@@ -83,7 +78,6 @@ public class RecordActivityBeta extends Activity {
 		progressBarZ.setProgress(0);
 		rec_sample.setText("" + sample);
 		
-		//rec_sample.setEnabled(false);
 		pauseSession.setEnabled(false);
 		stopSession.setEnabled(false);
 		
@@ -116,52 +110,7 @@ public class RecordActivityBeta extends Activity {
 		for(int xi = 0; xi < 500; xi++) data_z.add(10f);
 		
     }
-    
-    public static void updateSample(){
-			rec_sample.setText("" + sample);
-			progressBarX.setProgress(x);
-			progressBarY.setProgress(y);
-			progressBarZ.setProgress(z);
-	}
-    /*
-    private BroadcastReceiver receiverRecord = new BroadcastReceiver() {
-    	
-    	@Override
-        public void onReceive(Context context, Intent intent) {
-    		Bundle bundle = intent.getExtras();
-    		if (bundle != null) {
-    			String action = intent.getAction();
-    			if(action == RecordTrack.NOTIFICATION_RECORD)
-    			{
-	    			x = (int)bundle.getFloat(RecordTrack.AXIS_X_DATA, x);
-	    			y = (int)bundle.getFloat(RecordTrack.AXIS_Y_DATA, y);
-	    			z = (int)bundle.getFloat(RecordTrack.AXIS_Z_DATA, z);
-	    			rec_sample.setText("" + bundle.getInt(RecordTrack.SAMPLE_N_DATA));
-	    			progressBarX.setProgress(x);
-	    			progressBarY.setProgress(y);
-	    			progressBarZ.setProgress(z);
-    			}
-    		}
-        }
-    };
-    private BroadcastReceiver receiverStop = new BroadcastReceiver() {
-    	
-    	@Override
-        public void onReceive(Context context, Intent intent) {
-    		Bundle bundle = intent.getExtras();
-    		if (bundle != null) {
-    			String action = intent.getAction();
-				if(action == RecordTrack.NOTIFICATION_STOP)
-				{
-					data_x.addAll(Util.copyListFloat(bundle.getFloatArray(RecordTrack.AXIS_X_DATA)));
-					data_y.addAll(Util.copyListFloat(bundle.getFloatArray(RecordTrack.AXIS_Y_DATA)));
-					data_z.addAll(Util.copyListFloat(bundle.getFloatArray(RecordTrack.AXIS_Z_DATA)));
-					initialized = true;
-				}
-    		}
-        }
-    };
-    */
+
     @Override
 	public void onResume() {
 		super.onResume();
@@ -200,6 +149,7 @@ public class RecordActivityBeta extends Activity {
 				pauseSession.setEnabled(false);
 				
 				stopService(intentRecord);
+				
 				// Verifica che siano stati presi dati dall'accelerometro
 				if(initialized)
 					if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
@@ -215,19 +165,20 @@ public class RecordActivityBeta extends Activity {
 			}
 		});
 		
-		//registerReceiver(receiverRecord, new IntentFilter(RecordTrack.NOTIFICATION_RECORD));
-		//registerReceiver(receiverStop, new IntentFilter(RecordTrack.NOTIFICATION_STOP));
     }
     
     @Override
     protected void onPause() {
     	super.onPause();
-    	//unregisterReceiver(receiverRecord);
-    	//unregisterReceiver(receiverStop);
     	if (insertComplete) finish();
     }
-        
     
+    @Override
+    protected void onDestroy() {
+    	super.onDestroy();
+    	stopService(intentRecord);
+    }
+        
 /////////////////////////////////////////////////////////    
 ////////////////Metodi Utili  //////////////////////////
 ////////////////////////////////////////////////////////
@@ -258,5 +209,17 @@ public class RecordActivityBeta extends Activity {
 			dbAdapter.close();
 		}
     }
-    
+    public static void updateSample(){
+		rec_sample.setText("" + sample);
+		progressBarX.setProgress(x);
+		progressBarY.setProgress(y);
+		progressBarZ.setProgress(z);
+    }
+	public static void updateRemainingTime(String s){
+		time_remaining.setText(s);
+	}
+	public static void finishTime(){
+		startSession.setEnabled(false);
+		pauseSession.setEnabled(false);
+	}
 }

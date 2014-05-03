@@ -105,4 +105,31 @@
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <RadioButton
+        android:id="@+id/UI3_radioButton1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="Portrait" />
+
+    <RadioButton
+        android:id="@+id/UI3_radioButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/UI3_radioButton1"
+        android:text="Landscape" />
+
+    <TextView
+        android:id="@+id/UI3_timeRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3button2"
+        android:layout_marginBottom="23dp"
+        android:layout_toRightOf="@+id/UI3button2"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
 </RelativeLayout>
