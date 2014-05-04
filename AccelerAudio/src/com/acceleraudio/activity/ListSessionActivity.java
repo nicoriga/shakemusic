@@ -93,7 +93,7 @@ public class ListSessionActivity extends Activity {
 		newSession.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				// avvio la Recordactivity
-				Intent i = new Intent(view.getContext(), RecordActivityBeta.class);
+				Intent i = new Intent(view.getContext(), RecordActivity.class);
 				view.getContext().startActivity(i);
 			}
 		});

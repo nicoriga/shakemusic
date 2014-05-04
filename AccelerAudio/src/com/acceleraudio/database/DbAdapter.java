@@ -20,7 +20,6 @@ public class DbAdapter {
 	
 	// nome tabelle
 	private static final String DATABASE_TABLE_SESSION = "session";
-	private static final String DATABASE_TABLE_PREFERENCES = "preferences";
 	
 	// lista colonne tabella session
 	public static final String T_SESSION_SESSIONID = "_id";
@@ -39,15 +38,6 @@ public class DbAdapter {
 	public static final String T_SESSION_N_DATA_Y = "n_data_y";
 	public static final String T_SESSION_N_DATA_Z = "n_data_z";
 	
-	//lista colonne tabella preferences
-	public static final String T_PREFERENCES_ID = "_id";
-	public static final String T_PREFERENCES_AXIS_X ="axis_x";
-	public static final String T_PREFERENCES_AXIS_Y ="axis_y";
-	public static final String T_PREFERENCES_AXIS_Z ="axis_z";
-	public static final String T_PREFERENCES_UPSAMPLING ="upsampling";
-	public static final String T_PREFERENCES_SAMPLE_RATE ="sample_rate";
-	public static final String T_PREFERENCES_MAX_MINUTES ="max_minutes";
-	public static final String T_PREFERENCES_MAX_SECONDS ="max_seconds";
 	 
 	public DbAdapter(Context context) {
 		this.context = context;
@@ -65,22 +55,9 @@ public class DbAdapter {
 	}
  
 	private String getDate() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
-	}
-	
-	private ContentValues createContentValuesPreferences(int axis_x, int axis_y, int axis_z, int upsampling, int sample_rate, int max_minutes, int max_seconds ) {
-		ContentValues values = new ContentValues();
-	    values.put( T_PREFERENCES_AXIS_X, axis_x );
-	    values.put( T_PREFERENCES_AXIS_Y, axis_y );
-	    values.put( T_PREFERENCES_AXIS_Z, axis_z );
-	    values.put( T_PREFERENCES_UPSAMPLING, upsampling );
-	    values.put( T_PREFERENCES_SAMPLE_RATE, sample_rate );
-	    values.put( T_PREFERENCES_MAX_MINUTES, max_minutes );
-	    values.put( T_PREFERENCES_MAX_SECONDS, max_seconds );
-     
-	    return values;
 	}
 	
 	private ContentValues createContentValuesSession(String name, int image, int axis_x, int axis_y, int axis_z, int upsampling, String creation_date, String date_change, String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) {
@@ -120,12 +97,6 @@ public class DbAdapter {
 		ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, getDate(), getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
 		return database.insertOrThrow(DATABASE_TABLE_SESSION, null, values);
 	}
- 
-	// aggiorna record preferences
-		public boolean updatePreferences( int axis_x, int axis_y, int axis_z, int upsampling, int sample_rate, int max_minutes, int max_seconds ) {
-			ContentValues updateValues = createContentValuesPreferences(axis_x, axis_y, axis_z, upsampling, sample_rate, max_minutes, max_seconds);
-			return database.update(DATABASE_TABLE_PREFERENCES, updateValues, T_PREFERENCES_ID + "= 1", null) > 0;
-		}
 		
 	// aggiorna record info sessione 
 	public boolean updateSession( long sessionID, String name, int axis_x, int axis_y, int axis_z, int upsampling) {
@@ -143,11 +114,6 @@ public class DbAdapter {
 	public boolean deleteSession(long contactID) {
 		return database.delete(DATABASE_TABLE_SESSION, T_SESSION_SESSIONID + "=" + contactID, null) > 0;
 	}
- 
-	// preleva tutte le preferenze predefinite
-		public Cursor fetchAllPreferences() {
-			return database.query(DATABASE_TABLE_PREFERENCES, new String[] { T_PREFERENCES_ID, T_PREFERENCES_AXIS_X, T_PREFERENCES_AXIS_Y, T_PREFERENCES_AXIS_Z, T_PREFERENCES_SAMPLE_RATE, T_PREFERENCES_UPSAMPLING, T_PREFERENCES_MAX_MINUTES, T_PREFERENCES_MAX_SECONDS }, null, null, null, null, null);
-		}
 		
 	// preleva tutte le sessioni
 	public Cursor fetchAllSession() {
@@ -155,9 +121,9 @@ public class DbAdapter {
 	}
    
 	// preleva sessioni per ID
-		public Cursor fetchSessionById(int filter) {
-			Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + filter, null, null, null, null, null);     
-			return mCursor;
-		}
+	public Cursor fetchSessionById(int filter) {
+		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + filter, null, null, null, null, null);     
+		return mCursor;
+	}
   
 }
