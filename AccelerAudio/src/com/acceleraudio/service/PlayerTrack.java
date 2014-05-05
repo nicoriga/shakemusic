@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.util.Log;
 import android.widget.Toast;
 
 public class PlayerTrack extends IntentService{
@@ -28,6 +29,7 @@ public class PlayerTrack extends IntentService{
     protected void onHandleIntent(Intent intent) {
     	sampleList = intent.getIntegerArrayListExtra(PlayerActivity.ACC_DATA).toArray();
     	sample = Util.copyArrayInt(sampleList);
+    	for(int i = 0; i<sample.length; i++) Log.w("sample :", ""+sample[i]);
     	x = intent.getIntExtra(PlayerActivity.MUSIC_CURSOR, 0);
     	sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 44100);
     	isRunning = true;
@@ -43,7 +45,7 @@ public class PlayerTrack extends IntentService{
 		        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sound_rate, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrack.MODE_STREAM);
 		
 		        short samples[] = new short[buffsize];
-		        int amp = 4000;
+		        int amp = 10000;
 		        double twoph = Math.PI*2; // 2pi grego
 		        double fr = 440.f; // frequenza
 		        double ph = 0.0; // pi greco
@@ -74,7 +76,7 @@ public class PlayerTrack extends IntentService{
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Play started", Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent,flags,startId);
     }
     
@@ -91,7 +93,7 @@ public class PlayerTrack extends IntentService{
     		e.printStackTrace();
     	}
     	
-    	Toast.makeText(this, "service stop", Toast.LENGTH_SHORT).show();
+    	Toast.makeText(this, "Play stop", Toast.LENGTH_SHORT).show();
     	
     	Intent intent = new Intent(NOTIFICATION);
         intent.putExtra(PlayerActivity.MUSIC_CURSOR, x);

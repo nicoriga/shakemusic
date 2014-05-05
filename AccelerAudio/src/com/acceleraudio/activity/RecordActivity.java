@@ -18,13 +18,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class RecordActivity extends Activity {
 
-	private boolean initialized;
+	private boolean initialized, insertComplete = false;
 	private SensorManager sensorManager;
 	private Sensor accelerometro;
-	private final float rumore = (float) 1.0;
+	private final float rumore = (float) 0.3;
 	private float oldX, oldY, oldZ;
 	private Button startSession, stopSession, pauseSession;
 	private EditText nameSession, rec_sample;
@@ -36,11 +37,12 @@ public class RecordActivity extends Activity {
 	private DbAdapter dbAdapter;
 	private int sample = 0;
 	public Intent intentRecord;
+	private long sessionId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.ui_3l);
+    	setContentView(R.layout.ui_3);
     	
     	initialized = false;
     	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -68,43 +70,74 @@ public class RecordActivity extends Activity {
 		progressBarY.setProgress(0);
 		progressBarZ.setProgress(0);
 		rec_sample.setText("" + sample);
+		
+		pauseSession.setEnabled(false);
+		stopSession.setEnabled(false);
+		
+		////////////// TODO: dati di prova da eliminare
+		for(int xi = 0; xi < 1500; xi++) data_x.add(10f);
+    	for(int xi = 0; xi < 1500; xi++) data_y.add(10f);
+    	for(int xi = 0; xi < 1500; xi++) data_z.add(10f);
     	
+    }
+    
+    @Override
+	public void onResume() {
+		super.onResume();
+		
 /////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
 
 		/**** AVVIA LA REGISTRAZIONE ****/
-    	startSession.setOnClickListener(new OnClickListener() {
+		startSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				sensorManager.registerListener(mySensorEventListener, accelerometro, SensorManager.SENSOR_DELAY_NORMAL);
 				//TODO: impostazioni per accelerometro intentRecord.putExtra(...);
-    			//startService(intentRecord);
+				startSession.setEnabled(false);
+				pauseSession.setEnabled(true);
+				stopSession.setEnabled(true);
 			}
 		});
-    	
-    	/**** PAUSA LA REGISTRAZIONE ****/
-    	pauseSession.setOnClickListener(new OnClickListener() {
+		
+		/**** PAUSA LA REGISTRAZIONE ****/
+		pauseSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				sensorManager.unregisterListener(mySensorEventListener);
-				//stopService(intentRecord);
+				startSession.setEnabled(true);
+				pauseSession.setEnabled(false);
 			}
 		});
-    	
-    	/**** STOPPA LA REGISTRAZIONE ****/
-    	stopSession.setOnClickListener(new View.OnClickListener() {
+		
+		/**** STOPPA LA REGISTRAZIONE ****/
+		stopSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				saveAccelerometerData();
-				//Intent i = new Intent(v.getContext(), ListSessionActivity.class);
-				//v.getContext().startActivity(i);
-				finish();
+				sensorManager.unregisterListener(mySensorEventListener);
+				startSession.setEnabled(false);
+				pauseSession.setEnabled(false);
+				if(nameSession.getText().toString().length() > 0)
+				{
+					saveAccelerometerData();
+					// avvio la PlayerActivity
+					Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
+					i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
+					v.getContext().startActivity(i);
+					//finish();
+				}
+				else Toast.makeText(v.getContext(), "INSERISCI NOME SESSIONE", Toast.LENGTH_SHORT).show();
 			}
 		});
-    	
     }
     
+    @Override
+	public void onPause() {
+		super.onPause();
+		
+		if (insertComplete) finish();
+    }
 
 /////////////////////////////////////////////////////////
 //////////////// Gestione Accelerometro /////////////////
@@ -192,24 +225,25 @@ public class RecordActivity extends Activity {
     public void saveAccelerometerData(){
     	if(initialized){
 
-			//sensorManager.unregisterListener(mySensorEventListener);
-			//stopService(intentRecord);
-
 			// apro la connessione al db
 	    	dbAdapter.open();
 
-	    	String x = "";
-	    	String y = "";
-	    	String z = "";
+	    	int n_x = 0;
+	    	int n_y = 0;
+	    	int n_z = 0;
 
-	    	for (float value : data_x)   x += " " + value;
-	    	for (float value : data_y)   y += " " + value;
-	    	for (float value : data_z)   z += " " + value;
+	    	StringBuilder x_sb = new StringBuilder();
+	    	StringBuilder y_sb = new StringBuilder();
+	    	StringBuilder z_sb = new StringBuilder();
+	    	for (float value : data_x){   x_sb.append(" " + value); n_x++;}
+	    	for (float value : data_y){   y_sb.append(" " + value); n_y++;}
+	    	for (float value : data_z){   z_sb.append(" " + value); n_z++;}
 
 	    	// inserisco i dati della sessione nel database
 	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-			dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, "25/01/2014", "14/04/2014", x, y, z );
-
+	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, x_sb.toString(), y_sb.toString(), z_sb.toString(), n_x, n_y, n_z );
+	    	insertComplete = true;
+	    	
 			// chiudo la connessione al db
 			dbAdapter.close();
 		}
