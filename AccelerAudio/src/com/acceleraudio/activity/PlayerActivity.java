@@ -164,5 +164,12 @@ public class PlayerActivity extends Activity {
     	//stopService(intentPlayer);
     	inizialized = false;
     }
+    
+    @Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    stopService(intentPlayer); // stoppa il servizio della musica
+	    finish();
+    }
 
 }
