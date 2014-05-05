@@ -14,15 +14,6 @@
         android:layout_marginTop="85dp"
         android:src="@drawable/ic_launcher" />
 
-    <SeekBar
-        android:id="@+id/UI4seekBar1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI4imageView1"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/UI4button3"
-        android:layout_marginBottom="116dp" />
-
     <TextView
         android:id="@+id/UI4textView1"
         android:layout_width="wrap_content"
@@ -32,17 +23,8 @@
         android:text="00:00"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/UI4ButtonEsporta"
-        android:layout_width="80dp"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@+id/UI4button2"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
-        android:text="Esporta" />
-
     <TextView
-        android:id="@+id/UI4textView1"
+        android:id="@+id/UI4textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -50,22 +32,6 @@
         android:layout_toLeftOf="@+id/UI4button2"
         android:text="Nome Sessione"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <Button
-        android:id="@+id/UI4button3"
-        android:layout_width="80dp"
-        android:layout_height="50dp"
-        android:layout_below="@+id/UI4textView1"
-        android:layout_toRightOf="@+id/UI4imageView1"
-        android:text="Pause" />
-
-    <Button
-        android:id="@+id/UI4button2"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/UI4button3"
-        android:layout_toLeftOf="@+id/UI4button3"
-        android:text="Play" />
 
     <Button
         android:id="@+id/UI4button1"
@@ -80,10 +46,44 @@
         android:id="@+id/UI4textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI4textView1"
+        android:layout_alignBottom="@+id/UI4textView1"
         android:layout_alignRight="@+id/UI4seekBar1"
-        android:layout_alignTop="@+id/UI4seekBar1"
-        android:layout_marginTop="34dp"
         android:text="01:25"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/UI4ButtonEsporta"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_alignBaseline="@+id/UI4button3"
+        android:layout_alignBottom="@+id/UI4button3"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:text="Esporta" />
+
+    <Button
+        android:id="@+id/UI4button3"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/UI4button2"
+        android:layout_toRightOf="@+id/UI4imageView1"
+        android:text="Pause" />
+
+    <SeekBar
+        android:id="@+id/UI4seekBar1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI4imageView1"
+        android:layout_centerVertical="true" />
+
+    <Button
+        android:id="@+id/UI4button2"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/UI4seekBar1"
+        android:layout_marginTop="25dp"
+        android:layout_toLeftOf="@+id/UI4button3"
+        android:text="Play" />
 
 </RelativeLayout>
