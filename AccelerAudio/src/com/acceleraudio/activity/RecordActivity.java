@@ -3,84 +3,110 @@ package com.acceleraudio.activity;
 import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
-import com.acceleraudio.design.VerticalProgressBar;
+import com.acceleraudio.service.RecordTrack;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class RecordActivity extends Activity {
-
-	private boolean initialized, insertComplete = false;
-	private SensorManager sensorManager;
-	private Sensor accelerometro;
-	private final float rumore = (float) 0.3;
-	private float oldX, oldY, oldZ;
-	private Button startSession, stopSession, pauseSession;
-	private EditText nameSession, rec_sample;
-	private VerticalProgressBar progressBarX , progressBarY, progressBarZ;
-	private ArrayList<Float> 
-			data_x = new ArrayList<Float>(), 
-			data_y = new ArrayList<Float>(), 
-			data_z = new ArrayList<Float>();
+	
+	private boolean insertComplete = false;
+	private static boolean initialized;
+	private static Button startSession, stopSession, pauseSession, saveSession;
+	protected static EditText nameSession;
+	public static TextView  rec_sample, time_remaining;
+	private static ProgressBar progressBarX , progressBarY, progressBarZ;
+	private RadioGroup radioGroup;
+	private RadioButton radioOrientationButton;
+	public static ArrayList<Float> data_x, data_y, data_z;
 	private DbAdapter dbAdapter;
-	private int sample = 0;
-	public Intent intentRecord;
-	private long sessionId;
-
+	public static int sample, x, y, z;
+	private Intent intentRecord;
+	private static long sessionId, remaining_time;
+	private boolean axis_x, axis_y, axis_z, pause = false;
+	private int upsampling, sample_rate;
+	private CountDownTimer countDownTimer;
+	private SharedPreferences pref;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_3);
+    	pref = PreferenceManager.getDefaultSharedPreferences(this);
+    	
+    	// creo intent per avviare il servizio di registrazione
+    	intentRecord = new Intent(this, RecordTrack.class);
     	
     	initialized = false;
-    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		accelerometro = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
+		
 		dbAdapter = new DbAdapter(this);
-
+		
+		data_x = new ArrayList<Float>();
+		data_y = new ArrayList<Float>();
+		data_z = new ArrayList<Float>();
+		sample = 0;
+		x = 0;
+		y = 0;
+		z = 0;
+		
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
 		nameSession = (EditText) findViewById(R.id.UI3editText1);
-		rec_sample = (EditText) findViewById(R.id.UI3editText2);
+		rec_sample = (TextView) findViewById(R.id.UI3textView3);
+		time_remaining = (TextView) findViewById(R.id.UI3_timeRemaining);
     	startSession = (Button) findViewById(R.id.UI3button1);
     	stopSession = (Button) findViewById(R.id.UI3button2);
     	pauseSession = (Button) findViewById(R.id.UI3button3);
-    	progressBarX = (VerticalProgressBar) findViewById(R.id.UI3verticalBarX);
-    	progressBarY = (VerticalProgressBar) findViewById(R.id.UI3verticalBarY);
-    	progressBarZ = (VerticalProgressBar) findViewById(R.id.UI3verticalBarZ);
-    	progressBarX.setMax((int)accelerometro.getMaximumRange());
-    	progressBarY.setMax((int)accelerometro.getMaximumRange());
-    	progressBarZ.setMax((int)accelerometro.getMaximumRange());
-    	
-    	progressBarX.setProgress(0);
-		progressBarY.setProgress(0);
-		progressBarZ.setProgress(0);
+    	saveSession = (Button) findViewById(R.id.UI3_save);
+    	progressBarX = (ProgressBar) findViewById(R.id.UI3verticalBarX);
+    	progressBarY = (ProgressBar) findViewById(R.id.UI3verticalBarY);
+    	progressBarZ = (ProgressBar) findViewById(R.id.UI3verticalBarZ);
+    	radioGroup = (RadioGroup) findViewById(R.id.UI3_orientation);
+    	//setProgressBarMax((int)accelerometro.getMaximumRange());
+    	setProgressBarMax(20);
+    	resetProgressBar();
 		rec_sample.setText("" + sample);
 		
 		pauseSession.setEnabled(false);
 		stopSession.setEnabled(false);
+		saveSession.setEnabled(false);
 		
-		////////////// TODO: dati di prova da eliminare
-		for(int xi = 0; xi < 1500; xi++) data_x.add(10f);
-    	for(int xi = 0; xi < 1500; xi++) data_y.add(10f);
-    	for(int xi = 0; xi < 1500; xi++) data_z.add(10f);
-    	
+//////////////////////////////////////////////////////////
+///////////// prelevo le impostazioni predefinite ////////
+//////////////////////////////////////////////////////////
+
+		// imposto preferenze
+		axis_x = pref.getBoolean(PreferencesActivity.AXIS_X, true); // asse x
+		axis_y = pref.getBoolean(PreferencesActivity.AXIS_Y, true); // asse y
+		axis_z = pref.getBoolean(PreferencesActivity.AXIS_Z, true); // asse z
+		sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
+		upsampling = pref.getInt(PreferencesActivity.UPSAMPLING, 48000);
+		remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
+		
+		int orientationID = radioGroup.getCheckedRadioButtonId();
+		radioOrientationButton = (RadioButton) findViewById(orientationID);
+		
     }
-    
+
     @Override
 	public void onResume() {
 		super.onResume();
@@ -88,16 +114,59 @@ public class RecordActivity extends Activity {
 /////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
+		
+		/**** ROTAZIONE SCHERMO ****/
+		radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				int orientationID = radioGroup.getCheckedRadioButtonId();
+				radioOrientationButton = (RadioButton) findViewById(orientationID);
+				
+				//TODO: salvare orientamento schermo per ripristinarlo 
+				if(radioOrientationButton.getText().toString().equalsIgnoreCase("portrait"))
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				else
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			}
+		});
 
 		/**** AVVIA LA REGISTRAZIONE ****/
 		startSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sensorManager.registerListener(mySensorEventListener, accelerometro, SensorManager.SENSOR_DELAY_NORMAL);
 				//TODO: impostazioni per accelerometro intentRecord.putExtra(...);
+				pause = false;
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(true);
 				stopSession.setEnabled(true);
+				intentRecord.putExtra(RecordTrack.SENSOR_DELAY, sample_rate);
+				startService(intentRecord);
+				countDownTimer = new CountDownTimer(remaining_time, 1000) {
+					public void onTick(long millisUntilFinished) {
+						remaining_time = millisUntilFinished;
+						time_remaining.setText("" + millisUntilFinished / 1000);
+					}
+					
+					public void onFinish() {
+						time_remaining.setText("0");
+						if(!pause)
+						{
+							startSession.setEnabled(false);
+							pauseSession.setEnabled(false);
+							stopSession.setEnabled(false);
+							saveSession.setEnabled(true);
+						}
+						try{
+							resetProgressBar();
+							stopService(intentRecord);
+						}
+						catch(NullPointerException ex)
+						{
+							ex.printStackTrace();
+						}
+					}
+				};
+				countDownTimer.start();
 			}
 		});
 		
@@ -105,9 +174,12 @@ public class RecordActivity extends Activity {
 		pauseSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sensorManager.unregisterListener(mySensorEventListener);
+				pause = true;
 				startSession.setEnabled(true);
 				pauseSession.setEnabled(false);
+				stopService(intentRecord);
+				countDownTimer.cancel();
+				resetProgressBar();
 			}
 		});
 		
@@ -115,113 +187,58 @@ public class RecordActivity extends Activity {
 		stopSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				sensorManager.unregisterListener(mySensorEventListener);
+				pause = false;
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(false);
-				if(nameSession.getText().toString().length() > 0)
-				{
-					saveAccelerometerData();
-					// avvio la PlayerActivity
-					Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
-					i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
-					v.getContext().startActivity(i);
-					//finish();
-				}
-				else Toast.makeText(v.getContext(), "INSERISCI NOME SESSIONE", Toast.LENGTH_SHORT).show();
+				stopSession.setEnabled(false);
+				saveSession.setEnabled(true);
+				
+				stopService(intentRecord);
+				countDownTimer.cancel();
+				resetProgressBar();
 			}
 		});
+		
+		/**** SALVA LA REGISTRAZIONE ****/
+		saveSession.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Verifica che siano stati presi dati dall'accelerometro
+				if(initialized)
+					if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
+					{
+						saveAccelerometerData();
+						// avvio la SessionInfoActivity
+						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
+						i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
+						v.getContext().startActivity(i);
+					}
+					else Toast.makeText(v.getContext(), "INSERISCI NOME SESSIONE", Toast.LENGTH_SHORT).show();
+				else finish(); // se non ci sono dati chiude l'activity
+			}
+		});
+		
     }
     
     @Override
-	public void onPause() {
-		super.onPause();
-		
-		if (insertComplete) finish();
+    protected void onPause() {
+    	super.onPause();
+    	if (insertComplete) finish();
     }
-
-/////////////////////////////////////////////////////////
-//////////////// Gestione Accelerometro /////////////////
-////////////////////////////////////////////////////////
-
-	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
-        public void onSensorChanged(SensorEvent event) {
-        	if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-	        	float x = event.values[0];
-	    		float y = event.values[1];
-	    		float z = event.values[2];
-	    		if (!initialized) {
-
-	    			oldX = x;
-	    			oldY = y;
-	    			oldZ = z;
-
-	    			data_x.add(0f);
-	    			data_y.add(0f);
-	    			data_z.add(0f);
-
-	    			progressBarX.setProgress(0);
-	    			progressBarY.setProgress(0);
-	    			progressBarZ.setProgress(0);
-
-	    			rec_sample.setText("" + sample);
-
-	    			initialized = true;
-
-	    		} else {
-
-	    			float deltaX = Math.abs(oldX - x);
-	    			float deltaY = Math.abs(oldY - y);
-	    			float deltaZ = Math.abs(oldZ - z);
-
-	    			if (deltaX < rumore)
-	    				deltaX = (float) 0.0;
-	    			else
-	    			{
-	    				data_x.add(deltaX);
-	    				sample++;
-	    				rec_sample.setText("" + sample);
-	    			}
-
-	    			if (deltaY < rumore)
-	    				deltaY = (float) 0.0;
-	    			else
-	    			{
-	    				data_y.add(deltaY);
-	    				sample++;
-	    				rec_sample.setText("" + sample);
-	    			}
-
-	    			if (deltaZ < rumore)
-	    				deltaZ = (float) 0.0;
-	    			else
-	    			{
-	    				data_z.add(deltaZ);
-	    				sample++;
-	    				rec_sample.setText("" + sample);
-	    			}
-
-	    			oldX = x;
-	    			oldY = y;
-	    			oldZ = z;
-
-	    			progressBarX.setProgress((int)deltaX);
-	    			progressBarY.setProgress((int)deltaY);
-	    			progressBarZ.setProgress((int)deltaZ);	
-	    		}
-        	}
-        }
+    
+   
+    @Override
+    protected void onDestroy() {
+    	super.onDestroy();
+    	stopService(intentRecord);
+    	if(countDownTimer != null)countDownTimer.cancel();
+    }
         
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // TODO Auto-generated method stub
 
-        }
-    };
-    
 /////////////////////////////////////////////////////////    
-//////////////// Metodi Utili  //////////////////////////
+////////////////Metodi Utili  //////////////////////////
 ////////////////////////////////////////////////////////
-    
+
     public void saveAccelerometerData(){
     	if(initialized){
 
@@ -241,12 +258,30 @@ public class RecordActivity extends Activity {
 
 	    	// inserisco i dati della sessione nel database
 	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, 1, 1, 1, 48000, x_sb.toString(), y_sb.toString(), z_sb.toString(), n_x, n_y, n_z );
+	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), n_x, n_y, n_z );
 	    	insertComplete = true;
 	    	
 			// chiudo la connessione al db
 			dbAdapter.close();
 		}
     }
-    
+    public static void updateSample(){
+		rec_sample.setText("" + sample);
+		progressBarX.setProgress(x);
+		progressBarY.setProgress(y);
+		progressBarZ.setProgress(z);
+		initialized = true;
+    }
+    public static void setProgressBarMax(int max)
+    {
+    	progressBarX.setMax(max);
+		progressBarY.setMax(max);
+		progressBarZ.setMax(max);
+    }
+    public static void resetProgressBar()
+    {
+    	progressBarX.setProgress(0);
+		progressBarY.setProgress(0);
+		progressBarZ.setProgress(0);
+    }
 }

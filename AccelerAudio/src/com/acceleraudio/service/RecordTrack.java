@@ -2,7 +2,7 @@ package com.acceleraudio.service;
 
 import java.util.ArrayList;
 
-import com.acceleraudio.activity.RecordActivityBeta;
+import com.acceleraudio.activity.RecordActivity;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -65,10 +65,10 @@ public class RecordTrack extends IntentService{
 	    			else
 	    			{
 	    				data_x.add(deltaX);
-	    				RecordActivityBeta.sample++;
-	    				RecordActivityBeta.x = (int)deltaX;
-	    				RecordActivityBeta.data_x.add(deltaX);
-	    				RecordActivityBeta.updateSample();
+	    				RecordActivity.sample++;
+	    				RecordActivity.x = (int)deltaX;
+	    				RecordActivity.data_x.add(deltaX);
+	    				RecordActivity.updateSample();
 	    			}
 	    			
 	    			if (deltaY < rumore)
@@ -77,10 +77,10 @@ public class RecordTrack extends IntentService{
 	    			{
 	    				data_y.add(deltaY);
 
-	    				RecordActivityBeta.sample++;
-	    				RecordActivityBeta.y = (int)deltaY;
-	    				RecordActivityBeta.data_y.add(deltaY);
-	    				RecordActivityBeta.updateSample();
+	    				RecordActivity.sample++;
+	    				RecordActivity.y = (int)deltaY;
+	    				RecordActivity.data_y.add(deltaY);
+	    				RecordActivity.updateSample();
 	    			}
 	    			
 	    			if (deltaZ < rumore)
@@ -89,10 +89,10 @@ public class RecordTrack extends IntentService{
 	    			{
 	    				data_z.add(deltaZ);
 	    				
-	    				RecordActivityBeta.sample++;
-	    				RecordActivityBeta.z = (int)deltaZ;
-	    				RecordActivityBeta.data_z.add(deltaZ);
-	    				RecordActivityBeta.updateSample();
+	    				RecordActivity.sample++;
+	    				RecordActivity.z = (int)deltaZ;
+	    				RecordActivity.data_z.add(deltaZ);
+	    				RecordActivity.updateSample();
 	    			}
 	    			
 	    			oldX = x;

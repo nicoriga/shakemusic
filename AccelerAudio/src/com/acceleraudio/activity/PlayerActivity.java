@@ -52,7 +52,7 @@ public class PlayerActivity extends Activity {
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
-		sessionName = (TextView) findViewById(R.id.UI4textView1);
+		sessionName = (TextView) findViewById(R.id.UI4textView3);
 		play = (Button) findViewById(R.id.UI4button2);
 		pause = (Button) findViewById(R.id.UI4button3);
 		stop = (Button) findViewById(R.id.UI4button1);
@@ -86,13 +86,13 @@ public class PlayerActivity extends Activity {
 		
 		if(axis_x)
 			for(int i = 0; i<data_x.length; i++)
-				if(data_x[i].length()>0)sample.add((int)(Float.parseFloat(data_x[i])));
+				if(data_x[i].length()>0)sample.add((int)(Float.parseFloat(data_x[i])*100));
 		if(axis_y)
 			for(int i = 0; i<data_y.length; i++)
-				if(data_y[i].length()>0)sample.add((int)(Float.parseFloat(data_y[i])));
+				if(data_y[i].length()>0)sample.add((int)(Float.parseFloat(data_y[i])*100));
 		if(axis_z)
 			for(int i = 0; i<data_z.length; i++)
-				if(data_z[i].length()>0)sample.add((int)(Float.parseFloat(data_z[i])));
+				if(data_z[i].length()>0)sample.add((int)(Float.parseFloat(data_z[i])*100));
 
     }
 
@@ -163,6 +163,13 @@ public class PlayerActivity extends Activity {
     	super.onDestroy();
     	//stopService(intentPlayer);
     	inizialized = false;
+    }
+    
+    @Override
+	public void onBackPressed() {
+	    super.onBackPressed();
+	    stopService(intentPlayer); // stoppa il servizio della musica
+	    finish();
     }
 
 }

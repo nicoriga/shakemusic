@@ -2,6 +2,7 @@ package com.acceleraudio.util;
 
 import java.util.ArrayList;
 
+import android.hardware.SensorManager;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
@@ -61,5 +62,23 @@ public class Util{
     	return floatL;
     }
     
+    /**** ritorna il numero univoco della velocita del sensore in base al nome  ****/
+    public static int sensorRateByString(String n)
+    {
+    	if(n.equalsIgnoreCase("lento")) return SensorManager.SENSOR_DELAY_NORMAL;
+    	if(n.equalsIgnoreCase("normale")) return SensorManager.SENSOR_DELAY_GAME;
+    	if(n.equalsIgnoreCase("veloce")) return SensorManager.SENSOR_DELAY_FASTEST;
+    	return SensorManager.SENSOR_DELAY_NORMAL;
+    }
+    
+    /**** ritorna il nome corrispondente alla velocita del sensore  ****/
+    public static String sensorRateName(int r)
+    {
+    	if(r == SensorManager.SENSOR_DELAY_NORMAL) return "Lento";
+    	if(r == SensorManager.SENSOR_DELAY_GAME) return "Normale";
+    	if(r == SensorManager.SENSOR_DELAY_FASTEST) return "Veloce";
+    	
+    	return "Normale";
+    }
 }
 

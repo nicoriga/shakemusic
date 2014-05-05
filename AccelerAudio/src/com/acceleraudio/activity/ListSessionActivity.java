@@ -7,9 +7,14 @@ import com.acceleraudio.design.CustomListSession;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -26,7 +31,8 @@ public class ListSessionActivity extends Activity {
 	private Integer[] imageId;
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
-
+    private Context context;
+    
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -83,6 +89,7 @@ public class ListSessionActivity extends Activity {
 		//{
 		CustomListSession adapter1 = new CustomListSession(this, sessionNameList, sessionDataMod, imageId);
 		list.setAdapter(adapter1);
+		registerForContextMenu(list);
 		//}
 		
 /////////////////////////////////////////////////////////
@@ -93,7 +100,7 @@ public class ListSessionActivity extends Activity {
 		newSession.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				// avvio la Recordactivity
-				Intent i = new Intent(view.getContext(), RecordActivityBeta.class);
+				Intent i = new Intent(view.getContext(), RecordActivity.class);
 				view.getContext().startActivity(i);
 			}
 		});
@@ -116,6 +123,50 @@ public class ListSessionActivity extends Activity {
 				view.getContext().startActivity(i);
 			}
 		});
+		
 	}
 	
+	//creazione del menu contestuale
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) 
+	{
+		if (v.getId()==R.id.UI1listSession) 
+		{
+			context = v.getContext();
+			//AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+			menu.setHeaderTitle("Opzioni");
+			String[] menuItems = {"play", "duplica", "esporta", "elimina"};
+			for (int i = 0; i<menuItems.length; i++) {
+				menu.add(Menu.NONE, i, i, menuItems[i]);
+			}
+		}
+	}
+
+	// svolge azione dal menu contestuale
+	@Override
+	public boolean onContextItemSelected(MenuItem item) 
+	{
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+		// esegue un azione diversa per le opzioni del menu
+		switch(item.getItemId()) 
+		{
+			case 0:
+				// avvio la PlayerActivity
+				Intent i = new Intent(context, PlayerActivity.class);
+				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(info.position));
+				context.startActivity(i);
+				return true;
+			case 1:
+				//TODO: duplica la sessione
+				return true;
+			case 2:
+				//TODO: esporta la sessione
+				return true;	
+			case 3:
+				//TODO: elimina la sessione
+				return true;	
+			default:
+				return super.onContextItemSelected(item);
+	  }
+	}
 }
