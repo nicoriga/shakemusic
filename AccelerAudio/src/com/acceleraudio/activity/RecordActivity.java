@@ -42,7 +42,7 @@ public class RecordActivity extends Activity {
 	private static long sessionId, remaining_time;
 	private boolean axis_x, axis_y, axis_z, pause = false;
 	private int upsampling, sample_rate;
-	private CountDownTimer countDownTimer;
+	private static CountDownTimer countDownTimer;
 	private SharedPreferences pref;
 	
     @Override
@@ -58,13 +58,6 @@ public class RecordActivity extends Activity {
 		
 		dbAdapter = new DbAdapter(this);
 		
-		data_x = new ArrayList<Float>();
-		data_y = new ArrayList<Float>();
-		data_z = new ArrayList<Float>();
-		sample = 0;
-		x = 0;
-		y = 0;
-		z = 0;
 		
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
@@ -102,6 +95,23 @@ public class RecordActivity extends Activity {
 		upsampling = pref.getInt(PreferencesActivity.UPSAMPLING, 48000);
 		remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
 		
+		// Restore from the savedInstanceState
+		if (savedInstanceState != null)
+		{
+			remaining_time = savedInstanceState.getLong("time");
+		}
+		else
+		{	 
+			data_x = new ArrayList<Float>();
+			data_y = new ArrayList<Float>();
+			data_z = new ArrayList<Float>();
+			sample = 0;
+			x = 0;
+			y = 0;
+			z = 0;
+		}
+		
+		time_remaining.setText("" + remaining_time / 1000);
 		int orientationID = radioGroup.getCheckedRadioButtonId();
 		radioOrientationButton = (RadioButton) findViewById(orientationID);
 		
@@ -233,6 +243,13 @@ public class RecordActivity extends Activity {
     	stopService(intentRecord);
     	if(countDownTimer != null)countDownTimer.cancel();
     }
+    
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) 
+    {
+    	savedInstanceState.putLong("time", remaining_time);
+    	super.onSaveInstanceState(savedInstanceState);
+    }
         
 
 /////////////////////////////////////////////////////////    
@@ -245,20 +262,16 @@ public class RecordActivity extends Activity {
 			// apro la connessione al db
 	    	dbAdapter.open();
 
-	    	int n_x = 0;
-	    	int n_y = 0;
-	    	int n_z = 0;
-
 	    	StringBuilder x_sb = new StringBuilder();
 	    	StringBuilder y_sb = new StringBuilder();
 	    	StringBuilder z_sb = new StringBuilder();
-	    	for (float value : data_x){   x_sb.append(" " + value); n_x++;}
-	    	for (float value : data_y){   y_sb.append(" " + value); n_y++;}
-	    	for (float value : data_z){   z_sb.append(" " + value); n_z++;}
+	    	for (float value : data_x) x_sb.append(" " + value);
+	    	for (float value : data_y) y_sb.append(" " + value);
+	    	for (float value : data_z) z_sb.append(" " + value);
 
 	    	// inserisco i dati della sessione nel database
 	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), n_x, n_y, n_z );
+	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), x_sb.length(), y_sb.length(), z_sb.length() );
 	    	insertComplete = true;
 	    	
 			// chiudo la connessione al db
