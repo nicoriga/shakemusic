@@ -1,12 +1,14 @@
 package com.acceleraudio.activity;
 
 import com.acceleraudio.database.DbAdapter;
+import com.acceleraudio.util.ImageBitmap;
 import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -27,11 +30,13 @@ public class SessionInfoActivity extends Activity {
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
     private Button listSession, playSession;
+    private ImageView thumbnail;
     private EditText et_sessionName;
     private TextView creation_date, date_change;
     private CheckBox axis_x, axis_y, axis_z;
     private Spinner spinner;
     private int sessionId;
+    private String[] data_x, data_y, data_z;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,7 @@ public class SessionInfoActivity extends Activity {
     	listSession = (Button) findViewById(R.id.UI2_B_listsession);
     	playSession = (Button) findViewById(R.id.UI2_button_play);
     	et_sessionName = (EditText)findViewById(R.id.UI2_editText_titolo_sessione);
+    	thumbnail = (ImageView) findViewById(R.id.UI2_imageView_thumbnail);
     	creation_date = (TextView)findViewById(R.id.UI2_textView_data_creazione);
     	date_change = (TextView)findViewById(R.id.UI2_textView_data_Modifica);
     	axis_x = (CheckBox)findViewById(R.id.UI2_checkBox_x);
@@ -79,6 +85,9 @@ public class SessionInfoActivity extends Activity {
         // carico dati
         et_sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME))); // carico il nome della sessione
         //et_result.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))); // TODO: da eliminare server solo per prova carico i dati registraati PROVA
+        data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
+		data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
+		data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
         creation_date.setText(creation_date.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_CREATION_DATE))); // carico data creazione
         date_change.setText(date_change.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE))); // carico data modifica
         axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1")); // asse x
@@ -89,6 +98,11 @@ public class SessionInfoActivity extends Activity {
         // chiudo connessioni
         cursor.close();
 		dbAdapter.close();
+		
+		//costruzione immagine
+		Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+		ImageBitmap.color(bmp, data_x, data_y, data_z, sessionId);
+		thumbnail.setImageBitmap(bmp);
              	    
     }
     
