@@ -240,7 +240,12 @@ public class RecordActivity extends Activity {
     @Override
     protected void onDestroy() {
     	super.onDestroy();
-    	stopService(intentRecord);
+    	try {
+			stopService(intentRecord);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	if(countDownTimer != null)countDownTimer.cancel();
     }
     

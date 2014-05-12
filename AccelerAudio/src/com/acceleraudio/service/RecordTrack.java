@@ -11,6 +11,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.widget.Toast;
 
 public class RecordTrack extends IntentService{
@@ -120,16 +121,32 @@ public class RecordTrack extends IntentService{
     	isRecording = true;
     	intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL);
    	  
-    	t = new Thread() {
+    	t = new Thread("recording thread") {
             public void run() {
-            	// setta la priorità massia del thread
+            	// setta la priorità massima al thread
                 setPriority(Thread.MAX_PRIORITY);
     	
 		    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		    	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-		    	  
-		    	while(isRecording){}
+
+		    	while(isRecording)
+		        {
+		            synchronized (t)
+		            {
+		                try {
+		                    t.wait();
+		                } catch (InterruptedException e) {
+		                    e.printStackTrace();
+		                }
+		            }
+		        }
+		    	try {
+					sensorManager.unregisterListener(mySensorEventListener);
+				} catch (NullPointerException e1) {
+					e1.printStackTrace();
+				}
+		    	Log.d("RecordTrack", "thread recording in chiusura");
             }
     	};
     	t.run();
@@ -145,8 +162,11 @@ public class RecordTrack extends IntentService{
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	sensorManager.unregisterListener(mySensorEventListener);
     	isRecording = false;
+    	synchronized(t)
+        {
+            t.notify();
+        }  	
     	try {
     		t.join();
     	} 
