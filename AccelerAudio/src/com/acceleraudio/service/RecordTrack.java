@@ -1,7 +1,5 @@
 package com.acceleraudio.service;
 
-import java.util.ArrayList;
-
 import com.acceleraudio.activity.RecordActivity;
 
 import android.app.IntentService;
@@ -30,10 +28,6 @@ public class RecordTrack extends IntentService{
 	private Sensor accelerometer;
 	private final float rumore = 0.3f;
 	private float oldX, oldY, oldZ;
-	private ArrayList<Float> 
-			data_x = new ArrayList<Float>(), 
-			data_y = new ArrayList<Float>(), 
-			data_z = new ArrayList<Float>();
 	private Thread t;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
@@ -49,10 +43,6 @@ public class RecordTrack extends IntentService{
 	    			oldY = y;
 	    			oldZ = z;
 	    			
-	    			data_x.add(0f);
-	    			data_y.add(0f);
-	    			data_z.add(0f);
-	    			
 	    			initialized = true;
 	    			
 	    		} else {
@@ -65,7 +55,6 @@ public class RecordTrack extends IntentService{
 	    				deltaX = (float) 0.0;
 	    			else
 	    			{
-	    				data_x.add(deltaX);
 	    				RecordActivity.sample++;
 	    				RecordActivity.x = (int)deltaX;
 	    				RecordActivity.data_x.add(deltaX);
@@ -76,8 +65,6 @@ public class RecordTrack extends IntentService{
 	    				deltaY = (float) 0.0;
 	    			else
 	    			{
-	    				data_y.add(deltaY);
-
 	    				RecordActivity.sample++;
 	    				RecordActivity.y = (int)deltaY;
 	    				RecordActivity.data_y.add(deltaY);
@@ -88,8 +75,6 @@ public class RecordTrack extends IntentService{
 	    				deltaZ = (float) 0.0;
 	    			else
 	    			{
-	    				data_z.add(deltaZ);
-	    				
 	    				RecordActivity.sample++;
 	    				RecordActivity.z = (int)deltaZ;
 	    				RecordActivity.data_z.add(deltaZ);
@@ -125,17 +110,17 @@ public class RecordTrack extends IntentService{
             public void run() {
             	// setta la priorità massima al thread
                 setPriority(Thread.MAX_PRIORITY);
-    	
 		    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		    	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-
-		    	while(isRecording)
+		    	
+		    	long endTime = System.currentTimeMillis() + RecordActivity.remaining_time;
+		    	while(isRecording && System.currentTimeMillis() < endTime)
 		        {
 		            synchronized (t)
 		            {
 		                try {
-		                    t.wait();
+		                    t.wait(endTime - System.currentTimeMillis());
 		                } catch (InterruptedException e) {
 		                    e.printStackTrace();
 		                }

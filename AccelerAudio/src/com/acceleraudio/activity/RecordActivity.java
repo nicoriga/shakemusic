@@ -29,7 +29,7 @@ public class RecordActivity extends Activity {
 	
 	private boolean insertComplete = false;
 	private static boolean initialized;
-	private static Button startSession, stopSession, pauseSession, saveSession;
+	public static Button startSession, stopSession, pauseSession, saveSession;
 	protected static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
@@ -38,11 +38,12 @@ public class RecordActivity extends Activity {
 	public static ArrayList<Float> data_x, data_y, data_z;
 	private DbAdapter dbAdapter;
 	public static int sample, x, y, z;
-	private Intent intentRecord;
-	private static long sessionId, remaining_time;
-	private boolean axis_x, axis_y, axis_z, pause = false;
+	public Intent intentRecord;
+	public static long sessionId, remaining_time;
+	private boolean axis_x, axis_y, axis_z;
+	public static boolean pause = false;
 	private int upsampling, sample_rate;
-	private static CountDownTimer countDownTimer;
+	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
 	
     @Override
@@ -106,6 +107,7 @@ public class RecordActivity extends Activity {
 			data_y = new ArrayList<Float>();
 			data_z = new ArrayList<Float>();
 			sample = 0;
+			rec_sample.setText("0");
 			x = 0;
 			y = 0;
 			z = 0;
@@ -240,12 +242,7 @@ public class RecordActivity extends Activity {
     @Override
     protected void onDestroy() {
     	super.onDestroy();
-    	try {
-			stopService(intentRecord);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		stopService(intentRecord);
     	if(countDownTimer != null)countDownTimer.cancel();
     }
     
