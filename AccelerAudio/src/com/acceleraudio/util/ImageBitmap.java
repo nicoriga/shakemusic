@@ -29,7 +29,9 @@ public class ImageBitmap
 				{
 					case 0:		//pesco da x	attenzione il primo valore 
 						try {
-							val = Double.parseDouble(data_x[_x]);
+							//Log.w("valore x:", "-"+data_x[_x]+"-");
+							if(data_x[_x].length()>0) val = (double)Float.parseFloat(data_x[_x]);
+							else val = id;
 						} catch (NumberFormatException e) {
 							val = id;
 							e.printStackTrace();
@@ -39,10 +41,10 @@ public class ImageBitmap
 						else
 							_x++;
 						break;
-					
 					case 1: 	//pesco da y
 						try {
-							val = Double.parseDouble(data_y[_y]);	
+							if(data_y[_y].length()>0) val = (double)Float.parseFloat(data_y[_y]);
+							else val = id;
 						} catch (NumberFormatException e) {
 							val = id;
 							e.printStackTrace();
@@ -56,7 +58,8 @@ public class ImageBitmap
 					
 					case 2:		//pesco da z
 						try {
-							val = Double.parseDouble(data_z[_z]);
+							if(data_z[_z].length()>0) val = (double)Float.parseFloat(data_z[_z]);
+							else val = id;
 						} catch (NumberFormatException e) {
 							val = id;
 							e.printStackTrace();

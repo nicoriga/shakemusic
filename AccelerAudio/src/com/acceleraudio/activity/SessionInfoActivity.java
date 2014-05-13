@@ -30,13 +30,15 @@ public class SessionInfoActivity extends Activity {
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
     private Button listSession, playSession;
-    private ImageView thumbnail;
+    private static ImageView thumbnail;
     private EditText et_sessionName;
     private TextView creation_date, date_change;
     private CheckBox axis_x, axis_y, axis_z;
     private Spinner spinner;
     private int sessionId;
     private String[] data_x, data_y, data_z;
+    private Thread t;
+    static final Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,6 @@ public class SessionInfoActivity extends Activity {
         
         // carico dati
         et_sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME))); // carico il nome della sessione
-        //et_result.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))); // TODO: da eliminare server solo per prova carico i dati registraati PROVA
         data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
 		data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
 		data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
@@ -99,11 +100,23 @@ public class SessionInfoActivity extends Activity {
         cursor.close();
 		dbAdapter.close();
 		
-		//costruzione immagine
-		Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-		ImageBitmap.color(bmp, data_x, data_y, data_z, sessionId);
-		thumbnail.setImageBitmap(bmp);
-             	    
+		t = new Thread("Thumbnail_Creation"){
+				public void run() {
+					// setta la priorità massia del thread
+	                setPriority(Thread.MAX_PRIORITY);
+	                
+					//costruzione immagine
+					ImageBitmap.color(bmp, data_x, data_y, data_z, sessionId);
+					
+					runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                        	setThumbnail();
+                        }
+                    });
+				}
+		};
+		t.start();    
     }
     
     @Override
@@ -181,8 +194,8 @@ public class SessionInfoActivity extends Activity {
 ///////////  metodi ausiliari  /////////////////////////
 ////////////////////////////////////////////////////////
 
-	// aggiorna le impostazioni nel database
-		private void updateChange(View v){
+		// aggiorna le impostazioni nel database
+	private void updateChange(View v){
 		if(v != null)
 		{
 			// apro la connessione al db
@@ -196,5 +209,9 @@ public class SessionInfoActivity extends Activity {
 			dbAdapter.close();
 		}
 	}
-    
+    	// imposta il thumbnail
+	private static void setThumbnail()
+	{
+		thumbnail.setImageBitmap(bmp);
+	}
 }

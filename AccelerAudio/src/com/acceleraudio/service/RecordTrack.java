@@ -25,7 +25,7 @@ public class RecordTrack extends IntentService{
 	private boolean initialized, isRecording;
 	private SensorManager sensorManager;
 	private Sensor accelerometer;
-	private final float rumore = 0.3f;
+	private final float rumore = 1.2f;
 	private float oldX, oldY, oldZ;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
