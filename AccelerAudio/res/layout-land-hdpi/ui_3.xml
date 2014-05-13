@@ -129,7 +129,7 @@
 	</RadioGroup>
     
     <TextView
-        android:id="@+id/UI3_timeRemaining"
+        android:id="@+id/UI3_TV_timerRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/UI3_BT_record"

@@ -9,7 +9,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 import android.widget.Toast;
 
 public class RecordTrack extends IntentService{
@@ -28,7 +27,6 @@ public class RecordTrack extends IntentService{
 	private Sensor accelerometer;
 	private final float rumore = 0.3f;
 	private float oldX, oldY, oldZ;
-	private Thread t;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
         public void onSensorChanged(SensorEvent event) {
@@ -106,35 +104,27 @@ public class RecordTrack extends IntentService{
     	isRecording = true;
     	intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL);
    	  
-    	t = new Thread("recording thread") {
-            public void run() {
-            	// setta la priorità massima al thread
-                setPriority(Thread.MAX_PRIORITY);
-		    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		    	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-		    	
-		    	long endTime = System.currentTimeMillis() + RecordActivity.remaining_time;
-		    	while(isRecording && System.currentTimeMillis() < endTime)
-		        {
-		            synchronized (t)
-		            {
-		                try {
-		                    t.wait(endTime - System.currentTimeMillis());
-		                } catch (InterruptedException e) {
-		                    e.printStackTrace();
-		                }
-		            }
-		        }
-		    	try {
-					sensorManager.unregisterListener(mySensorEventListener);
-				} catch (NullPointerException e1) {
-					e1.printStackTrace();
-				}
-		    	Log.d("RecordTrack", "thread recording in chiusura");
-            }
-    	};
-    	t.run();
+    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    	
+    	long endTime = System.currentTimeMillis() + RecordActivity.remaining_time;
+    	while(isRecording && System.currentTimeMillis() < endTime)
+        {
+    		synchronized (this) {
+    			try {
+                    wait(endTime - System.currentTimeMillis());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+			}      
+        }
+    	try {
+			sensorManager.unregisterListener(mySensorEventListener);
+		} catch (NullPointerException ex) {
+			ex.printStackTrace();
+		}
+            
     	initialized = true;
     }
     
@@ -148,18 +138,10 @@ public class RecordTrack extends IntentService{
     public void onDestroy() {
     	super.onDestroy();
     	isRecording = false;
-    	synchronized(t)
-        {
-            t.notify();
-        }  	
-    	try {
-    		t.join();
-    	} 
-    	catch (InterruptedException e) {
-    		e.printStackTrace();
-    	}
-    	
-    	Toast.makeText(this, "stop recording", Toast.LENGTH_SHORT).show();
+    	synchronized (this) {
+			this.notify();
+		}
+		Toast.makeText(this, "stop recording", Toast.LENGTH_SHORT).show();
     	
     }
     
