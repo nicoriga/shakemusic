@@ -5,7 +5,7 @@
     android:orientation="vertical" >
 
      <TextView
-         android:id="@+id/UI3textView1"
+         android:id="@+id/UI3_TV_SessionName"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignParentLeft="true"
@@ -16,10 +16,10 @@
          android:textAppearance="?android:attr/textAppearanceMedium" />
 
      <TextView
-         android:id="@+id/UI3textView1"
+         android:id="@+id/UI3_TV_SessionName"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_above="@+id/UI3verticalBarY"
+         android:layout_above="@+id/UI3_PB_Y"
          android:layout_alignParentLeft="true"
          android:layout_marginBottom="89dp"
          android:layout_marginLeft="37dp"
@@ -27,83 +27,83 @@
          android:textAppearance="?android:attr/textAppearanceMedium" />
 
      <Button
-         android:id="@+id/UI3button1"
+         android:id="@+id/UI3_BT_record"
          android:layout_width="150dp"
          android:layout_height="wrap_content"
          android:layout_alignParentBottom="true"
          android:layout_marginBottom="101dp"
          android:layout_marginLeft="31dp"
-         android:layout_toRightOf="@+id/UI3button2"
+         android:layout_toRightOf="@+id/UI3_BT_stop"
          android:text="Record" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3verticalBarY"
+         android:id="@+id/UI3_PB_Y"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_centerVertical="true"
-         android:layout_toRightOf="@+id/UI3textView1"
+         android:layout_toRightOf="@+id/UI3_TV_SessionName"
          android:minHeight="40dip"
          android:minWidth="200dip"
          android:progress="80" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3verticalBarX"
+         android:id="@+id/UI3_PB_X"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_alignRight="@+id/UI3textView1"
-         android:layout_below="@+id/UI3textView1"
+         android:layout_alignRight="@+id/UI3_TV_SessionName"
+         android:layout_below="@+id/UI3_TV_SessionName"
          android:layout_marginRight="30dp"
          android:minHeight="40dip"
          android:minWidth="200dip"
          android:progress="20" />
 
      <Button
-         android:id="@+id/UI3button2"
+         android:id="@+id/UI3_BT_stop"
          android:layout_width="80dp"
          android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI3button1"
-         android:layout_alignBottom="@+id/UI3button1"
-         android:layout_toLeftOf="@+id/UI3verticalBarX"
+         android:layout_alignBaseline="@+id/UI3_BT_record"
+         android:layout_alignBottom="@+id/UI3_BT_record"
+         android:layout_toLeftOf="@+id/UI3_PB_X"
          android:text="Stop" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3verticalBarZ"
+         android:id="@+id/UI3_PB_Z"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_alignRight="@+id/UI3button1"
-         android:layout_alignTop="@+id/UI3verticalBarY"
+         android:layout_alignRight="@+id/UI3_BT_record"
+         android:layout_alignTop="@+id/UI3_PB_Y"
          android:minHeight="40dip"
          android:minWidth="200dip"
          android:progress="40" />
 
      <Button
-         android:id="@+id/UI3button3"
+         android:id="@+id/UI3_BT_pause"
          android:layout_width="80dp"
          android:layout_height="wrap_content"
-         android:layout_alignBaseline="@+id/UI3button1"
-         android:layout_alignBottom="@+id/UI3button1"
+         android:layout_alignBaseline="@+id/UI3_BT_record"
+         android:layout_alignBottom="@+id/UI3_BT_record"
          android:layout_marginLeft="27dp"
-         android:layout_toRightOf="@+id/UI3button1"
+         android:layout_toRightOf="@+id/UI3_BT_record"
          android:text="Pause" />
 
      <EditText
-         android:id="@+id/UI3editText1"
+         android:id="@+id/UI3_ET_SessionName"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_alignBottom="@+id/UI3textView1"
+         android:layout_alignBottom="@+id/UI3_TV_SessionName"
          android:layout_marginBottom="23dp"
-         android:layout_toLeftOf="@+id/UI3verticalBarZ"
+         android:layout_toLeftOf="@+id/UI3_PB_Z"
          android:ems="10" />
 
      <EditText
          android:id="@+id/UI3editText2"
          android:layout_width="80dp"
          android:layout_height="wrap_content"
-         android:layout_alignLeft="@+id/UI3verticalBarX"
-         android:layout_below="@+id/UI3editText1"
+         android:layout_alignLeft="@+id/UI3_PB_X"
+         android:layout_below="@+id/UI3_ET_SessionName"
          android:clickable="false"
          android:ems="10"
          android:inputType="number" />

@@ -52,10 +52,10 @@ public class PlayerActivity extends Activity {
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
-		sessionName = (TextView) findViewById(R.id.UI4textView3);
-		play = (Button) findViewById(R.id.UI4button2);
-		pause = (Button) findViewById(R.id.UI4button3);
-		stop = (Button) findViewById(R.id.UI4button1);
+		sessionName = (TextView) findViewById(R.id.UI4_TV_sessionName);
+		play = (Button) findViewById(R.id.UI4_BT_play);
+		pause = (Button) findViewById(R.id.UI4_BT_pause);
+		stop = (Button) findViewById(R.id.UI4_BT_stop);
     	
 ////////////////////////////////////////////////////////
 /// prelevo dati dal database e li carico nella vista///

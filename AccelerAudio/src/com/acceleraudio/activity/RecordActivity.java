@@ -29,7 +29,7 @@ public class RecordActivity extends Activity {
 	
 	private boolean insertComplete = false;
 	private static boolean initialized;
-	private static Button startSession, stopSession, pauseSession, saveSession;
+	public static Button startSession, stopSession, pauseSession, saveSession;
 	protected static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
@@ -38,11 +38,12 @@ public class RecordActivity extends Activity {
 	public static ArrayList<Float> data_x, data_y, data_z;
 	private DbAdapter dbAdapter;
 	public static int sample, x, y, z;
-	private Intent intentRecord;
-	private static long sessionId, remaining_time;
-	private boolean axis_x, axis_y, axis_z, pause = false;
+	public Intent intentRecord;
+	public static long sessionId, remaining_time;
+	private boolean axis_x, axis_y, axis_z;
+	public static boolean pause = false;
 	private int upsampling, sample_rate;
-	private static CountDownTimer countDownTimer;
+	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
 	
     @Override
@@ -63,16 +64,16 @@ public class RecordActivity extends Activity {
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
-		nameSession = (EditText) findViewById(R.id.UI3editText1);
-		rec_sample = (TextView) findViewById(R.id.UI3textView3);
-		time_remaining = (TextView) findViewById(R.id.UI3_timeRemaining);
-    	startSession = (Button) findViewById(R.id.UI3button1);
-    	stopSession = (Button) findViewById(R.id.UI3button2);
-    	pauseSession = (Button) findViewById(R.id.UI3button3);
-    	saveSession = (Button) findViewById(R.id.UI3_save);
-    	progressBarX = (ProgressBar) findViewById(R.id.UI3verticalBarX);
-    	progressBarY = (ProgressBar) findViewById(R.id.UI3verticalBarY);
-    	progressBarZ = (ProgressBar) findViewById(R.id.UI3verticalBarZ);
+		nameSession = (EditText) findViewById(R.id.UI3_ET_SessionName);
+		rec_sample = (TextView) findViewById(R.id.UI3_TV_RecordedSamples);
+		time_remaining = (TextView) findViewById(R.id.UI3_TV_timerRemaning);
+    	startSession = (Button) findViewById(R.id.UI3_BT_record);
+    	stopSession = (Button) findViewById(R.id.UI3_BT_stop);
+    	pauseSession = (Button) findViewById(R.id.UI3_BT_pause);
+    	saveSession = (Button) findViewById(R.id.UI3_BT_save);
+    	progressBarX = (ProgressBar) findViewById(R.id.UI3_PB_X);
+    	progressBarY = (ProgressBar) findViewById(R.id.UI3_PB_Y);
+    	progressBarZ = (ProgressBar) findViewById(R.id.UI3_PB_Z);
     	radioGroup = (RadioGroup) findViewById(R.id.UI3_orientation);
     	//setProgressBarMax((int)accelerometro.getMaximumRange());
     	setProgressBarMax(20);
@@ -106,6 +107,7 @@ public class RecordActivity extends Activity {
 			data_y = new ArrayList<Float>();
 			data_z = new ArrayList<Float>();
 			sample = 0;
+			rec_sample.setText("0");
 			x = 0;
 			y = 0;
 			z = 0;
@@ -240,7 +242,7 @@ public class RecordActivity extends Activity {
     @Override
     protected void onDestroy() {
     	super.onDestroy();
-    	stopService(intentRecord);
+		stopService(intentRecord);
     	if(countDownTimer != null)countDownTimer.cancel();
     }
     
