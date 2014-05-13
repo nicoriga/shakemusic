@@ -19,7 +19,7 @@
          android:id="@+id/UI3_TV_SessionName"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_above="@+id/UI3_VB_Y"
+         android:layout_above="@+id/UI3_PB_Y"
          android:layout_alignParentLeft="true"
          android:layout_marginBottom="89dp"
          android:layout_marginLeft="37dp"
@@ -37,7 +37,7 @@
          android:text="Record" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3_VB_Y"
+         android:id="@+id/UI3_PB_Y"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
          android:progress="80" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3_VB_X"
+         android:id="@+id/UI3_PB_X"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -65,16 +65,16 @@
          android:layout_height="wrap_content"
          android:layout_alignBaseline="@+id/UI3_BT_record"
          android:layout_alignBottom="@+id/UI3_BT_record"
-         android:layout_toLeftOf="@+id/UI3_VB_X"
+         android:layout_toLeftOf="@+id/UI3_PB_X"
          android:text="Stop" />
 
      <com.acceleraudio.design.VerticalProgressBar
-         android:id="@+id/UI3_VB_Z"
+         android:id="@+id/UI3_PB_Z"
          style="?android:attr/progressBarStyleHorizontal"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignRight="@+id/UI3_BT_record"
-         android:layout_alignTop="@+id/UI3_VB_Y"
+         android:layout_alignTop="@+id/UI3_PB_Y"
          android:minHeight="40dip"
          android:minWidth="200dip"
          android:progress="40" />
@@ -95,14 +95,14 @@
          android:layout_height="wrap_content"
          android:layout_alignBottom="@+id/UI3_TV_SessionName"
          android:layout_marginBottom="23dp"
-         android:layout_toLeftOf="@+id/UI3_VB_Z"
+         android:layout_toLeftOf="@+id/UI3_PB_Z"
          android:ems="10" />
 
      <EditText
          android:id="@+id/UI3editText2"
          android:layout_width="80dp"
          android:layout_height="wrap_content"
-         android:layout_alignLeft="@+id/UI3_VB_X"
+         android:layout_alignLeft="@+id/UI3_PB_X"
          android:layout_below="@+id/UI3_ET_SessionName"
          android:clickable="false"
          android:ems="10"

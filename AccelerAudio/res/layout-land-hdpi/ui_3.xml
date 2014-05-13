@@ -21,7 +21,7 @@
         android:text="Stop" />
 
     <ProgressBar
-        android:id="@+id/UI3_VB_Z"
+        android:id="@+id/UI3_PB_Z"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,29 +33,29 @@
         android:progress="40" />
 
     <ProgressBar
-        android:id="@+id/UI3_VB_Y"
+        android:id="@+id/UI3_PB_Y"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI3_VB_Z"
-        android:layout_below="@+id/UI3_VB_Z"
+        android:layout_alignLeft="@+id/UI3_PB_Z"
+        android:layout_below="@+id/UI3_PB_Z"
         android:minHeight="40dip"
         android:minWidth="200dip"
         android:progress="80" />
 
     <ProgressBar
-        android:id="@+id/UI3_VB_X"
+        android:id="@+id/UI3_PB_X"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI3_VB_Y"
-        android:layout_below="@+id/UI3_VB_Y"
+        android:layout_alignLeft="@+id/UI3_PB_Y"
+        android:layout_below="@+id/UI3_PB_Y"
         android:minHeight="40dip"
         android:minWidth="200dip"
         android:progress="20" />
 
     <TextView
-        android:id="@+id/UI3_TV_RecordedSamples"
+        android:id="@+id/UI3_TV_label_RecordedSamples"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/UI3_BT_pause"
@@ -70,7 +70,7 @@
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/UI3_BT_stop"
-        android:layout_toLeftOf="@+id/UI3_VB_Z"
+        android:layout_toLeftOf="@+id/UI3_PB_Z"
         android:text="Pause" />
 
     <EditText
@@ -94,11 +94,11 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/UI3_TV_MediumText"
+        android:id="@+id/UI3_TV_RecordedSamples"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/UI3_VB_Z"
+        android:layout_alignRight="@+id/UI3_PB_Z"
         android:layout_marginTop="85dp"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -109,7 +109,7 @@
         android:layout_height="50dp"
         android:layout_alignBottom="@+id/UI3_BT_stop"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/UI3_VB_Z"
+        android:layout_alignTop="@+id/UI3_PB_Z"
         android:orientation="vertical" >
                 
 	    <RadioButton

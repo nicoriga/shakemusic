@@ -83,7 +83,7 @@
         android:id="@+id/UI4_IV_thumbnail"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_alignLeft="@+id/UI4_TV_sessionName"
+        android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/UI4_BT_stop"
         android:src="@drawable/ic_launcher" />
 
