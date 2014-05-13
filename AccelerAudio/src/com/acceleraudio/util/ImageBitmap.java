@@ -27,37 +27,47 @@ public class ImageBitmap
 				int r = y/10;
 				switch ((p+r)%4) 
 				{
-					case 0:		//pesco da x	attenzione il primo valore � ""
-						val = Double.parseDouble(data_x[_x]);
-						if((x+1)/10 > p)
-						{
-							if(_x+1 >= data_x.length)
-								_x = 0;
-							else
-								_x++;
+					case 0:		//pesco da x	attenzione il primo valore 
+						try {
+							//Log.w("valore x:", "-"+data_x[_x]+"-");
+							if(data_x[_x].length()>0) val = (double)Float.parseFloat(data_x[_x]);
+							else val = id;
+						} catch (NumberFormatException e) {
+							val = id;
+							e.printStackTrace();
 						}
-					break;
-					
+						if(_x+1 >= data_x.length)
+							_x = 0;
+						else
+							_x++;
+						break;
 					case 1: 	//pesco da y
-						val = Double.parseDouble(data_y[_y]);
-						if((x+1)/10 > p)
-						{
-							if(_y+1 >= data_y.length)
-								_y = 0;
-							else
-								_y++;
+						try {
+							if(data_y[_y].length()>0) val = (double)Float.parseFloat(data_y[_y]);
+							else val = id;
+						} catch (NumberFormatException e) {
+							val = id;
+							e.printStackTrace();
 						}
-					break;
+						if(_y+1 >= data_y.length)
+							_y = 0;
+						else
+							_y++;
+						
+						break;
 					
 					case 2:		//pesco da z
-						val = Double.parseDouble(data_z[_z]);
-						if((x+1)/10 > p)
-						{
-							if(_z+1 >= data_z.length)
-								_z = 0;
-							else
-								_z++;
+						try {
+							if(data_z[_z].length()>0) val = (double)Float.parseFloat(data_z[_z]);
+							else val = id;
+						} catch (NumberFormatException e) {
+							val = id;
+							e.printStackTrace();
 						}
+						if(_z+1 >= data_z.length)
+							_z = 0;
+						else
+							_z++;
 					break;
 					
 					case 3:
