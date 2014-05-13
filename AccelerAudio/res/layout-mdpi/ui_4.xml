@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/UI4_BT_export"
+        android:layout_width="80dp"
+        android:layout_height="75dp"
+        android:layout_below="@+id/UI4_BT_pause"
+        android:layout_centerHorizontal="true"
+        android:text="Esporta" />
+
+    <Button
+        android:id="@+id/UI4_BT_stop"
+        android:layout_width="80dp"
+        android:layout_height="75dp"
+        android:layout_above="@+id/UI4_BT_export"
+        android:layout_toLeftOf="@+id/UI4_BT_play"
+        android:text="Stop" />
+
+    <Button
+        android:id="@+id/UI4_BT_pause"
+        android:layout_width="80dp"
+        android:layout_height="75dp"
+        android:layout_alignRight="@+id/UI4_SB_musicProgress"
+        android:layout_alignTop="@+id/UI4_BT_play"
+        android:text="Pause"  />
+
+    <Button
+        android:id="@+id/UI4_BT_play"
+        android:layout_width="150dp"
+        android:layout_height="75dp"
+        android:layout_below="@+id/UI4_IV_thumbnail"
+        android:layout_marginTop="100dp"
+        android:layout_toLeftOf="@+id/UI4_BT_pause"
+        android:text="Play" />
+
+    <TextView
+        android:id="@+id/UI4_TV_sessionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="74dp"
+        android:layout_toLeftOf="@+id/UI4_BT_export"
+        android:text="Nome Sessione"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <SeekBar
+        android:id="@+id/UI4_SB_musicProgress"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/UI4_IV_thumbnail"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+         />
+
+    <ImageView
+        android:id="@+id/UI4_IV_thumbnail"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/UI4_TV_sessionName"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@+id/UI4_TV_initialTimer"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/UI4_TV_initialTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI4_SB_musicProgress"
+        android:layout_below="@+id/UI4_IV_thumbnail"
+        android:text="00:00"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/UI4_TV_finalTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/UI4_SB_musicProgress"
+        android:layout_below="@+id/UI4_IV_thumbnail"
+        android:text="01:25"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</RelativeLayout>
