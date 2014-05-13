@@ -64,16 +64,16 @@ public class RecordActivity extends Activity {
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
-		nameSession = (EditText) findViewById(R.id.UI3editText1);
-		rec_sample = (TextView) findViewById(R.id.UI3textView3);
+		nameSession = (EditText) findViewById(R.id.UI3_ET_SessionName);
+		rec_sample = (TextView) findViewById(R.id.UI3_TV_RecordedSamples);
 		time_remaining = (TextView) findViewById(R.id.UI3_timeRemaining);
-    	startSession = (Button) findViewById(R.id.UI3button1);
-    	stopSession = (Button) findViewById(R.id.UI3button2);
-    	pauseSession = (Button) findViewById(R.id.UI3button3);
-    	saveSession = (Button) findViewById(R.id.UI3_save);
-    	progressBarX = (ProgressBar) findViewById(R.id.UI3verticalBarX);
-    	progressBarY = (ProgressBar) findViewById(R.id.UI3verticalBarY);
-    	progressBarZ = (ProgressBar) findViewById(R.id.UI3verticalBarZ);
+    	startSession = (Button) findViewById(R.id.UI3_BT_record);
+    	stopSession = (Button) findViewById(R.id.UI3_BT_stop);
+    	pauseSession = (Button) findViewById(R.id.UI3_BT_pause);
+    	saveSession = (Button) findViewById(R.id.UI3_BT_save);
+    	progressBarX = (ProgressBar) findViewById(R.id.UI3_VB_X);
+    	progressBarY = (ProgressBar) findViewById(R.id.UI3_VB_Y);
+    	progressBarZ = (ProgressBar) findViewById(R.id.UI3_VB_Z);
     	radioGroup = (RadioGroup) findViewById(R.id.UI3_orientation);
     	//setProgressBarMax((int)accelerometro.getMaximumRange());
     	setProgressBarMax(20);

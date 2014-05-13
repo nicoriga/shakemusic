@@ -54,16 +54,16 @@ public class SessionInfoActivity extends Activity {
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
     	
-    	listSession = (Button) findViewById(R.id.UI2_B_listsession);
+    	listSession = (Button) findViewById(R.id.UI2_BT_listsession);
     	playSession = (Button) findViewById(R.id.UI2_button_play);
-    	et_sessionName = (EditText)findViewById(R.id.UI2_editText_titolo_sessione);
-    	thumbnail = (ImageView) findViewById(R.id.UI2_imageView_thumbnail);
-    	creation_date = (TextView)findViewById(R.id.UI2_textView_data_creazione);
-    	date_change = (TextView)findViewById(R.id.UI2_textView_data_Modifica);
-    	axis_x = (CheckBox)findViewById(R.id.UI2_checkBox_x);
-    	axis_y = (CheckBox)findViewById(R.id.UI2_checkBox_y);
-    	axis_z = (CheckBox)findViewById(R.id.UI2_checkBox_z);
-    	spinner = (Spinner) findViewById(R.id.UI2_spinner_upsampling);
+    	et_sessionName = (EditText)findViewById(R.id.UI2_ET_sessionTitle);
+    	thumbnail = (ImageView) findViewById(R.id.UI2_IV_thumbnail);
+    	creation_date = (TextView)findViewById(R.id.UI2_TV_creationDate);
+    	date_change = (TextView)findViewById(R.id.UI2_TV_ModifiedDate);
+    	axis_x = (CheckBox)findViewById(R.id.UI2_CB_X);
+    	axis_y = (CheckBox)findViewById(R.id.UI2_CB_Y);
+    	axis_z = (CheckBox)findViewById(R.id.UI2_CB_Z);
+    	spinner = (Spinner) findViewById(R.id.UI2_SP_upsampling);
     	
     	/**** POPOLA LA LISTA DELLO SPINNER ****/
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);

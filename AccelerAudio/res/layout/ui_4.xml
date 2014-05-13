@@ -10,7 +10,7 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/UI4textView3"
+            android:id="@+id/UI4_TV_sessionName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -25,19 +25,19 @@
         android:layout_height="wrap_content" >
 
         <Button
-            android:id="@+id/UI4button3"
+            android:id="@+id/UI4_BT_pause"
             android:layout_width="80dp"
             android:layout_height="50dp"
             android:text="Pause" />
 
         <Button
-            android:id="@+id/UI4button2"
+            android:id="@+id/UI4_BT_play"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="Play" />
 
         <Button
-            android:id="@+id/UI4button1"
+            android:id="@+id/UI4_BT_stop"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:text="Stop" />
@@ -50,14 +50,14 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/UI4textView2"
+            android:id="@+id/UI4_TV_finalTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="01:25"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/UI4textView1"
+            android:id="@+id/UI4_TV_initialTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="200dp"
@@ -67,20 +67,20 @@
     </TableRow>
 
     <SeekBar
-        android:id="@+id/UI4seekBar1"
+        android:id="@+id/UI4_SB_musicProgress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/UI4ButtonEsporta"
+        android:id="@+id/UI4_BT_export"
         android:layout_width="80dp"
         android:layout_height="50dp"
         android:text="Esporta" />
 
     <ImageView
-        android:id="@+id/UI4imageView1"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:id="@+id/UI4_IV_thumbnail"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:src="@drawable/ic_launcher" />
 
 </LinearLayout>

@@ -10,7 +10,7 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/UI2_B_listsession"
+            android:id="@+id/UI2_BT_listsession"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="Lista Sessioni" />
@@ -24,7 +24,7 @@
         android:layout_marginTop="40dp" >
 
         <TextView
-            android:id="@+id/UI2_textView_titolo_sessione"
+            android:id="@+id/UI2_TV_sessionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
@@ -32,7 +32,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <EditText
-            android:id="@+id/UI2_editText_titolo_sessione"
+            android:id="@+id/UI2_ET_sessionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
@@ -40,13 +40,13 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/UI2_tableRow2"
+        android:id="@+id/UI2_TR1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" 
         android:layout_marginTop="40dp">
 
         <TextView
-            android:id="@+id/UI2_textView_assi"
+            android:id="@+id/UI2_TV_axes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
@@ -55,27 +55,27 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/UI2_tableRow3"
+        android:id="@+id/UI2_TR3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" >
 
         <CheckBox
-            android:id="@+id/UI2_checkBox_x"
+            android:id="@+id/UI2_CB_X"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:text="X" />
 
         <CheckBox
-            android:id="@+id/UI2_checkBox_y"
+            android:id="@+id/UI2_CB_Y"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:text="Y" />
 
         <CheckBox
-            android:id="@+id/UI2_checkBox_z"
+            android:id="@+id/UI2_CB_Z"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
@@ -83,13 +83,13 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/UI2_tableRow4"
+        android:id="@+id/UI2_TR4"
         android:layout_width="500dp"
         android:layout_height="wrap_content" 
         android:layout_marginTop="40dp">
 
         <TextView
-            android:id="@+id/UI2_textView_upsampling"
+            android:id="@+id/UI2_TV_upsampling"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
@@ -97,14 +97,14 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
-            android:id="@+id/UI2_spinner_upsampling"
+            android:id="@+id/UI2_SP_upsampling"
             android:layout_width="300dp"
             android:layout_marginLeft="30dp"
             android:layout_height="wrap_content" />
     </TableRow>
 
     <TableRow
-        android:id="@+id/UI2_tableRow5"
+        android:id="@+id/UI2_TR5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
@@ -112,7 +112,7 @@
         android:layout_marginTop="40dp">
 
         <ImageView
-            android:id="@+id/UI2_imageView_thumbnail"
+            android:id="@+id/UI2_IV_thumbnail"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="right"
@@ -124,7 +124,7 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/UI2_textView_data_creazione"
+                android:id="@+id/UI2_TV_creationDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -133,7 +133,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
-                android:id="@+id/UI2_textView_data_Modifica"
+                android:id="@+id/UI2_TV_ModifiedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
