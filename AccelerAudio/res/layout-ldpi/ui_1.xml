@@ -11,7 +11,7 @@
 	    android:orientation="horizontal" >
 	
 	    <Button
-	        android:id="@+id/UI1_BT_newSession"
+	        android:id="@+id/UI1button1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="Nuovo" />
@@ -23,7 +23,7 @@
 	        android:text="Unisci" />
 	
 	    <Button
-	        android:id="@+id/UI1_BT_preferences"
+	        android:id="@+id/UI1button3"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="Preferenze" />
@@ -31,7 +31,7 @@
 	</LinearLayout>
 
     <ListView
-        android:id="@+id/UI1_LV_listSession"
+        android:id="@+id/UI1listSession"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
