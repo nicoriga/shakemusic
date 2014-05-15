@@ -33,21 +33,21 @@
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
         
         <CheckBox
-	        android:id="@+id/UI5checkBox1"
+	        android:id="@+id/UI5_CB_X"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
 	        android:text="X" />
         
         <CheckBox
-	        android:id="@+id/UI5checkBox2"
+	        android:id="@+id/UI5_CB_Y"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
 	        android:text="Y" />
         
         <CheckBox
-	        android:id="@+id/UI5checkBox3"
+	        android:id="@+id/UI5_CB_Z"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
@@ -73,11 +73,62 @@
 		        android:text="Durata Massima"
 		        android:textAppearance="?android:attr/textAppearanceMedium" />
 	        
-	        <TimePicker
-	            android:id="@+id/UI5timePicker1"
-	            android:layout_width="wrap_content"
+	        <LinearLayout
+	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
-	            android:layout_marginTop="10dp"/>
+	            android:orientation="horizontal" 
+	            android:gravity="center"
+	            android:layout_marginTop="10dp">
+        
+	            <Button
+			        android:id="@+id/UI5_BT_minuteMinus"
+			        android:layout_width="60dp"
+			        android:layout_height="40dp"
+			        android:text="-" />
+	            
+	            <EditText
+	                android:id="@+id/UI5_ET_minute"
+	                android:layout_width="wrap_content"
+	                android:layout_height="40dp"
+	                android:ems="5"
+	                android:inputType="number"
+	                android:text="1"/>
+
+	            <Button
+			        android:id="@+id/UI5_BT_minutePlus"
+			        android:layout_width="60dp"
+			        android:layout_height="40dp"
+			        android:text="+" />          
+	            
+	        </LinearLayout>
+		        
+			<LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" 
+	            android:gravity="center">
+	            
+			    <Button
+			        android:id="@+id/UI5_BT_secondMinus"
+			        android:layout_width="60dp"
+			        android:layout_height="40dp"
+			        android:text="-" />
+			    
+			    <EditText
+			        android:id="@+id/UI5_ET_second"
+			        android:layout_width="wrap_content"
+			        android:layout_height="40dp"
+			        android:inputType="number" 
+			        android:ems="5"
+			        android:text="0"/>
+			    
+			    <Button
+			        android:id="@+id/UI5_BT_secondPlus"
+			        android:layout_width="60dp"
+			        android:layout_height="40dp"
+			        android:text="+" />
+	            
+			</LinearLayout>	    
 	        
 	    </LinearLayout>    
         
@@ -90,7 +141,7 @@
         android:weightSum="1.0" 
        	android:layout_marginLeft="10dp"
        	android:layout_marginRight="10dp"
-       	android:layout_marginTop="10dp">
+       	android:layout_marginTop="20dp">
         
    	     <LinearLayout
             android:layout_width="wrap_content"
@@ -106,7 +157,7 @@
 		        android:textAppearance="?android:attr/textAppearanceMedium" />
             
             <Spinner
-		        android:id="@+id/UI5spinner1"
+		        android:id="@+id/UI5_SP_frequency"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content" />
             
@@ -126,7 +177,7 @@
 		        android:textAppearance="?android:attr/textAppearanceMedium" />
 		    
 		    <Spinner
-		        android:id="@+id/UI5spinner2"
+		        android:id="@+id/UI5_SP_upsampling"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content" /> 
 		
