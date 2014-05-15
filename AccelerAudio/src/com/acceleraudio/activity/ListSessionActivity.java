@@ -48,9 +48,9 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 ///////////////////////////////////////////////////////
     	
     	try {
-			newSession = (Button)findViewById(R.id.UI1_BT_newSession);
-			preferences = (Button)findViewById(R.id.UI1_BT_preferences);
-			list = (ListView)findViewById(R.id.UI1_LV_listSession);
+			newSession = (Button)findViewById(R.id.UI1button1);
+			preferences = (Button)findViewById(R.id.UI1button2);
+			list = (ListView)findViewById(R.id.UI1listSession);
 		} catch (Exception e) {
 			Toast.makeText(this, "Errore Caricamento Interfaccia", Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
@@ -141,7 +141,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) 
 	{
-		if (v.getId()==R.id.UI1_LV_listSession) 
+		if (v.getId()==R.id.UI1listSession) 
 		{
 			context = v.getContext();
 			menu.setHeaderTitle("Opzioni");

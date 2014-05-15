@@ -66,8 +66,8 @@ public class Util{
     public static int sensorRateByString(String n)
     {
     	if(n.equalsIgnoreCase("lento")) return SensorManager.SENSOR_DELAY_NORMAL;
-    	if(n.equalsIgnoreCase("normale")) return SensorManager.SENSOR_DELAY_GAME;
-    	if(n.equalsIgnoreCase("veloce")) return SensorManager.SENSOR_DELAY_FASTEST;
+    	if(n.equalsIgnoreCase("normale")) return SensorManager.SENSOR_DELAY_UI;
+    	if(n.equalsIgnoreCase("veloce")) return SensorManager.SENSOR_DELAY_GAME;
     	return SensorManager.SENSOR_DELAY_NORMAL;
     }
     
@@ -75,8 +75,8 @@ public class Util{
     public static String sensorRateName(int r)
     {
     	if(r == SensorManager.SENSOR_DELAY_NORMAL) return "Lento";
-    	if(r == SensorManager.SENSOR_DELAY_GAME) return "Normale";
-    	if(r == SensorManager.SENSOR_DELAY_FASTEST) return "Veloce";
+    	if(r == SensorManager.SENSOR_DELAY_UI) return "Normale";
+    	if(r == SensorManager.SENSOR_DELAY_GAME) return "Veloce";
     	
     	return "Normale";
     }

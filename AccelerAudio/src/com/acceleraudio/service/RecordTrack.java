@@ -22,10 +22,11 @@ public class RecordTrack extends IntentService{
 	public static final String AXIS_Y_DATA = "recordtrack.axis_y_data";
 	public static final String AXIS_Z_DATA = "recordtrack.axis_z_data";
 	public static final String TIME_REMAINING = "recordtrack.timeRemaining";
+	public static final String NOISE = "recordtrack.noise";
 	private boolean initialized, isRecording;
 	private SensorManager sensorManager;
 	private Sensor accelerometer;
-	private final float rumore = 1.2f;
+	private float noise = 1.2f;
 	private float oldX, oldY, oldZ;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
@@ -49,8 +50,12 @@ public class RecordTrack extends IntentService{
 	    			float deltaY = Math.abs(oldY - y);
 	    			float deltaZ = Math.abs(oldZ - z);
 	    			
-	    			if (deltaX < rumore)
+	    			if (deltaX < noise)
+	    			{
 	    				deltaX = (float) 0.0;
+	    				RecordActivity.x = (int) deltaX;
+	    				RecordActivity.updateSample();
+	    			}
 	    			else
 	    			{
 	    				synchronized (this) {
@@ -61,8 +66,12 @@ public class RecordTrack extends IntentService{
 						}
 	    			}
 	    			
-	    			if (deltaY < rumore)
+	    			if (deltaY < noise)
+	    			{
 	    				deltaY = (float) 0.0;
+	    				RecordActivity.y = (int) deltaY;
+	    				RecordActivity.updateSample();
+	    			}
 	    			else
 	    			{
 	    				synchronized (this) {
@@ -73,8 +82,12 @@ public class RecordTrack extends IntentService{
 						}
 	    			}
 	    			
-	    			if (deltaZ < rumore)
+	    			if (deltaZ < noise)
+	    			{
 	    				deltaZ = (float) 0.0;
+	    				RecordActivity.z = (int) deltaZ;
+	    				RecordActivity.updateSample();
+	    			}
 	    			else
 	    			{
 	    				synchronized (this) {
@@ -108,11 +121,11 @@ public class RecordTrack extends IntentService{
     protected void onHandleIntent(Intent intent) {
     	initialized = false;
     	isRecording = true;
-    	intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL);
+    	noise = intent.getFloatExtra(NOISE, 1.0f);
    	  
     	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    	sensorManager.registerListener(mySensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    	sensorManager.registerListener(mySensorEventListener, accelerometer, intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL));
     	
     	long endTime = System.currentTimeMillis() + RecordActivity.remaining_time;
     	while(isRecording && System.currentTimeMillis() < endTime)

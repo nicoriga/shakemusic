@@ -121,7 +121,7 @@
         android:layout_marginRight="10dp" >        
 
 	    <ImageView
-	        android:id="@+id/UI4_imageView_thumbnail"
+	        android:id="@+id/UI4_IV_thumbnail"
 	        android:layout_width="150dp"
 	        android:layout_height="150dp"
 	        android:src="@drawable/ic_launcher" />
