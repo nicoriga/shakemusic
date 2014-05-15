@@ -136,8 +136,7 @@ public class RecordActivity extends Activity {
 			}
 			
 			time_remaining.setText("" + remaining_time / 1000);
-			int orientationID = radioGroup.getCheckedRadioButtonId();
-			radioOrientationButton = (RadioButton) findViewById(orientationID);
+			
 		} catch (RuntimeException e) {
 			Toast.makeText(this, "Errore caricamento interfaccia", Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
@@ -163,9 +162,15 @@ public class RecordActivity extends Activity {
 				
 				//TODO: salvare orientamento schermo per ripristinarlo 
 				if(radioOrientationButton.getText().toString().equalsIgnoreCase("portrait"))
+				{
 					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+					orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+				}
 				else
+				{
 					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+				}
 			}
 		});
 
@@ -277,7 +282,7 @@ public class RecordActivity extends Activity {
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
     	savedInstanceState.putLong(TIME_REMAINING, remaining_time);
-    	savedInstanceState.putInt(ORIENTATION, getResources().getConfiguration().orientation);
+    	savedInstanceState.putInt(ORIENTATION, orientation);
     	super.onSaveInstanceState(savedInstanceState);
     }
         
