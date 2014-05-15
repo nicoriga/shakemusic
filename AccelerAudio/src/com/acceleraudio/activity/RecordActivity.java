@@ -33,9 +33,11 @@ public class RecordActivity extends Activity {
 	
 	public static String TIME_REMAINING = "recordActivity.time_remaining";
 	public static String ORIENTATION = "recordActivity.orientation";
+	public static String PAUSE = "recordActivity.pause";
+	public static String STOP = "recordActivity.stop";
 	
 	private boolean insertComplete = false;
-	private static boolean initialized;
+	public static boolean initialized;
 	public static Button startSession, stopSession, pauseSession, saveSession;
 	protected static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
@@ -48,7 +50,7 @@ public class RecordActivity extends Activity {
 	public Intent intentRecord;
 	public static long sessionId, remaining_time;
 	private boolean axis_x, axis_y, axis_z;
-	public static boolean pause = false;
+	public static boolean pause, stop;
 	private int upsampling, sample_rate, orientation;
 	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
@@ -110,7 +112,24 @@ public class RecordActivity extends Activity {
 			{
 				remaining_time = savedInstanceState.getLong(TIME_REMAINING);
 				orientation = savedInstanceState.getInt(ORIENTATION);
+				pause = savedInstanceState.getBoolean(PAUSE);
+				stop = savedInstanceState.getBoolean(STOP);
 				setRequestedOrientation(orientation);
+				
+				if(remaining_time == 0 || stop)
+				{
+					startSession.setEnabled(false);
+					pauseSession.setEnabled(false);
+					stopSession.setEnabled(false);
+					saveSession.setEnabled(true);
+				}
+				else
+				{
+					startSession.setEnabled(true);
+					pauseSession.setEnabled(false);
+					stopSession.setEnabled(true);
+					saveSession.setEnabled(false);
+				}
 			}
 			else
 			{	
@@ -133,6 +152,8 @@ public class RecordActivity extends Activity {
 				x = 0;
 				y = 0;
 				z = 0;
+				pause = false;
+				stop = false;
 			}
 			
 			time_remaining.setText("" + remaining_time / 1000);
@@ -160,7 +181,6 @@ public class RecordActivity extends Activity {
 				int orientationID = radioGroup.getCheckedRadioButtonId();
 				radioOrientationButton = (RadioButton) findViewById(orientationID);
 				
-				//TODO: salvare orientamento schermo per ripristinarlo 
 				if(radioOrientationButton.getText().toString().equalsIgnoreCase("portrait"))
 				{
 					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -199,10 +219,12 @@ public class RecordActivity extends Activity {
 							pauseSession.setEnabled(false);
 							stopSession.setEnabled(false);
 							saveSession.setEnabled(true);
+							remaining_time = 0;
 						}
 						try{
 							resetProgressBar();
 							stopService(intentRecord);
+							stop = true;
 						}
 						catch(NullPointerException ex)
 						{
@@ -222,7 +244,7 @@ public class RecordActivity extends Activity {
 				startSession.setEnabled(true);
 				pauseSession.setEnabled(false);
 				stopService(intentRecord);
-				countDownTimer.cancel();
+				if(countDownTimer != null) countDownTimer.cancel();
 				resetProgressBar();
 			}
 		});
@@ -232,13 +254,14 @@ public class RecordActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				pause = false;
+				stop = true;
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(false);
 				stopSession.setEnabled(false);
 				saveSession.setEnabled(true);
 				
 				stopService(intentRecord);
-				countDownTimer.cancel();
+				if(countDownTimer != null) countDownTimer.cancel();
 				resetProgressBar();
 			}
 		});
@@ -283,6 +306,8 @@ public class RecordActivity extends Activity {
     {
     	savedInstanceState.putLong(TIME_REMAINING, remaining_time);
     	savedInstanceState.putInt(ORIENTATION, orientation);
+    	savedInstanceState.putBoolean(PAUSE, pause);
+    	savedInstanceState.putBoolean(STOP, stop);
     	super.onSaveInstanceState(savedInstanceState);
     }
         
