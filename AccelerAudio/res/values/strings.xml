@@ -1,6 +1,7 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">AccelerAudio</string>
+    <string name="cancel">Cancel</string>
 	<string-array name="upsampling_array">
         <item>44100</item>
         <item>48000</item>
@@ -10,5 +11,5 @@
 		<item >Normale</item>
 		<item >Veloce</item>
 	</string-array>
-    
+ 	
 </resources>

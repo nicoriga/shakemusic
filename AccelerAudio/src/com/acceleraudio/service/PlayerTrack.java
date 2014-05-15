@@ -29,7 +29,9 @@ public class PlayerTrack extends IntentService{
     protected void onHandleIntent(Intent intent) {
     	sampleList = intent.getIntegerArrayListExtra(PlayerActivity.ACC_DATA).toArray();
     	sample = Util.copyArrayInt(sampleList);
-    	for(int i = 0; i<sample.length; i++) Log.w("sample :", ""+sample[i]);
+    	// TODO stampa valori per verifica
+    	//for(int i = 0; i<sample.length; i++) Log.w("sample :", ""+sample[i]);
+    	Log.w("PlayerTrack", "sample: " +sample.length);
     	x = intent.getIntExtra(PlayerActivity.MUSIC_CURSOR, 0);
     	sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 44100);
     	isRunning = true;

@@ -6,38 +6,22 @@
     android:orientation="vertical"
     tools:context="com.acceleraudio.activity.PreferencesActivity" >
 
-    <CheckBox
-        android:id="@+id/UI5checkBox1"
+    <Spinner
+        android:id="@+id/UI5_SP_frequency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5textView2"
-        android:layout_below="@+id/UI5textView2"
-        android:text="X" />
+        android:layout_below="@+id/UI5_TV_frequency"
+        android:layout_toRightOf="@+id/UI5_CB_Z" />
 
     <Spinner
-        android:id="@+id/UI5spinner1"
+        android:id="@+id/UI5_SP_upsampling"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5textView3"
-        android:layout_below="@+id/UI5textView3" />
-
-    <TimePicker
-        android:id="@+id/UI5timePicker1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5textView5"
-        android:layout_below="@+id/UI5textView5"
-        android:layout_marginTop="32dp" />
-
-    <Spinner
-        android:id="@+id/UI5spinner2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5textView4"
-        android:layout_below="@+id/UI5textView4" />
+        android:layout_alignLeft="@+id/UI5_SP_frequency"
+        android:layout_below="@+id/UI5_TV_upsampling" />
 
     <TextView
-        android:id="@+id/UI5textView1"
+        android:id="@+id/UI5_TV_recordDefaultOption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -47,59 +31,118 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/UI5textView2"
+        android:id="@+id/UI5_TV_axes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5textView1"
-        android:layout_below="@+id/UI5textView1"
+        android:layout_alignLeft="@+id/UI5_TV_recordDefaultOption"
+        android:layout_below="@+id/UI5_TV_recordDefaultOption"
         android:text="Assi:"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <CheckBox
-        android:id="@+id/UI5checkBox2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/UI5textView2"
-        android:layout_marginLeft="23dp"
-        android:layout_toRightOf="@+id/UI5checkBox1"
-        android:text="Y" />
-
-    <CheckBox
-        android:id="@+id/UI5checkBox3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI5checkBox2"
-        android:layout_alignBottom="@+id/UI5checkBox2"
-        android:layout_toRightOf="@+id/UI5textView5"
-        android:text="Z" />
-
     <TextView
-        android:id="@+id/UI5textView5"
+        android:id="@+id/UI5_TV_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/UI5checkBox2"
-        android:layout_below="@+id/UI5checkBox1"
-        android:layout_marginTop="21dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/UI5_SP_frequency"
         android:text="Durata Massima"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/UI5textView3"
+    <CheckBox
+        android:id="@+id/UI5_CB_X"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI5checkBox3"
-        android:layout_alignBottom="@+id/UI5checkBox3"
-        android:layout_toRightOf="@+id/UI5timePicker1"
+        android:layout_alignRight="@+id/UI5_TV_axes"
+        android:layout_below="@+id/UI5_TV_axes"
+        android:text="X" />
+
+    <CheckBox
+        android:id="@+id/UI5_CB_Y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI5_CB_X"
+        android:layout_alignBottom="@+id/UI5_CB_X"
+        android:layout_toRightOf="@+id/UI5_CB_X"
+        android:text="Y" />
+
+    <CheckBox
+        android:id="@+id/UI5_CB_Z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI5_CB_Y"
+        android:layout_alignBottom="@+id/UI5_CB_Y"
+        android:layout_toRightOf="@+id/UI5_CB_Y"
+        android:text="Z" />
+
+    <TextView
+        android:id="@+id/UI5_TV_frequency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI5_CB_Z"
+        android:layout_alignLeft="@+id/UI5_SP_frequency"
+        android:layout_marginLeft="16dp"
         android:text="Freuenza di Campionamento"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/UI5textView4"
+        android:id="@+id/UI5_TV_upsampling"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/UI5spinner1"
-        android:layout_toRightOf="@+id/UI5timePicker1"
+        android:layout_alignLeft="@+id/UI5_TV_frequency"
+        android:layout_below="@+id/UI5_SP_frequency"
         android:text="Upsampling"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <Button
+        android:id="@+id/UI5_BT_minuteMinus"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/UI5_ET_minute"
+        android:layout_below="@+id/UI5_ET_minute"
+        android:text="-" />
+
+    <Button
+        android:id="@+id/UI5_BT_secondMinus"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI5_ET_second"
+        android:layout_below="@+id/UI5_ET_second"
+        android:text="-" />
+
+    <Button
+        android:id="@+id/UI5_BT_secondPlus"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI5_ET_minute"
+        android:layout_alignLeft="@+id/UI5_CB_Y"
+        android:text="+" />
+
+    <Button
+        android:id="@+id/UI5_BT_minutePlus"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI5_TV_duration"
+        android:layout_below="@+id/UI5_TV_duration"
+        android:text="+" />
+
+    <EditText
+        android:id="@+id/UI5_ET_minute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI5_BT_minutePlus"
+        android:layout_alignRight="@+id/UI5_BT_minutePlus"
+        android:layout_below="@+id/UI5_BT_minutePlus"
+        android:ems="10"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/UI5_ET_second"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI5_BT_minuteMinus"
+        android:layout_alignLeft="@+id/UI5_BT_secondPlus"
+        android:layout_alignRight="@+id/UI5_BT_secondPlus"
+        android:ems="10"
+        android:inputType="number" />
 
 </RelativeLayout>

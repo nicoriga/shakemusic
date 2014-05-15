@@ -13,9 +13,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 public class PreferencesActivity extends Activity {
@@ -32,6 +35,9 @@ public class PreferencesActivity extends Activity {
 	private SharedPreferences pref;
 	private Spinner spinner1, spinner2;
 	private CheckBox axis_x, axis_y, axis_z;
+	private Button minutesUp, minutesDown, secondsUp, secondsDown;
+	private EditText minutesET, secondsET;
+	private int minutes, seconds;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,28 +49,37 @@ public class PreferencesActivity extends Activity {
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
     	
-    	axis_x = (CheckBox) findViewById(R.id.UI5checkBox1);
-    	axis_y = (CheckBox) findViewById(R.id.UI5checkBox2);
-    	axis_z = (CheckBox) findViewById(R.id.UI5checkBox3);
-    	spinner1 = (Spinner) findViewById(R.id.UI5spinner1);
-    	spinner2 = (Spinner) findViewById(R.id.UI5spinner2);
-    	
-    	
-    	/*** Popolo lo spinner ***/
-    	ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.sample_rate, android.R.layout.simple_spinner_item);
-        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner1.setAdapter(adapter1); // applico adapter allo spinner
-        
-        /*** Popolo lo spinner ***/
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner2.setAdapter(adapter2); // applico adapter allo spinner
-        
-////////////////////////////////////////////////////////
-////////////////// carico le preferenze ////////////////
-///////////////////////////////////////////////////////
+    	try {
+			axis_x = (CheckBox) findViewById(R.id.UI5_CB_X);
+			axis_y = (CheckBox) findViewById(R.id.UI5_CB_Y);
+			axis_z = (CheckBox) findViewById(R.id.UI5_CB_Z);
+			spinner1 = (Spinner) findViewById(R.id.UI5_SP_frequency);
+			spinner2 = (Spinner) findViewById(R.id.UI5_SP_upsampling);
+			minutesUp = (Button) findViewById(R.id.UI5_BT_minutePlus);
+			minutesDown = (Button) findViewById(R.id.UI5_BT_minuteMinus);
+			secondsUp = (Button) findViewById(R.id.UI5_BT_secondPlus);
+			secondsDown = (Button) findViewById(R.id.UI5_BT_secondMinus);
+			minutesET = (EditText) findViewById(R.id.UI5_ET_minute);
+			secondsET = (EditText) findViewById(R.id.UI5_ET_second);
+			
+			/*** Popolo lo spinner ***/
+			ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.sample_rate, android.R.layout.simple_spinner_item);
+			adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spinner1.setAdapter(adapter1); // applico adapter allo spinner
+			
+			/*** Popolo lo spinner ***/
+			ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);
+			adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spinner2.setAdapter(adapter2); // applico adapter allo spinner
+			
+			//carico le preferenze
 
-        LoadPreferences();
+			LoadPreferences();
+		} catch (RuntimeException e) {
+			Toast.makeText(this, "Errore caricamento Interfaccia", Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+			finish();
+		}
 		
     }
     
@@ -75,13 +90,17 @@ public class PreferencesActivity extends Activity {
 /////////////////////////////////////////////////////////
 ///////////  aggiungo listener  /////////////////////////
 ////////////////////////////////////////////////////////
-
-// TODO: migliorare gestione aggiornamento preferenze predefinite
-
+			
 		final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				updateChange(buttonView);
+				if (axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked()) {
+					Editor prefEdit = pref.edit();
+					prefEdit.putBoolean(AXIS_X, axis_x.isChecked());
+					prefEdit.putBoolean(AXIS_Y, axis_y.isChecked());
+					prefEdit.putBoolean(AXIS_Z, axis_z.isChecked());
+					prefEdit.commit();
+				}
 			}
 		};
 		axis_x.setOnCheckedChangeListener(axis_change);
@@ -91,17 +110,62 @@ public class PreferencesActivity extends Activity {
 		final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				updateChange(arg1);
+				Editor prefEdit = pref.edit();
+				prefEdit.putInt(SAMPLE_RATE, Util.sensorRateByString(spinner1.getSelectedItem().toString()));
+	    		prefEdit.putInt(UPSAMPLING, Integer.parseInt(spinner2.getSelectedItem().toString()));
+	    		prefEdit.commit();
 			}
 		
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO: Auto-generated method stub
-				
 			}
 		};
 		spinner1.setOnItemSelectedListener(spinner_change);
 		spinner2.setOnItemSelectedListener(spinner_change);
+		
+		/**** incrementa i minuti ****/
+		minutesUp.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				if (minutes < 60) {
+					minutes++;
+					minutesET.setText("" + minutes);
+					updateMinutesSeconds(view);
+				}
+			}
+		});
+		
+		/**** decrementa i minuti ****/
+		minutesDown.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				if (minutes > 1 || (minutes >0 && seconds >0)) {
+					minutes--;
+					minutesET.setText("" + minutes);
+					updateMinutesSeconds(view);
+				}
+			}
+		});
+		
+		/**** incrementa i secondi ****/
+		secondsUp.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				if (seconds < 60) {
+					seconds++;
+					secondsET.setText("" + seconds);
+					updateMinutesSeconds(view);
+				}
+			}
+		});
+		
+		/**** decrementa i secondi ****/
+		secondsDown.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				if (seconds > 1 || (seconds >0 && minutes >0)) {
+					seconds--;
+					secondsET.setText("" + seconds);
+					updateMinutesSeconds(view);
+				}
+			}
+		});
 	}
     
 /////////////////////////////////////////////////////////
@@ -109,20 +173,16 @@ public class PreferencesActivity extends Activity {
 ////////////////////////////////////////////////////////
     
     // aggiorna le impostazioni
-    private void updateChange(View v){
+    private void updateMinutesSeconds(View v){
     	if(v != null)
     	{
     		Editor prefEdit = pref.edit();
-    		prefEdit.putBoolean(AXIS_X, axis_x.isChecked());
-    		prefEdit.putBoolean(AXIS_Y, axis_y.isChecked());
-    		prefEdit.putBoolean(AXIS_Z, axis_z.isChecked());
-    		prefEdit.putInt(SAMPLE_RATE, Util.sensorRateByString(spinner1.getSelectedItem().toString()));
-    		prefEdit.putInt(UPSAMPLING, Integer.parseInt(spinner2.getSelectedItem().toString()));
-    		prefEdit.putInt(TIMER_MINUTES, 1);
-    		prefEdit.putInt(TIMER_SECONDS, 0);
+    		prefEdit.putInt(TIMER_MINUTES, Integer.parseInt(minutesET.getText().toString()));
+    		prefEdit.putInt(TIMER_SECONDS, Integer.parseInt(secondsET.getText().toString()));
     		prefEdit.commit();
     	}
     }
+    
     // carica le impostazioni dell'applicazione
     private void LoadPreferences()
     {
@@ -137,6 +197,17 @@ public class PreferencesActivity extends Activity {
     		prefEdit.putInt(TIMER_MINUTES, 1);
     		prefEdit.putInt(TIMER_SECONDS, 0);
     		prefEdit.putBoolean(FIRST_START, false);
+    		
+    		axis_x.setChecked(true); // asse x
+    		axis_y.setChecked(true); // asse y
+    		axis_z.setChecked(true); // asse z
+    		Util.SelectSpinnerItemByValue(spinner1, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
+    		Util.SelectSpinnerItemByValue(spinner2, "" + 48000);
+    		minutes = 1;
+    		seconds = 0;
+    		minutesET.setText("" + minutes);
+    		secondsET.setText("" + seconds);
+    		
     		prefEdit.commit();
     	}
     	else
@@ -146,6 +217,20 @@ public class PreferencesActivity extends Activity {
     		axis_z.setChecked(pref.getBoolean(AXIS_Z, true)); // asse z
     		Util.SelectSpinnerItemByValue(spinner1, Util.sensorRateName(pref.getInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL)));
     		Util.SelectSpinnerItemByValue(spinner2, "" + (pref.getInt(UPSAMPLING, 48000)));
+    		minutes = pref.getInt(TIMER_MINUTES, 1);
+    		seconds = pref.getInt(TIMER_SECONDS, 0);
+    		minutesET.setText("" + minutes);
+    		secondsET.setText("" + seconds);
     	}
+    }
+
+    @Override
+	public void onBackPressed() {
+	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
+		{
+				Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT).show();
+		}
+	    else
+	    	finish();
     }
 }

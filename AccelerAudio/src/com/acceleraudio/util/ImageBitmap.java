@@ -1,14 +1,18 @@
 package com.acceleraudio.util;
 
+import java.io.ByteArrayOutputStream;
+
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.util.Base64;
 import android.util.Log;
 
 public class ImageBitmap 
 {
 	
 	/*
-	 * Metodo per colorare una bitmap in modo standard
+	 * Metodo per colorare una bitmap
 	 * Bitmap bmp: la bitmap da colorare
 	 * data_x: valori dall'asse x
 	 * data_y: valori dall'asse y
@@ -28,6 +32,10 @@ public class ImageBitmap
 				switch ((p+r)%4) 
 				{
 					case 0:		//pesco da x	attenzione il primo valore 
+						if(_x+1 >= data_x.length)
+							_x = 0;
+						else
+							_x++;
 						try {
 							//Log.w("valore x:", "-"+data_x[_x]+"-");
 							if(data_x[_x].length()>0) val = (double)Float.parseFloat(data_x[_x]);
@@ -35,39 +43,34 @@ public class ImageBitmap
 						} catch (NumberFormatException e) {
 							val = id;
 							e.printStackTrace();
-						}
-						if(_x+1 >= data_x.length)
-							_x = 0;
-						else
-							_x++;
+						}	
 						break;
 					case 1: 	//pesco da y
+						if(_y+1 >= data_y.length)
+							_y = 0;
+						else
+							_y++;
 						try {
 							if(data_y[_y].length()>0) val = (double)Float.parseFloat(data_y[_y]);
 							else val = id;
 						} catch (NumberFormatException e) {
 							val = id;
 							e.printStackTrace();
-						}
-						if(_y+1 >= data_y.length)
-							_y = 0;
-						else
-							_y++;
-						
+						}										
 						break;
 					
 					case 2:		//pesco da z
+						if(_z+1 >= data_z.length)
+							_z = 0;
+						else
+							_z++;
 						try {
 							if(data_z[_z].length()>0) val = (double)Float.parseFloat(data_z[_z]);
 							else val = id;
 						} catch (NumberFormatException e) {
 							val = id;
 							e.printStackTrace();
-						}
-						if(_z+1 >= data_z.length)
-							_z = 0;
-						else
-							_z++;
+						}	
 					break;
 					
 					case 3:
@@ -87,6 +90,7 @@ public class ImageBitmap
 			_z = 1;
         }
 	}
+
 	
 	/*
 	 * Metodo per colorare una bitmap in modo standard
@@ -156,5 +160,19 @@ public class ImageBitmap
 			default: return Color.TRANSPARENT;
 		}
 		 
+	}
+	
+	public static Bitmap decodeImage(String image)
+	{
+		byte[] decodedImgByteArray = Base64.decode(image,Base64.DEFAULT);
+		return BitmapFactory.decodeByteArray( decodedImgByteArray, 0, decodedImgByteArray.length);	
+	}
+	
+	public static String encodeImage(Bitmap bmp)
+	{
+		ByteArrayOutputStream imgByteArray = new ByteArrayOutputStream();  
+		bmp.compress(Bitmap.CompressFormat.PNG, 100, imgByteArray);
+		byte[] b = imgByteArray.toByteArray();
+		return Base64.encodeToString(b, Base64.DEFAULT);
 	}
 }

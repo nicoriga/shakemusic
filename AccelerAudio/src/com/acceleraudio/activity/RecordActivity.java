@@ -4,16 +4,19 @@ import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.RecordTrack;
+import com.acceleraudio.util.ImageBitmap;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -45,6 +48,7 @@ public class RecordActivity extends Activity {
 	private int upsampling, sample_rate;
 	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
+	static final Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -264,18 +268,36 @@ public class RecordActivity extends Activity {
 			// apro la connessione al db
 	    	dbAdapter.open();
 
-	    	StringBuilder x_sb = new StringBuilder();
-	    	StringBuilder y_sb = new StringBuilder();
-	    	StringBuilder z_sb = new StringBuilder();
+	    	Log.w("save Session", "inzio..");
+	    	final StringBuilder x_sb = new StringBuilder();
+	    	final StringBuilder y_sb = new StringBuilder();
+	    	final StringBuilder z_sb = new StringBuilder();
 	    	for (float value : data_x) x_sb.append(" " + value);
 	    	for (float value : data_y) y_sb.append(" " + value);
 	    	for (float value : data_z) z_sb.append(" " + value);
-
+	    	Log.w("save Session", "...dati preparati");
+	    	Log.w("save Session", "creazione immagine...");
+	    	
+	    	Thread t = new Thread("Thumbnail_Creation"){
+				public void run() {
+					// setta la priorità massia del thread
+	                setPriority(Thread.MAX_PRIORITY);
+	                
+	                //costruzione immagine
+	    			ImageBitmap.color(bmp, x_sb.toString().split(" "), y_sb.toString().split(" "), z_sb.toString().split(" "), (int)sessionId);	
+				}
+			};
+			t.start();  
+			
+	    	Log.w("save Session", "...creata");
+			String encodedImage = ImageBitmap.encodeImage(bmp);
+			Log.w("save Session", "...codificata");
+			
 	    	// inserisco i dati della sessione nel database
 	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), R.drawable.ic_launcher, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), x_sb.length(), y_sb.length(), z_sb.length() );
+	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), encodedImage, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), x_sb.length(), y_sb.length(), z_sb.length() );
 	    	insertComplete = true;
-	    	
+	    	Log.w("save Session", "sessione inserita");
 			// chiudo la connessione al db
 			dbAdapter.close();
 		}

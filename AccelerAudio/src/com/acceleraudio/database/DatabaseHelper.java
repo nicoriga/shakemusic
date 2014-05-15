@@ -7,14 +7,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
          
 	private static final String DATABASE_NAME = "AccelerAudio.db";
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 1;
  
     // stringa creazione del database
     private static final String DATABASE_CREATE_T_SESSION = ""
         		+ "CREATE TABLE session ("
         		+ "_id integer primary key autoincrement, "
         		+ "name text not null, "
-        		+ "image int not null,"
+        		+ "image text not null,"
         		+ "axis_x int not null, "
         		+ "axis_y int not null, "
         		+ "axis_z int not null, "

@@ -53,30 +53,36 @@ public class RecordTrack extends IntentService{
 	    				deltaX = (float) 0.0;
 	    			else
 	    			{
-	    				RecordActivity.sample++;
-	    				RecordActivity.x = (int)deltaX;
-	    				RecordActivity.data_x.add(deltaX);
-	    				RecordActivity.updateSample();
+	    				synchronized (this) {
+							RecordActivity.sample++;
+							RecordActivity.x = (int) deltaX;
+							RecordActivity.data_x.add(deltaX);
+							RecordActivity.updateSample();
+						}
 	    			}
 	    			
 	    			if (deltaY < rumore)
 	    				deltaY = (float) 0.0;
 	    			else
 	    			{
-	    				RecordActivity.sample++;
-	    				RecordActivity.y = (int)deltaY;
-	    				RecordActivity.data_y.add(deltaY);
-	    				RecordActivity.updateSample();
+	    				synchronized (this) {
+							RecordActivity.sample++;
+							RecordActivity.y = (int) deltaY;
+							RecordActivity.data_y.add(deltaY);
+							RecordActivity.updateSample();
+						}
 	    			}
 	    			
 	    			if (deltaZ < rumore)
 	    				deltaZ = (float) 0.0;
 	    			else
 	    			{
-	    				RecordActivity.sample++;
-	    				RecordActivity.z = (int)deltaZ;
-	    				RecordActivity.data_z.add(deltaZ);
-	    				RecordActivity.updateSample();
+	    				synchronized (this) {
+							RecordActivity.sample++;
+							RecordActivity.z = (int) deltaZ;
+							RecordActivity.data_z.add(deltaZ);
+							RecordActivity.updateSample();
+						}
 	    			}
 	    			
 	    			oldX = x;

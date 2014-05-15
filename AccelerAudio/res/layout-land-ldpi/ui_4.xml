@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TableRow
+        android:id="@+id/UI4_tableRow1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/UI4_TV_sessionName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nome Sessione"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/UI4_tableRow2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:weightSum="1.0">
+		
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_weight=".5"
+            android:orientation="horizontal"
+            android:showDividers="none" >
+            
+	        <TextView
+	            android:id="@+id/UI4textView2"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="01:25"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	        
+	  	</LinearLayout>
+	
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_weight=".5"
+            android:orientation="horizontal"
+            android:showDividers="none" >
+	        
+	        <TextView
+	            android:id="@+id/UI4textView1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="00:00"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	        
+	  	</LinearLayout>
+	  	
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/UI4_tableRow3"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" >
+        
+		<SeekBar
+	        android:id="@+id/UI4seekBar1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"/>
+        
+
+    </TableRow>
+    
+    <TableRow
+        android:id="@+id/UI4_tableRow5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" >
+
+        <ImageView
+            android:id="@+id/UI4_imageView_thumbnail"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_launcher" />
+        
+         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:showDividers="none"
+            android:gravity="center">
+            
+            	<LinearLayout
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:orientation="horizontal"
+		            android:showDividers="none"
+		            android:gravity="center">
+        
+            	    <Button
+			            android:id="@+id/UI4_BT_play"
+			            android:layout_width="100dp"
+			            android:layout_height="wrap_content"
+			            android:text="Play" />
+            	    
+            	    <Button
+			            android:id="@+id/UI4_BT_stop"
+			            android:layout_width="100dp"
+			            android:layout_height="wrap_content"
+			            android:text="Stop" />
+
+				</LinearLayout>
+            
+            	<LinearLayout
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:orientation="horizontal"
+		            android:showDividers="none"
+		            android:gravity="center">         
+
+			        <Button
+			            android:id="@+id/UI4_BT_pause"
+			            android:layout_width="100dp"
+			            android:layout_height="wrap_content"
+			            android:text="Pause" />
+			
+			        <Button
+				        android:id="@+id/UI4ButtonEsporta"
+				        android:layout_width="100dp"
+				        android:layout_height="wrap_content"
+				        android:text="Esporta" />
+			        
+        		</LinearLayout>
+		</LinearLayout>		        
+			        
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/UI4_tableRow4"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" 
+        android:weightSum="1.0">
+		
+        
+		
+   	</TableRow>
+    
+    
+    
+    
+    	
+
+</LinearLayout>

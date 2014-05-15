@@ -4,11 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import com.acceleraudio.util.ImageBitmap;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
  
 public class DbAdapter {
 	@SuppressWarnings("unused")
@@ -39,28 +42,33 @@ public class DbAdapter {
 	public static final String T_SESSION_N_DATA_Z = "n_data_z";
 	
 	 
-	public DbAdapter(Context context) {
+	public DbAdapter(Context context) 
+	{
 		this.context = context;
 	}
  
-	public DbAdapter open() throws SQLException {
+	public DbAdapter open() throws SQLException 
+	{
 		dbHelper = new DatabaseHelper(context);
 		database = dbHelper.getWritableDatabase();
 		return this;
 	}
  
-	public void close() {
+	public void close() 
+	{
 		database.close();
 		dbHelper.close();
 	}
  
-	private String getDate() {
+	private String getDate() 
+	{
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
 	}
 	
-	private ContentValues createContentValuesSession(String name, int image, int axis_x, int axis_y, int axis_z, int upsampling, String creation_date, String date_change, String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) {
+	private ContentValues createContentValuesSession(String name, int image, int axis_x, int axis_y, int axis_z, int upsampling, String creation_date, String date_change, String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) 
+	{
 		ContentValues values = new ContentValues();
 		values.put( T_SESSION_NAME, name );
 	    values.put( T_SESSION_IMAGE, image );
@@ -80,7 +88,31 @@ public class DbAdapter {
 	    return values;
 	}
 	
-	private ContentValues createContentValuesSession(String name, int axis_x, int axis_y, int axis_z, int upsampling, String date_change) {
+	// creazione valori: con immagine sottoforma di stringa
+	private ContentValues createContentValuesSession(String name, String image, int axis_x, int axis_y, int axis_z, int upsampling, String creation_date, String date_change, String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) 
+	{
+		ContentValues values = new ContentValues();
+		values.put( T_SESSION_NAME, name );
+	    values.put( T_SESSION_IMAGE, image );
+	    values.put( T_SESSION_AXIS_X, axis_x );
+	    values.put( T_SESSION_AXIS_Y, axis_y );
+	    values.put( T_SESSION_AXIS_Z, axis_z );
+	    values.put( T_SESSION_UPSAMPLING, upsampling );
+	    values.put( T_SESSION_CREATION_DATE, creation_date );
+	    values.put( T_SESSION_DATE_CHANGE, date_change );
+	    values.put( T_SESSION_SENSOR_DATA_X, sensor_data_x );
+	    values.put( T_SESSION_SENSOR_DATA_Y, sensor_data_y );
+	    values.put( T_SESSION_SENSOR_DATA_Z, sensor_data_z );
+	    values.put( T_SESSION_N_DATA_X, n_data_x );
+	    values.put( T_SESSION_N_DATA_Y, n_data_y );
+	    values.put( T_SESSION_N_DATA_Z, n_data_z );
+     
+	    return values;
+	}
+	
+	// usata per l'aggiornamento delle impostazioni della sessione
+	private ContentValues createContentValuesSession(String name, int axis_x, int axis_y, int axis_z, int upsampling, String date_change) 
+	{
 		ContentValues values = new ContentValues();
 		values.put( T_SESSION_NAME, name );
 	    values.put( T_SESSION_AXIS_X, axis_x );
@@ -93,37 +125,108 @@ public class DbAdapter {
 	}
          
 	// inserisci nuova sessione
-	public long createSession(String name, int image, int axis_x, int axis_y, int axis_z, int upsampling,  String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) {
+	public long createSession(String name, int image, int axis_x, int axis_y, int axis_z, int upsampling,  String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) 
+	{
+		ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, getDate(), getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
+		return database.insertOrThrow(DATABASE_TABLE_SESSION, null, values);
+	}
+    
+	// TODO inserisci nuova sessione: versione con immagine sottoforma di stringa base64
+	public long createSession(String name, String image, int axis_x, int axis_y, int axis_z, int upsampling,  String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) 
+	{
 		ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, getDate(), getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
 		return database.insertOrThrow(DATABASE_TABLE_SESSION, null, values);
 	}
 		
 	// aggiorna record info sessione 
-	public boolean updateSession( long sessionID, String name, int axis_x, int axis_y, int axis_z, int upsampling) {
+	public boolean updateSession( long sessionID, String name, int axis_x, int axis_y, int axis_z, int upsampling) 
+	{
 		ContentValues updateValues = createContentValuesSession(name, axis_x, axis_y, axis_z, upsampling, getDate());
 		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
 	}
 	
+	// aggiorna record info sessione 
+	public boolean updateSessionImage( long sessionID, String image) 
+	{
+		ContentValues updateValues = new ContentValues();
+		updateValues.put( T_SESSION_IMAGE, image );
+		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
+	}
+	
 	// aggiorna record sessione
-	public boolean updateSession( long sessionID, String name, int image, int axis_x, int axis_y, int axis_z, int upsampling, String creation_date, String date_change, String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) {
+	public boolean updateSession( long sessionID, String name, int image, int axis_x, int axis_y, int axis_z, int upsampling, String creation_date, String date_change, String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) 
+	{
 		ContentValues updateValues = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, creation_date, date_change,  sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z);
 		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
 	}
                  
 	// elimina sessione    
-	public boolean deleteSession(long contactID) {
-		return database.delete(DATABASE_TABLE_SESSION, T_SESSION_SESSIONID + "=" + contactID, null) > 0;
+	public boolean deleteSession(int sessionID) 
+	{
+		return database.delete(DATABASE_TABLE_SESSION, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
 	}
 		
 	// preleva tutte le sessioni
-	public Cursor fetchAllSession() {
-		return database.query(DATABASE_TABLE_SESSION, new String[] { T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z}, null, null, null, null, null);
+	public Cursor fetchAllSession() 
+	{
+		return database.query(DATABASE_TABLE_SESSION, new String[] { T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z}, null, null, null, null, T_SESSION_NAME);
 	}
    
 	// preleva sessioni per ID
-	public Cursor fetchSessionById(int filter) {
-		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + filter, null, null, null, null, null);     
+	public Cursor fetchSessionById(int sessionID) 
+	{
+		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
 		return mCursor;
+	}
+	
+	// duplica sessioni per ID
+	public String[] duplicateSessionById(int sessionID) 
+	{
+		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
+		mCursor.moveToFirst();
+		if(mCursor.getCount()>0)
+		{
+			String name = mCursor.getString( mCursor.getColumnIndex(DbAdapter.T_SESSION_NAME));
+			String image = mCursor.getString( mCursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE));
+			int axis_x = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X));
+			int axis_y = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y));
+			int axis_z = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z));
+			int upsampling = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING));
+			String sensor_data_x = mCursor.getString( mCursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X));
+			String sensor_data_y = mCursor.getString( mCursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y));
+			String sensor_data_z = mCursor.getString( mCursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z));
+			int n_data_x = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_X));
+			int n_data_y = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Y));
+			int n_data_z = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Z));
+			mCursor.close();
+				
+			ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, getDate(), getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
+			long sessionId = database.insertOrThrow(DATABASE_TABLE_SESSION, null, values);
+			
+			Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+			//costruzione immagine
+			ImageBitmap.color(bmp, sensor_data_x.toString().split(" "), sensor_data_y.toString().split(" "), sensor_data_z.toString().split(" "), (int)sessionId);	
+			image = ImageBitmap.encodeImage(bmp);
+			updateSessionImage(sessionId, image);
+			String[] s = new String[4];
+			s[0] = "" + sessionId;
+			s[1] = name;
+			s[2] = getDate();
+			s[3] = image;
+			
+			return s;
+		}
+		else
+		{
+			
+			return null;
+		}	
+	}
+
+	public boolean renameSession(int sessionId, String name) {
+		ContentValues updateValues = new ContentValues();
+		updateValues.put( T_SESSION_NAME, name );
+		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionId, null) > 0;
 	}
   
 }
