@@ -35,7 +35,7 @@ public class SessionInfoActivity extends Activity {
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
     private Button listSession, playSession;
-    private static ImageView thumbnail;
+    public static ImageView thumbnail;
     private EditText et_sessionName;
     private TextView creation_date, date_change;
     private CheckBox axis_x, axis_y, axis_z;
@@ -66,6 +66,7 @@ public class SessionInfoActivity extends Activity {
 			playSession = (Button) findViewById(R.id.UI2_button_play);
 			et_sessionName = (EditText)findViewById(R.id.UI2_ET_sessionTitle);
 			thumbnail = (ImageView) findViewById(R.id.UI2_IV_thumbnail);
+			thumbnail.setImageResource(R.id.img);
 			creation_date = (TextView)findViewById(R.id.UI2_TV_creationDate);
 			date_change = (TextView)findViewById(R.id.UI2_TV_ModifiedDate);
 			axis_x = (CheckBox)findViewById(R.id.UI2_CB_X);

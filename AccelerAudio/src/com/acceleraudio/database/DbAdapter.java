@@ -145,7 +145,7 @@ public class DbAdapter {
 		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
 	}
 	
-	// aggiorna record info sessione 
+	// aggiorna immagine sessione 
 	public boolean updateSessionImage( long sessionID, String image) 
 	{
 		ContentValues updateValues = new ContentValues();

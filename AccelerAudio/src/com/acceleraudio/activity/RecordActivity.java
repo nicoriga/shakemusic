@@ -8,6 +8,7 @@ import com.acceleraudio.util.ImageBitmap;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -35,9 +36,10 @@ public class RecordActivity extends Activity {
 	public static String ORIENTATION = "recordActivity.orientation";
 	public static String PAUSE = "recordActivity.pause";
 	public static String STOP = "recordActivity.stop";
+	public static String INIZIALIZED = "recordActivity.inizialized";
 	
 	private boolean insertComplete = false;
-	public static boolean initialized;
+	private static boolean initialized;
 	public static Button startSession, stopSession, pauseSession, saveSession;
 	protected static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
@@ -55,6 +57,7 @@ public class RecordActivity extends Activity {
 	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
 	static final Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+	private Context context;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,7 @@ public class RecordActivity extends Activity {
 		
 		dbAdapter = new DbAdapter(this);
 		
+		context = this;
 		
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
@@ -110,10 +114,12 @@ public class RecordActivity extends Activity {
 			// Restore from the savedInstanceState
 			if (savedInstanceState != null)
 			{
+				resetProgressBar();
 				remaining_time = savedInstanceState.getLong(TIME_REMAINING);
 				orientation = savedInstanceState.getInt(ORIENTATION);
 				pause = savedInstanceState.getBoolean(PAUSE);
 				stop = savedInstanceState.getBoolean(STOP);
+				initialized = savedInstanceState.getBoolean(INIZIALIZED);
 				setRequestedOrientation(orientation);
 				
 				if(remaining_time == 0 || stop)
@@ -133,17 +139,22 @@ public class RecordActivity extends Activity {
 			}
 			else
 			{	
-				setRequestedOrientation(getResources().getConfiguration().orientation);
-				if(getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-				{
+				// TODO sistemare orientamento nel caso sia reverse
+//				int currOrient = getResources().getConfiguration().orientation;
+//				if(currOrient == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || currOrient == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
+//				{
+				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 					radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_portrait);
 					radioOrientationButton.setChecked(true);
-				}
-				if(getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-				{
-					radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_landscape);
-					radioOrientationButton.setChecked(true);
-				}
+//				}
+//				// il 2 sta per reverse landscape
+//				if(currOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || currOrient == 2)
+//				{
+//					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//					radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_landscape);
+//					radioOrientationButton.setChecked(true);
+//				}
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
 				data_z = new ArrayList<Float>();
@@ -274,6 +285,7 @@ public class RecordActivity extends Activity {
 				if(initialized)
 					if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
 					{
+						saveSession.setEnabled(false);
 						saveAccelerometerData();
 						// avvio la SessionInfoActivity
 						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
@@ -308,6 +320,7 @@ public class RecordActivity extends Activity {
     	savedInstanceState.putInt(ORIENTATION, orientation);
     	savedInstanceState.putBoolean(PAUSE, pause);
     	savedInstanceState.putBoolean(STOP, stop);
+    	savedInstanceState.putBoolean(INIZIALIZED, initialized);
     	super.onSaveInstanceState(savedInstanceState);
     }
         
@@ -320,9 +333,7 @@ public class RecordActivity extends Activity {
     	if(initialized){
 
 			try {
-				// apro la connessione al db
-				dbAdapter.open();
-
+				
 				Log.w("save Session", "inzio..");
 				final StringBuilder x_sb = new StringBuilder();
 				final StringBuilder y_sb = new StringBuilder();
@@ -339,21 +350,42 @@ public class RecordActivity extends Activity {
 				        setPriority(Thread.MAX_PRIORITY);
 				        
 				        //costruzione immagine
+				        Log.w("save Session", "...creata");
 						ImageBitmap.color(bmp, x_sb.toString().split(" "), y_sb.toString().split(" "), z_sb.toString().split(" "), (int)sessionId);	
+						String encodedImage = ImageBitmap.encodeImage(bmp);
+						Log.w("save Session", "...codificata");
+						
+						DbAdapter dba = new  DbAdapter(context);
+						dba.open();
+						dba.updateSessionImage(sessionId, encodedImage);
+						dba.close();
+						
+						runOnUiThread(new Runnable() {
+			                @Override
+			                public void run() {
+			                	try {
+									SessionInfoActivity.thumbnail.setImageBitmap(bmp);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+			                }
+			            });	
 					}
 				};
 				t.start();  
 				
-				Log.w("save Session", "...creata");
+				// inserisce un immagine vuota nel database mentre il thread elabora quella vera
 				String encodedImage = ImageBitmap.encodeImage(bmp);
-				Log.w("save Session", "...codificata");
-				
+
+				// apro la connessione al db
+				dbAdapter.open();
 				// inserisco i dati della sessione nel database
 				sessionId = dbAdapter.createSession( nameSession.getText().toString(), encodedImage, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), x_sb.length(), y_sb.length(), z_sb.length() );
 				insertComplete = true;
 				Log.w("save Session", "sessione inserita");
 				// chiudo la connessione al db
 				dbAdapter.close();
+				
 			} catch (SQLException e) {
 				Toast.makeText(this, "Errore salvataggio nel database", Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
