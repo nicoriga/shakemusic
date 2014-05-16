@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.RecordTrack;
 import com.acceleraudio.util.ImageBitmap;
+import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
@@ -108,7 +109,7 @@ public class RecordActivity extends Activity {
 			axis_y = pref.getBoolean(PreferencesActivity.AXIS_Y, true); // asse y
 			axis_z = pref.getBoolean(PreferencesActivity.AXIS_Z, true); // asse z
 			sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
-			upsampling = pref.getInt(PreferencesActivity.UPSAMPLING, 48000);
+			upsampling = pref.getInt(PreferencesActivity.UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)));
 			remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
 			
 			// Restore from the savedInstanceState
@@ -209,7 +210,6 @@ public class RecordActivity extends Activity {
 		startSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//TODO: impostazioni per accelerometro intentRecord.putExtra(...);
 				pause = false;
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(true);
@@ -285,6 +285,7 @@ public class RecordActivity extends Activity {
 				if(initialized)
 					if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
 					{
+						radioGroup.setEnabled(false);
 						saveSession.setEnabled(false);
 						saveAccelerometerData();
 						// avvio la SessionInfoActivity
@@ -302,6 +303,9 @@ public class RecordActivity extends Activity {
     @Override
     protected void onPause() {
     	super.onPause();
+    	// nel caso vada in background non deve chiudersi activity, mentre se ha salvato i dati
+    	// e passa nella infoActivity deve chiudersi in modo premendo back
+    	// si ritorna alla lista delle sessioni
     	if (insertComplete) finish();
     }
     

@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -66,7 +65,7 @@ public class SessionInfoActivity extends Activity {
 			playSession = (Button) findViewById(R.id.UI2_button_play);
 			et_sessionName = (EditText)findViewById(R.id.UI2_ET_sessionTitle);
 			thumbnail = (ImageView) findViewById(R.id.UI2_IV_thumbnail);
-			thumbnail.setImageResource(R.id.img);
+			thumbnail.setImageResource(R.drawable.ic_launcher);
 			creation_date = (TextView)findViewById(R.id.UI2_TV_creationDate);
 			date_change = (TextView)findViewById(R.id.UI2_TV_ModifiedDate);
 			axis_x = (CheckBox)findViewById(R.id.UI2_CB_X);
@@ -99,13 +98,11 @@ public class SessionInfoActivity extends Activity {
 			axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1")); // asse x
 			axis_y.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1")); // asse y
 			axis_z.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1")); // asse z
-			Util.SelectSpinnerItemByValue(spinner, cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
+			Util.SelectSpinnerItemByValue(spinner, Util.getUpsamplingName(Integer.parseInt(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)))));
 			
 			// chiudo connessioni
 			cursor.close();
 			dbAdapter.close();
-			
-			Log.w("SessionInfo", "image: " + image);
 			
 			t = new Thread("Thumbnail_Decoding"){
 					public void run() {
@@ -228,7 +225,7 @@ public class SessionInfoActivity extends Activity {
 				dbAdapter.open();
 				
 				// aggiorno i dati delle preferenze
-				dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt(spinner.getSelectedItem().toString()));
+				dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Util.getUpsamplingID(spinner.getSelectedItem().toString()));
 				
 				// chiudo la connessione al db
 				dbAdapter.close();

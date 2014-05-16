@@ -112,7 +112,7 @@ public class PreferencesActivity extends Activity {
 			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				Editor prefEdit = pref.edit();
 				prefEdit.putInt(SAMPLE_RATE, Util.sensorRateByString(spinner1.getSelectedItem().toString()));
-	    		prefEdit.putInt(UPSAMPLING, Integer.parseInt(spinner2.getSelectedItem().toString()));
+	    		prefEdit.putInt(UPSAMPLING, Util.getUpsamplingID(spinner2.getSelectedItem().toString()));
 	    		prefEdit.commit();
 			}
 		
@@ -193,7 +193,7 @@ public class PreferencesActivity extends Activity {
     		prefEdit.putBoolean(AXIS_Y, true);
     		prefEdit.putBoolean(AXIS_Z, true);
     		prefEdit.putInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
-    		prefEdit.putInt(UPSAMPLING, 48000);
+    		prefEdit.putInt(UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)));
     		prefEdit.putInt(TIMER_MINUTES, 1);
     		prefEdit.putInt(TIMER_SECONDS, 0);
     		prefEdit.putBoolean(FIRST_START, false);
@@ -202,7 +202,7 @@ public class PreferencesActivity extends Activity {
     		axis_y.setChecked(true); // asse y
     		axis_z.setChecked(true); // asse z
     		Util.SelectSpinnerItemByValue(spinner1, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
-    		Util.SelectSpinnerItemByValue(spinner2, "" + 48000);
+    		Util.SelectSpinnerItemByValue(spinner2, getString(R.string.note));
     		minutes = 1;
     		seconds = 0;
     		minutesET.setText("" + minutes);
@@ -216,7 +216,7 @@ public class PreferencesActivity extends Activity {
     		axis_y.setChecked(pref.getBoolean(AXIS_Y, true)); // asse y
     		axis_z.setChecked(pref.getBoolean(AXIS_Z, true)); // asse z
     		Util.SelectSpinnerItemByValue(spinner1, Util.sensorRateName(pref.getInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL)));
-    		Util.SelectSpinnerItemByValue(spinner2, "" + (pref.getInt(UPSAMPLING, 48000)));
+    		Util.SelectSpinnerItemByValue(spinner2, "" + Util.getUpsamplingName(pref.getInt(UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)))));
     		minutes = pref.getInt(TIMER_MINUTES, 1);
     		seconds = pref.getInt(TIMER_SECONDS, 0);
     		minutesET.setText("" + minutes);
@@ -228,7 +228,7 @@ public class PreferencesActivity extends Activity {
 	public void onBackPressed() {
 	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
 		{
-				Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.no_axis_error), Toast.LENGTH_SHORT).show();
 		}
 	    else
 	    	finish();

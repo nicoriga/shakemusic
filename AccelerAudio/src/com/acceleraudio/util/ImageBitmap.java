@@ -164,8 +164,14 @@ public class ImageBitmap
 	
 	public static Bitmap decodeImage(String image)
 	{
-		byte[] decodedImgByteArray = Base64.decode(image,Base64.DEFAULT);
-		return BitmapFactory.decodeByteArray( decodedImgByteArray, 0, decodedImgByteArray.length);	
+		try {
+			byte[] encodedImgByteArray = Base64.decode(image,Base64.DEFAULT);
+			return BitmapFactory.decodeByteArray( encodedImgByteArray, 0, encodedImgByteArray.length);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}	
 	}
 	
 	public static String encodeImage(Bitmap bmp)

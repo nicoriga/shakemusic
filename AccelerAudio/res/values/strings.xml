@@ -2,14 +2,17 @@
 
     <string name="app_name">AccelerAudio</string>
     <string name="cancel">Cancel</string>
+    <string name="note">Note</string>
+    <string name="lineare">Lineare</string>
+    <string name="no_axis_error">Selezionare almeno un asse</string>
 	<string-array name="upsampling_array">
-        <item>44100</item>
-        <item>48000</item>
+        <item>Note</item>
+        <item>Lineare</item>
     </string-array>
 	<string-array name="sample_rate">
 		<item >Lento</item>
 		<item >Normale</item>
 		<item >Veloce</item>
 	</string-array>
- 	
+	
 </resources>
