@@ -22,10 +22,11 @@ public class ImageBitmap
 	{
 		int _x = 1, _y = 1, _z = 1;
 		double val;
+		
 		//algoritmo di colorazione
 		for (int y = 0; y < bmp.getHeight(); y++) 			//selezione la riga
         {
-			for (int x = 0; x < bmp.getWidth(); x++) 		//seleziona la colonna e quindi il pixel
+			for (int x = 0; x < bmp.getWidth()-9; x++) 		//seleziona la colonna e quindi il pixel
 			{
 				int p = x/10;
 				int r = y/10;
@@ -82,8 +83,20 @@ public class ImageBitmap
 				}
 				
 				
-				int v = (int)(val*100);
-				bmp.setPixel(x, y, colorSelect(v%12));
+				int v = (int)(val*id);
+				//bmp.setPixel(x, y, colorSelect(v%12));
+				bmp.setPixel(x, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				
 			}
 			_x = 1;
 			_y = 1;
@@ -141,26 +154,27 @@ public class ImageBitmap
 		}
 	}
 	
-	private static int colorSelect(int val)
-	{
-		switch(val)
-		{
-			case 0: return Color.BLACK; 
-			case 1: return Color.BLUE;
-			case 2: return Color.CYAN;
-			case 3: return Color.DKGRAY;
-			case 4: return Color.GRAY;
-			case 5: return Color.GREEN;
-			case 6: return Color.LTGRAY;
-			case 7: return Color.MAGENTA;
-			case 8: return Color.RED;
-			case 9: return Color.WHITE;
-			case 10: return Color.YELLOW;
-			case 11: return Color.TRANSPARENT;
-			default: return Color.TRANSPARENT;
-		}
-		 
-	}
+//	private static int colorSelect(int val)
+//	{
+//		switch(val)
+//		{
+//			case 0: return Color.BLACK; 
+//			case 1: return Color.BLUE;
+//			case 2: return Color.CYAN;
+//			case 3: return Color.DKGRAY;
+//			case 4: return Color.GRAY;
+//			case 5: return Color.GREEN;
+//			case 6: return Color.LTGRAY;
+//			case 7: return Color.MAGENTA;
+//			case 8: return Color.RED;
+//			case 9: return Color.WHITE;
+//			case 10: return Color.YELLOW;
+//			case 11: return Color.TRANSPARENT;
+//			default: return Color.TRANSPARENT;
+//		}
+//		 
+//	}
+	
 	
 	public static Bitmap decodeImage(String image)
 	{

@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -51,6 +53,15 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			newSession = (Button)findViewById(R.id.UI1_BT_newSession);
 			preferences = (Button)findViewById(R.id.UI1_BT_preferences);
 			list = (ListView)findViewById(R.id.UI1_LV_listSession);
+			SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+			// verifica presenza accelerometro
+			if (accelerometer == null)
+			{
+				newSession.setEnabled(false);
+				Toast.makeText(this, "Errore: Accelerometro non presente", Toast.LENGTH_SHORT).show();
+			}
+			
 		} catch (Exception e) {
 			Toast.makeText(this, "Errore Caricamento Interfaccia", Toast.LENGTH_SHORT).show();
 			e.printStackTrace();

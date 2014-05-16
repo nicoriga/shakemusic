@@ -123,28 +123,40 @@ public class RecordTrack extends IntentService{
     	isRecording = true;
     	noise = intent.getFloatExtra(NOISE, 1.0f);
    	  
-    	sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-    	accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    	sensorManager.registerListener(mySensorEventListener, accelerometer, intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL));
-    	
-    	long endTime = System.currentTimeMillis() + RecordActivity.remaining_time;
-    	while(isRecording && System.currentTimeMillis() < endTime)
-        {
-    		synchronized (this) {
-    			try {
-                    wait(endTime - System.currentTimeMillis());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-			}      
-        }
     	try {
-			sensorManager.unregisterListener(mySensorEventListener);
-		} catch (NullPointerException ex) {
-			ex.printStackTrace();
+			sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+			// verifica presenza accelerometro
+			if (accelerometer != null) 
+			{
+				sensorManager.registerListener(mySensorEventListener,
+						accelerometer, intent.getIntExtra(SENSOR_DELAY,
+								SensorManager.SENSOR_DELAY_NORMAL));
+				long endTime = System.currentTimeMillis()
+						+ RecordActivity.remaining_time;
+				while (isRecording && System.currentTimeMillis() < endTime) {
+					synchronized (this) {
+						try {
+							wait(endTime - System.currentTimeMillis());
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				try {
+					sensorManager.unregisterListener(mySensorEventListener);
+				} catch (NullPointerException ex) {
+					ex.printStackTrace();
+				}
+				initialized = true;
+			}
+			else
+				initialized = false;
+		} catch (Exception e) {
+			Toast.makeText(this, "Errore: accelerometro", Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+			initialized = false;
 		}
-            
-    	initialized = true;
     }
     
     @Override
