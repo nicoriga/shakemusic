@@ -56,7 +56,7 @@ public class CustomListSession extends ArrayAdapter<String>
 		try {
 			// converto la stringa in una immagine bitmap
 			Bitmap bmp = ImageBitmap.decodeImage(image.get(position));
-			holder.imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, 80,80, false));
+			holder.imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, 40,40, false));
 		} catch (Exception e) {
 			// TODO da rimuovere... serve solo per eliminare quelle con problemi
 			DbAdapter dbAdapter = new DbAdapter(context);
