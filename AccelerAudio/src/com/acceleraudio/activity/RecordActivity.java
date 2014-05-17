@@ -145,9 +145,9 @@ public class RecordActivity extends Activity {
 //				if(currOrient == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || currOrient == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
 //				{
 				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-					radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_portrait);
-					radioOrientationButton.setChecked(true);
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_portrait);
+				radioOrientationButton.setChecked(true);
 //				}
 //				// il 2 sta per reverse landscape
 //				if(currOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || currOrient == 2)

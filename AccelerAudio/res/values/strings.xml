@@ -1,10 +1,21 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">AccelerAudio</string>
+    <string name="play">Riproduci</string>
+    <string name="duplicate">Duplica</string>
+    <string name="export">Esporta</string>
+    <string name="rename">Rinomina</string>
+    <string name="delete">Elimina</string>
+    <string name="option">Opzioni</string>
+    <string name="confirm">Conferma</string>
     <string name="cancel">Cancel</string>
     <string name="note">Note</string>
     <string name="lineare">Lineare</string>
-    <string name="no_axis_error">Selezionare almeno un asse</string>
+    <string name="error_no_axis">Selezionare almeno un asse</string>
+    <string name="error_no_accelerometer">Errore: Accelerometro non presente</string>
+    <string name="error_interface_load">Errore Caricamento Interfaccia</string>
+    <string name="error_database">Errore Database</string>
+    <string name="error_database_rename_session">Errore database: rinomina sessione</string>
 	<string-array name="upsampling_array">
         <item>Note</item>
         <item>Lineare</item>

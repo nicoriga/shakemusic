@@ -33,7 +33,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	private Button newSession, preferences;
 	private ListView list;
 	private ArrayList<Integer> sessionIdList;
-	private ArrayList<String> sessionNameList, sessionDataMod, imageId;
+	private ArrayList<String> sessionNameList, sessionDataMod, image;
 	private DbAdapter dbAdapter; 
     private Context context;
     private CustomListSession adaperList;
@@ -53,17 +53,19 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			newSession = (Button)findViewById(R.id.UI1_BT_newSession);
 			preferences = (Button)findViewById(R.id.UI1_BT_preferences);
 			list = (ListView)findViewById(R.id.UI1_LV_listSession);
+			
+			
+			// verifico presenza accelerometro
 			SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-			// verifica presenza accelerometro
 			if (accelerometer == null)
 			{
 				newSession.setEnabled(false);
-				Toast.makeText(this, "Errore: Accelerometro non presente", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
 			}
 			
 		} catch (Exception e) {
-			Toast.makeText(this, "Errore Caricamento Interfaccia", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}
@@ -89,21 +91,21 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			sessionIdList = new ArrayList<Integer>();
 			sessionNameList = new ArrayList<String>();
 			sessionDataMod = new ArrayList<String>();
-			imageId = new ArrayList<String>();
+			image = new ArrayList<String>();
 			
 			cursor.moveToFirst();
 			while ( !cursor.isAfterLast() ) {
 				sessionIdList.add(cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_SESSIONID)));
 				sessionNameList.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
 				sessionDataMod.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE)));
-				imageId.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)));
+				image.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)));
 				cursor.moveToNext();
 			}
 			
 			cursor.close();
 			dbAdapter.close();
 			
-			adaperList = new CustomListSession(this, sessionIdList, sessionNameList, sessionDataMod, imageId);
+			adaperList = new CustomListSession(this, sessionIdList, sessionNameList, sessionDataMod, image);
 			list.setAdapter(adaperList);
 			
 			registerForContextMenu(list);	
@@ -130,7 +132,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			
 			/**** avvia l'activity per vedere le info sulla sessione ****/
 			list.setOnItemClickListener(new OnItemClickListener() {
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 					Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
 					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(position));
 					view.getContext().startActivity(i);
@@ -138,11 +140,11 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			});
 		
 		} catch (SQLException e) {
-			Toast.makeText(this, "Errore Database", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} catch (RuntimeException e) {
-			Toast.makeText(this, "Errore caricamento interfaccia", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} 
@@ -155,8 +157,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		if (v.getId()==R.id.UI1_LV_listSession) 
 		{
 			context = v.getContext();
-			menu.setHeaderTitle("Opzioni");
-			String[] menuItems = {"play", "duplica", "esporta", "rinomina", "elimina"};
+			menu.setHeaderTitle(getString(R.string.option));
+			String[] menuItems = {getString(R.string.play), getString(R.string.duplicate), getString(R.string.export), getString(R.string.rename), getString(R.string.delete)};
 			for (int i = 0; i<menuItems.length; i++) {
 				menu.add(Menu.NONE, i, i, menuItems[i]);
 			}
@@ -195,7 +197,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 								sessionIdList.add(x, Integer.parseInt(s[0]));
 								sessionNameList.add(x, s[1]);
 								sessionDataMod.add(x, s[2]);
-								imageId.add(x, s[3]);
+								image.add(x, s[3]);
 							} catch (NumberFormatException e) {
 								e.printStackTrace();
 							} catch (SQLException e) {
@@ -218,7 +220,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				return true;
 			
 			case 3:
-				//TODO: rinomina la sessione
+				// rinomina la sessione
 				showRenameDialog(info.position, sessionNameList.get(info.position));
 				return true;
 			
@@ -231,7 +233,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				sessionIdList.remove(info.position);
 				sessionNameList.remove(info.position);
 				sessionDataMod.remove(info.position);
-				imageId.remove(info.position);
+				image.remove(info.position);
 				adaperList.notifyDataSetChanged();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -243,6 +245,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		}
 	}
 	
+	/**** visualizza dialog per rinomina sessione ****/
 	private void showRenameDialog(int position, String oldName) {
         FragmentManager fm = getSupportFragmentManager();
         RenameDialog rd = new RenameDialog();
@@ -250,6 +253,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
         rd.show(fm, "rename_dialog");
     }
 	
+	/**** rinomina la sessione dopo la conferma del dialog ****/
 	@Override
 	public void onFinishRenameDialog(int position, String sessionName, boolean confirm) {
 		if(confirm)
@@ -259,12 +263,11 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					if(dbAdapter.renameSession(sessionIdList.get(position), sessionName))
 					{
 						sessionNameList.set(position, sessionName);
-						Toast.makeText(this, "Rinominato " + sessionName, Toast.LENGTH_SHORT).show();
 					}
 					dbAdapter.close();
 					adaperList.notifyDataSetChanged();
 				} catch (SQLException e) {
-					Toast.makeText(this, "Errore database: rinomina sessione ", Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, getString(R.string.error_database_rename_session), Toast.LENGTH_SHORT).show();
 					e.printStackTrace();
 				}
 			}

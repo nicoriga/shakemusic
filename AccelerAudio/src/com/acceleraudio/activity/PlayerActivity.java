@@ -14,6 +14,7 @@ import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
@@ -32,24 +33,27 @@ public class PlayerActivity extends Activity {
 	public static String IMAGE = "playerActivity.image";
 	
 	private Boolean inizialized = false, axis_x, axis_y, axis_z;
-	private TextView sessionName;
+	private TextView sessionName, currentTimeTV, durationTV;
 	private Button play, pause, stop;
 	private ImageView thumbnail;
 	private int[] sample;
 	private int sessionId, upsampling, musicCursor = 0; // musicCursos: puntatore array della musica in riproduzione
+	private long duration, time_elapsed;
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
 	public Intent intentPlayer;
 	public static String[] data_x, data_y, data_z;
 	private String image;
 	private Thread t;
+	private CountDownTimer countDownTimer;
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
     	
     	@Override
         public void onReceive(Context context, Intent intent) {
     		Bundle bundle = intent.getExtras();
     		if (bundle != null) {
-    			musicCursor = bundle.getInt(MUSIC_CURSOR);
+    			if(intent.hasExtra(MUSIC_CURSOR)) musicCursor = bundle.getInt(MUSIC_CURSOR);
+    			if(intent.hasExtra(PlayerTrack.DURATION)) duration = bundle.getLong(PlayerTrack.DURATION);
     		}
         }
     };
@@ -73,6 +77,8 @@ public class PlayerActivity extends Activity {
 			pause = (Button) findViewById(R.id.UI4_BT_pause);
 			stop = (Button) findViewById(R.id.UI4_BT_stop);
 			thumbnail = (ImageView) findViewById(R.id.UI4_IV_thumbnail);
+			currentTimeTV = (TextView) findViewById(R.id.UI4_TV_initialTimer);
+			durationTV = (TextView) findViewById(R.id.UI4_TV_finalTimer);
 			
 			play.setEnabled(true);
 			pause.setEnabled(false);
@@ -84,6 +90,7 @@ public class PlayerActivity extends Activity {
 				sample = savedInstanceState.getIntArray(SAMPLE);
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
 				image = savedInstanceState.getString(IMAGE);
+				duration = savedInstanceState.getLong(PlayerTrack.DURATION);
 				
 				if(inizialized)
 				{
@@ -140,13 +147,13 @@ public class PlayerActivity extends Activity {
 				
 				if(axis_x)
 					for(int i = 0; i<data_x.length; i++)
-						if(data_x[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_x[i])*100));
+						if(data_x[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_x[i])));
 				if(axis_y)
 					for(int i = 0; i<data_y.length; i++)
-						if(data_y[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_y[i])*100));
+						if(data_y[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_y[i])));
 				if(axis_z)
 					for(int i = 0; i<data_z.length; i++)
-						if(data_z[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_z[i])*100));
+						if(data_z[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_z[i])));
 				
 			}
 			
@@ -211,6 +218,20 @@ public class PlayerActivity extends Activity {
 					play.setEnabled(false);
 					pause.setEnabled(true);
 					
+					// TODO sistemare timer durata musica
+//					duration = 5000;
+//					countDownTimer = new CountDownTimer(duration, 1000) {
+//						public void onTick(long millisUntilFinished) {
+//							time_elapsed = duration - millisUntilFinished;
+//							currentTimeTV.setText("" + millisUntilFinished / 1000);
+//						}
+//						
+//						public void onFinish() {
+//							currentTimeTV.setText("0");
+//							countDownTimer.start();
+//						}
+//					};
+//					countDownTimer.start();
 				}
 			}
 		});
@@ -267,6 +288,7 @@ public class PlayerActivity extends Activity {
     	savedInstanceState.putInt(UPSAMPLING, upsampling);
     	savedInstanceState.putIntArray(SAMPLE, sample);
     	savedInstanceState.putString(IMAGE, image);
+    	savedInstanceState.putLong(PlayerTrack.DURATION, duration);
     	super.onSaveInstanceState(savedInstanceState);
     }
 

@@ -228,7 +228,7 @@ public class PreferencesActivity extends Activity {
 	public void onBackPressed() {
 	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
 		{
-				Toast.makeText(this, getString(R.string.no_axis_error), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.error_no_axis), Toast.LENGTH_SHORT).show();
 		}
 	    else
 	    	finish();

@@ -23,7 +23,7 @@ public class RenameDialog extends DialogFragment {
     public void setSessionInfo(int position, String name)
     {
     	this.position = position;
-    	oldName = name;
+    	this.oldName = name;
     }
     
     public interface RenameDialogListener {
