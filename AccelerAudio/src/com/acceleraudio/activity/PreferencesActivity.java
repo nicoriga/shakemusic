@@ -33,7 +33,7 @@ public class PreferencesActivity extends Activity {
 	public static String TIMER_SECONDS = "timer.seconds";
 	
 	private SharedPreferences pref;
-	private Spinner spinner1, spinner2;
+	private Spinner sp_sample_rate, sp_upsampling;
 	private CheckBox axis_x, axis_y, axis_z;
 	private Button minutesUp, minutesDown, secondsUp, secondsDown;
 	private EditText minutesET, secondsET;
@@ -45,38 +45,128 @@ public class PreferencesActivity extends Activity {
     	setContentView(R.layout.ui_5);
     	pref = PreferenceManager.getDefaultSharedPreferences(this);
 	  
+    	try {
+    		
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
-    	
-    	try {
-			axis_x = (CheckBox) findViewById(R.id.UI5_CB_X);
+    		
+    		axis_x = (CheckBox) findViewById(R.id.UI5_CB_X);
 			axis_y = (CheckBox) findViewById(R.id.UI5_CB_Y);
 			axis_z = (CheckBox) findViewById(R.id.UI5_CB_Z);
-			spinner1 = (Spinner) findViewById(R.id.UI5_SP_frequency);
-			spinner2 = (Spinner) findViewById(R.id.UI5_SP_upsampling);
+			sp_sample_rate = (Spinner) findViewById(R.id.UI5_SP_frequency);
+			sp_upsampling = (Spinner) findViewById(R.id.UI5_SP_upsampling);
 			minutesUp = (Button) findViewById(R.id.UI5_BT_minutePlus);
 			minutesDown = (Button) findViewById(R.id.UI5_BT_minuteMinus);
 			secondsUp = (Button) findViewById(R.id.UI5_BT_secondPlus);
 			secondsDown = (Button) findViewById(R.id.UI5_BT_secondMinus);
 			minutesET = (EditText) findViewById(R.id.UI5_ET_minute);
 			secondsET = (EditText) findViewById(R.id.UI5_ET_second);
+    		
+			/*** Popolo lo spinner: velocita campionamentov***/
+			ArrayAdapter<CharSequence> adapterSampleRate = ArrayAdapter.createFromResource(this, R.array.sample_rate, android.R.layout.simple_spinner_item);
+			adapterSampleRate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			sp_sample_rate.setAdapter(adapterSampleRate);
 			
-			/*** Popolo lo spinner ***/
-			ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.sample_rate, android.R.layout.simple_spinner_item);
-			adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			spinner1.setAdapter(adapter1); // applico adapter allo spinner
-			
-			/*** Popolo lo spinner ***/
-			ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);
-			adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			spinner2.setAdapter(adapter2); // applico adapter allo spinner
+			/*** Popolo lo spinner: scelta algoritmo di sovracampionamento ***/
+			ArrayAdapter<CharSequence> adapterUpsampling = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);
+			adapterUpsampling.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			sp_upsampling.setAdapter(adapterUpsampling);
 			
 			//carico le preferenze
-
 			LoadPreferences();
+			
+/////////////////////////////////////////////////////////
+///////////  aggiungo listener  /////////////////////////
+////////////////////////////////////////////////////////
+
+			final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
+				@Override
+					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					// aggiorna le impostazioni solo se almeno un asse e selezionato
+					if (axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked()) {
+						Editor prefEdit = pref.edit();
+						prefEdit.putBoolean(AXIS_X, axis_x.isChecked());
+						prefEdit.putBoolean(AXIS_Y, axis_y.isChecked());
+						prefEdit.putBoolean(AXIS_Z, axis_z.isChecked());
+						prefEdit.commit();
+					}
+				}
+			};
+			axis_x.setOnCheckedChangeListener(axis_change);
+			axis_y.setOnCheckedChangeListener(axis_change);
+			axis_z.setOnCheckedChangeListener(axis_change);
+			
+			final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+					Editor prefEdit = pref.edit();
+					prefEdit.putInt(SAMPLE_RATE, Util.sensorRateByString(sp_sample_rate.getSelectedItem().toString()));
+					prefEdit.putInt(UPSAMPLING, Util.getUpsamplingID(sp_upsampling.getSelectedItem().toString()));
+					prefEdit.commit();
+				}
+			
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {
+				}
+			};
+			sp_sample_rate.setOnItemSelectedListener(spinner_change);
+			sp_upsampling.setOnItemSelectedListener(spinner_change);
+			
+			/**** incrementa i minuti ****/
+			minutesUp.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View view) {
+					if (minutes < 60) {
+						minutes++;
+						minutesET.setText("" + minutes);
+						Editor prefEdit = pref.edit();
+			    		prefEdit.putInt(TIMER_MINUTES, Integer.parseInt(minutesET.getText().toString()));
+			    		prefEdit.commit();
+					}
+				}
+			});
+			
+			/**** decrementa i minuti ****/
+			minutesDown.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View view) {
+					if (minutes > 1 || (minutes >0 && seconds >0)) {
+						minutes--;
+						minutesET.setText("" + minutes);
+						Editor prefEdit = pref.edit();
+			    		prefEdit.putInt(TIMER_MINUTES, Integer.parseInt(minutesET.getText().toString()));
+			    		prefEdit.commit();
+					}
+				}
+			});
+			
+			/**** incrementa i secondi ****/
+			secondsUp.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View view) {
+					if (seconds < 60) {
+						seconds++;
+						secondsET.setText("" + seconds);
+						Editor prefEdit = pref.edit();
+			    		prefEdit.putInt(TIMER_SECONDS, Integer.parseInt(secondsET.getText().toString()));
+			    		prefEdit.commit();
+					}
+				}
+			});
+			
+			/**** decrementa i secondi ****/
+			secondsDown.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View view) {
+					if (seconds > 1 || (seconds >0 && minutes >0)) {
+						seconds--;
+						secondsET.setText("" + seconds);
+						Editor prefEdit = pref.edit();
+			    		prefEdit.putInt(TIMER_SECONDS, Integer.parseInt(secondsET.getText().toString()));
+			    		prefEdit.commit();
+					}
+				}
+			});
+			
 		} catch (RuntimeException e) {
-			Toast.makeText(this, "Errore caricamento Interfaccia", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}
@@ -84,104 +174,19 @@ public class PreferencesActivity extends Activity {
     }
     
     @Override
-	public void onResume() {
-		super.onResume();
-		
-/////////////////////////////////////////////////////////
-///////////  aggiungo listener  /////////////////////////
-////////////////////////////////////////////////////////
-			
-		final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked()) {
-					Editor prefEdit = pref.edit();
-					prefEdit.putBoolean(AXIS_X, axis_x.isChecked());
-					prefEdit.putBoolean(AXIS_Y, axis_y.isChecked());
-					prefEdit.putBoolean(AXIS_Z, axis_z.isChecked());
-					prefEdit.commit();
-				}
-			}
-		};
-		axis_x.setOnCheckedChangeListener(axis_change);
-		axis_y.setOnCheckedChangeListener(axis_change);
-		axis_z.setOnCheckedChangeListener(axis_change);
-		
-		final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Editor prefEdit = pref.edit();
-				prefEdit.putInt(SAMPLE_RATE, Util.sensorRateByString(spinner1.getSelectedItem().toString()));
-	    		prefEdit.putInt(UPSAMPLING, Util.getUpsamplingID(spinner2.getSelectedItem().toString()));
-	    		prefEdit.commit();
-			}
-		
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-			}
-		};
-		spinner1.setOnItemSelectedListener(spinner_change);
-		spinner2.setOnItemSelectedListener(spinner_change);
-		
-		/**** incrementa i minuti ****/
-		minutesUp.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				if (minutes < 60) {
-					minutes++;
-					minutesET.setText("" + minutes);
-					updateMinutesSeconds(view);
-				}
-			}
-		});
-		
-		/**** decrementa i minuti ****/
-		minutesDown.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				if (minutes > 1 || (minutes >0 && seconds >0)) {
-					minutes--;
-					minutesET.setText("" + minutes);
-					updateMinutesSeconds(view);
-				}
-			}
-		});
-		
-		/**** incrementa i secondi ****/
-		secondsUp.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				if (seconds < 60) {
-					seconds++;
-					secondsET.setText("" + seconds);
-					updateMinutesSeconds(view);
-				}
-			}
-		});
-		
-		/**** decrementa i secondi ****/
-		secondsDown.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				if (seconds > 1 || (seconds >0 && minutes >0)) {
-					seconds--;
-					secondsET.setText("" + seconds);
-					updateMinutesSeconds(view);
-				}
-			}
-		});
-	}
+	public void onBackPressed() {
+    	// impedisce di non selezionare nessun asse 
+	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
+		{
+				Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+		}
+	    else
+	    	finish();
+    }
     
 /////////////////////////////////////////////////////////
 ///////////  metodi ausiliari  /////////////////////////
 ////////////////////////////////////////////////////////
-    
-    // aggiorna le impostazioni
-    private void updateMinutesSeconds(View v){
-    	if(v != null)
-    	{
-    		Editor prefEdit = pref.edit();
-    		prefEdit.putInt(TIMER_MINUTES, Integer.parseInt(minutesET.getText().toString()));
-    		prefEdit.putInt(TIMER_SECONDS, Integer.parseInt(secondsET.getText().toString()));
-    		prefEdit.commit();
-    	}
-    }
     
     // carica le impostazioni dell'applicazione
     private void LoadPreferences()
@@ -198,11 +203,12 @@ public class PreferencesActivity extends Activity {
     		prefEdit.putInt(TIMER_SECONDS, 0);
     		prefEdit.putBoolean(FIRST_START, false);
     		
-    		axis_x.setChecked(true); // asse x
-    		axis_y.setChecked(true); // asse y
-    		axis_z.setChecked(true); // asse z
-    		Util.SelectSpinnerItemByValue(spinner1, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
-    		Util.SelectSpinnerItemByValue(spinner2, getString(R.string.note));
+    		// carico i dati nella vista
+    		axis_x.setChecked(true);
+    		axis_y.setChecked(true);
+    		axis_z.setChecked(true);
+    		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
+    		Util.SelectSpinnerItemByValue(sp_upsampling, getString(R.string.note));
     		minutes = 1;
     		seconds = 0;
     		minutesET.setText("" + minutes);
@@ -212,11 +218,12 @@ public class PreferencesActivity extends Activity {
     	}
     	else
     	{
-    		axis_x.setChecked(pref.getBoolean(AXIS_X, true)); // asse x
-    		axis_y.setChecked(pref.getBoolean(AXIS_Y, true)); // asse y
-    		axis_z.setChecked(pref.getBoolean(AXIS_Z, true)); // asse z
-    		Util.SelectSpinnerItemByValue(spinner1, Util.sensorRateName(pref.getInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL)));
-    		Util.SelectSpinnerItemByValue(spinner2, "" + Util.getUpsamplingName(pref.getInt(UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)))));
+    		// carico i dati nella vista
+    		axis_x.setChecked(pref.getBoolean(AXIS_X, true));
+    		axis_y.setChecked(pref.getBoolean(AXIS_Y, true));
+    		axis_z.setChecked(pref.getBoolean(AXIS_Z, true));
+    		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(pref.getInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL)));
+    		Util.SelectSpinnerItemByValue(sp_upsampling, "" + Util.getUpsamplingName(pref.getInt(UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)))));
     		minutes = pref.getInt(TIMER_MINUTES, 1);
     		seconds = pref.getInt(TIMER_SECONDS, 0);
     		minutesET.setText("" + minutes);
@@ -224,13 +231,4 @@ public class PreferencesActivity extends Activity {
     	}
     }
 
-    @Override
-	public void onBackPressed() {
-	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
-		{
-				Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
-		}
-	    else
-	    	finish();
-    }
 }
