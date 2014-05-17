@@ -4,7 +4,6 @@ import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -142,6 +141,79 @@ public class SessionInfoActivity extends Activity {
 				}
 			};
 			t.start();
+			
+/////////////////////////////////////////////////////////
+////////////aggiungo listener cambio info ///////////////
+////////////////////////////////////////////////////////
+
+			et_sessionName.addTextChangedListener(new TextWatcher() {
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+				}
+				
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				}
+				
+				@Override
+				public void afterTextChanged(Editable s) {
+					updateChange(et_sessionName);
+				}
+			});
+			
+			final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					updateChange(buttonView);
+				}
+			};
+			axis_x.setOnCheckedChangeListener(axis_change);
+			axis_y.setOnCheckedChangeListener(axis_change);
+			axis_z.setOnCheckedChangeListener(axis_change);
+			
+			final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
+				@Override
+				public void onItemSelected(AdapterView<?> arg0, View v, int arg2, long arg3) {
+					updateChange(v);
+				}
+				
+				@Override
+				public void onNothingSelected(AdapterView<?> arg0) {				
+				}
+			};
+			
+			sp_upsampling.setOnItemSelectedListener(spinner_change);
+			
+/////////////////////////////////////////////////////////
+////////////aggiungo listener ai bottoni ///////////////
+////////////////////////////////////////////////////////
+			
+			final Toast toast = Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT);
+			
+			/**** TORNA ALLA LISTA DELLE SESSIONI ****/
+			listSession.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// impedisco di tornare indietro se non viene selezionato almeno un asse
+					if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
+					{
+						toast.show();
+					}
+					else
+						finish();
+				}
+			});
+			
+			/**** AVVIA IL PLAYER MUSICALE ****/
+			playSession.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// avvio la PlayerActivity
+					Intent i = new Intent(v.getContext(), PlayerActivity.class);
+					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
+					v.getContext().startActivity(i);
+				}
+			});
 		
 		} catch (SQLException e) {
 			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
@@ -152,84 +224,6 @@ public class SessionInfoActivity extends Activity {
 			e.printStackTrace();
 			finish();
 		} 
-    }
-    
-	@SuppressLint("ShowToast")
-	@Override
-	public void onResume() {
-		super.onResume();
-		
-/////////////////////////////////////////////////////////
-////////////aggiungo listener cambio info ///////////////
-////////////////////////////////////////////////////////
-		
-		et_sessionName.addTextChangedListener(new TextWatcher() {
-		      @Override
-		      public void onTextChanged(CharSequence s, int start, int before, int count) {
-		      }
-		      
-		      @Override
-		      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		      }
-
-		      @Override
-		      public void afterTextChanged(Editable s) {
-		    	  updateChange(et_sessionName);
-		      }
-		    });
-		
-		final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				updateChange(buttonView);
-			}
-		};
-		axis_x.setOnCheckedChangeListener(axis_change);
-		axis_y.setOnCheckedChangeListener(axis_change);
-		axis_z.setOnCheckedChangeListener(axis_change);
-		
-		final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View v, int arg2, long arg3) {
-				updateChange(v);
-			}
-		
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {				
-			}
-		};
-		sp_upsampling.setOnItemSelectedListener(spinner_change);
-		
-/////////////////////////////////////////////////////////
-////////////aggiungo listener ai bottoni ///////////////
-////////////////////////////////////////////////////////
-
-		final Toast toast = Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT);
-		
-		/**** TORNA ALLA LISTA DELLE SESSIONI ****/
-		listSession.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// impedisco di tornare indietro se non viene selezionato almeno un asse
-				if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
-				{
-					toast.show();
-				}
-			    else
-			    	finish();
-			}
-		});
-				
-		/**** AVVIA IL PLAYER MUSICALE ****/
-		playSession.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// avvio la PlayerActivity
-				Intent i = new Intent(v.getContext(), PlayerActivity.class);
-				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
-				v.getContext().startActivity(i);
-			}
-		});
     }
     
 	@Override

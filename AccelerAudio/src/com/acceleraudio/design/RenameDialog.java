@@ -12,6 +12,8 @@ import com.malunix.acceleraudio.R;
 
 public class RenameDialog extends DialogFragment {
 
+	public static String POSITION = "renameDialog.position";
+	
 	private int position;
 	private String oldName;
     private EditText newName;
@@ -38,6 +40,11 @@ public class RenameDialog extends DialogFragment {
         cancel = (Button) view.findViewById(R.id.rename_cancel);
         getDialog().setTitle("Rinomina la sessione");
         
+        if (savedInstanceState != null)
+		{
+        	position = savedInstanceState.getInt(POSITION);
+		}
+        
         /**** confermo la rinomina ****/
         confirm.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -57,5 +64,12 @@ public class RenameDialog extends DialogFragment {
 		});
         
         return view;
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) 
+    {
+		savedInstanceState.putInt(POSITION, position);
+    	super.onSaveInstanceState(savedInstanceState);
     }
 }

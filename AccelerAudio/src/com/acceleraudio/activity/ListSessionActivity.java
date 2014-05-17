@@ -64,6 +64,35 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				Toast.makeText(this, getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
 			}
 			
+/////////////////////////////////////////////////////////
+///////////  aggiungo listener  /////////////////////////
+////////////////////////////////////////////////////////
+
+			/**** Avvia l'activity per registrare una nuova session ****/
+			newSession.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View view) {
+					Intent i = new Intent(view.getContext(), RecordActivity.class);
+					view.getContext().startActivity(i);
+				}
+			});
+			
+			/**** avvia l'activity per modificare le preferenze di registrazione ****/
+			preferences.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View view) {
+					Intent i = new Intent(view.getContext(), PreferencesActivity.class);
+					view.getContext().startActivity(i);
+				}
+			});
+			
+			/**** avvia l'activity per vedere le info sulla sessione ****/
+			list.setOnItemClickListener(new OnItemClickListener() {
+				public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+					Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
+					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(position));
+					view.getContext().startActivity(i);
+				}
+			});
+			
 		} catch (Exception e) {
 			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
@@ -109,35 +138,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			list.setAdapter(adaperList);
 			
 			registerForContextMenu(list);	
-		
-/////////////////////////////////////////////////////////
-///////////  aggiungo listener  /////////////////////////
-////////////////////////////////////////////////////////
-
-			/**** Avvia l'activity per registrare una nuova session ****/
-			newSession.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View view) {
-					Intent i = new Intent(view.getContext(), RecordActivity.class);
-					view.getContext().startActivity(i);
-				}
-			});
-			
-			/**** avvia l'activity per modificare le preferenze di registrazione ****/
-			preferences.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View view) {
-					Intent i = new Intent(view.getContext(), PreferencesActivity.class);
-					view.getContext().startActivity(i);
-				}
-			});
-			
-			/**** avvia l'activity per vedere le info sulla sessione ****/
-			list.setOnItemClickListener(new OnItemClickListener() {
-				public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-					Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
-					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(position));
-					view.getContext().startActivity(i);
-				}
-			});
 		
 		} catch (SQLException e) {
 			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
