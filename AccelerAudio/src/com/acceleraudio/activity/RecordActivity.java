@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.RecordTrack;
 import com.acceleraudio.util.ImageBitmap;
+import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -30,6 +33,12 @@ import android.widget.Toast;
 
 public class RecordActivity extends Activity {
 	
+	public static String TIME_REMAINING = "recordActivity.time_remaining";
+	public static String ORIENTATION = "recordActivity.orientation";
+	public static String PAUSE = "recordActivity.pause";
+	public static String STOP = "recordActivity.stop";
+	public static String INIZIALIZED = "recordActivity.inizialized";
+	
 	private boolean insertComplete = false;
 	private static boolean initialized;
 	public static Button startSession, stopSession, pauseSession, saveSession;
@@ -44,11 +53,12 @@ public class RecordActivity extends Activity {
 	public Intent intentRecord;
 	public static long sessionId, remaining_time;
 	private boolean axis_x, axis_y, axis_z;
-	public static boolean pause = false;
-	private int upsampling, sample_rate;
+	public static boolean pause, stop;
+	private int upsampling, sample_rate, orientation;
 	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
 	static final Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+	private Context context;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,63 +73,108 @@ public class RecordActivity extends Activity {
 		
 		dbAdapter = new DbAdapter(this);
 		
+		context = this;
 		
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
-		nameSession = (EditText) findViewById(R.id.UI3_ET_SessionName);
-		rec_sample = (TextView) findViewById(R.id.UI3_TV_RecordedSamples);
-		time_remaining = (TextView) findViewById(R.id.UI3_TV_timerRemaning);
-    	startSession = (Button) findViewById(R.id.UI3_BT_record);
-    	stopSession = (Button) findViewById(R.id.UI3_BT_stop);
-    	pauseSession = (Button) findViewById(R.id.UI3_BT_pause);
-    	saveSession = (Button) findViewById(R.id.UI3_BT_save);
-    	progressBarX = (ProgressBar) findViewById(R.id.UI3_PB_X);
-    	progressBarY = (ProgressBar) findViewById(R.id.UI3_PB_Y);
-    	progressBarZ = (ProgressBar) findViewById(R.id.UI3_PB_Z);
-    	radioGroup = (RadioGroup) findViewById(R.id.UI3_orientation);
-    	//setProgressBarMax((int)accelerometro.getMaximumRange());
-    	setProgressBarMax(20);
-    	resetProgressBar();
-		rec_sample.setText("" + sample);
-		
-		pauseSession.setEnabled(false);
-		stopSession.setEnabled(false);
-		saveSession.setEnabled(false);
-		
+		try {
+			nameSession = (EditText) findViewById(R.id.UI3_ET_SessionName);
+			rec_sample = (TextView) findViewById(R.id.UI3_TV_RecordedSamples);
+			time_remaining = (TextView) findViewById(R.id.UI3_TV_timerRemaning);
+			startSession = (Button) findViewById(R.id.UI3_BT_record);
+			stopSession = (Button) findViewById(R.id.UI3_BT_stop);
+			pauseSession = (Button) findViewById(R.id.UI3_BT_pause);
+			saveSession = (Button) findViewById(R.id.UI3_BT_save);
+			progressBarX = (ProgressBar) findViewById(R.id.UI3_PB_X);
+			progressBarY = (ProgressBar) findViewById(R.id.UI3_PB_Y);
+			progressBarZ = (ProgressBar) findViewById(R.id.UI3_PB_Z);
+			radioGroup = (RadioGroup) findViewById(R.id.UI3_orientation);
+			//setProgressBarMax((int)accelerometro.getMaximumRange());
+			setProgressBarMax(20);
+			resetProgressBar();
+			rec_sample.setText("" + sample);
+			
+			pauseSession.setEnabled(false);
+			stopSession.setEnabled(false);
+			saveSession.setEnabled(false);
+			
 //////////////////////////////////////////////////////////
 ///////////// prelevo le impostazioni predefinite ////////
 //////////////////////////////////////////////////////////
 
-		// imposto preferenze
-		axis_x = pref.getBoolean(PreferencesActivity.AXIS_X, true); // asse x
-		axis_y = pref.getBoolean(PreferencesActivity.AXIS_Y, true); // asse y
-		axis_z = pref.getBoolean(PreferencesActivity.AXIS_Z, true); // asse z
-		sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
-		upsampling = pref.getInt(PreferencesActivity.UPSAMPLING, 48000);
-		remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
-		
-		// Restore from the savedInstanceState
-		if (savedInstanceState != null)
-		{
-			remaining_time = savedInstanceState.getLong("time");
+			// imposto preferenze
+			axis_x = pref.getBoolean(PreferencesActivity.AXIS_X, true); // asse x
+			axis_y = pref.getBoolean(PreferencesActivity.AXIS_Y, true); // asse y
+			axis_z = pref.getBoolean(PreferencesActivity.AXIS_Z, true); // asse z
+			sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
+			upsampling = pref.getInt(PreferencesActivity.UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)));
+			remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
+			
+			// Restore from the savedInstanceState
+			if (savedInstanceState != null)
+			{
+				resetProgressBar();
+				remaining_time = savedInstanceState.getLong(TIME_REMAINING);
+				orientation = savedInstanceState.getInt(ORIENTATION);
+				pause = savedInstanceState.getBoolean(PAUSE);
+				stop = savedInstanceState.getBoolean(STOP);
+				initialized = savedInstanceState.getBoolean(INIZIALIZED);
+				setRequestedOrientation(orientation);
+				
+				if(remaining_time == 0 || stop)
+				{
+					startSession.setEnabled(false);
+					pauseSession.setEnabled(false);
+					stopSession.setEnabled(false);
+					saveSession.setEnabled(true);
+				}
+				else
+				{
+					startSession.setEnabled(true);
+					pauseSession.setEnabled(false);
+					stopSession.setEnabled(true);
+					saveSession.setEnabled(false);
+				}
+			}
+			else
+			{	
+				// TODO sistemare orientamento nel caso sia reverse
+//				int currOrient = getResources().getConfiguration().orientation;
+//				if(currOrient == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || currOrient == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
+//				{
+				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+					radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_portrait);
+					radioOrientationButton.setChecked(true);
+//				}
+//				// il 2 sta per reverse landscape
+//				if(currOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || currOrient == 2)
+//				{
+//					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//					radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_landscape);
+//					radioOrientationButton.setChecked(true);
+//				}
+				data_x = new ArrayList<Float>();
+				data_y = new ArrayList<Float>();
+				data_z = new ArrayList<Float>();
+				sample = 0;
+				rec_sample.setText("0");
+				x = 0;
+				y = 0;
+				z = 0;
+				pause = false;
+				stop = false;
+			}
+			
+			time_remaining.setText("" + remaining_time / 1000);
+			
+		} catch (RuntimeException e) {
+			Toast.makeText(this, "Errore caricamento interfaccia", Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+			finish();
 		}
-		else
-		{	 
-			data_x = new ArrayList<Float>();
-			data_y = new ArrayList<Float>();
-			data_z = new ArrayList<Float>();
-			sample = 0;
-			rec_sample.setText("0");
-			x = 0;
-			y = 0;
-			z = 0;
-		}
-		
-		time_remaining.setText("" + remaining_time / 1000);
-		int orientationID = radioGroup.getCheckedRadioButtonId();
-		radioOrientationButton = (RadioButton) findViewById(orientationID);
 		
     }
 
@@ -138,11 +193,16 @@ public class RecordActivity extends Activity {
 				int orientationID = radioGroup.getCheckedRadioButtonId();
 				radioOrientationButton = (RadioButton) findViewById(orientationID);
 				
-				//TODO: salvare orientamento schermo per ripristinarlo 
 				if(radioOrientationButton.getText().toString().equalsIgnoreCase("portrait"))
+				{
 					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+					orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+				}
 				else
+				{
 					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+				}
 			}
 		});
 
@@ -150,7 +210,6 @@ public class RecordActivity extends Activity {
 		startSession.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//TODO: impostazioni per accelerometro intentRecord.putExtra(...);
 				pause = false;
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(true);
@@ -171,10 +230,12 @@ public class RecordActivity extends Activity {
 							pauseSession.setEnabled(false);
 							stopSession.setEnabled(false);
 							saveSession.setEnabled(true);
+							remaining_time = 0;
 						}
 						try{
 							resetProgressBar();
 							stopService(intentRecord);
+							stop = true;
 						}
 						catch(NullPointerException ex)
 						{
@@ -194,7 +255,7 @@ public class RecordActivity extends Activity {
 				startSession.setEnabled(true);
 				pauseSession.setEnabled(false);
 				stopService(intentRecord);
-				countDownTimer.cancel();
+				if(countDownTimer != null) countDownTimer.cancel();
 				resetProgressBar();
 			}
 		});
@@ -204,13 +265,14 @@ public class RecordActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				pause = false;
+				stop = true;
 				startSession.setEnabled(false);
 				pauseSession.setEnabled(false);
 				stopSession.setEnabled(false);
 				saveSession.setEnabled(true);
 				
 				stopService(intentRecord);
-				countDownTimer.cancel();
+				if(countDownTimer != null) countDownTimer.cancel();
 				resetProgressBar();
 			}
 		});
@@ -223,6 +285,8 @@ public class RecordActivity extends Activity {
 				if(initialized)
 					if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
 					{
+						radioGroup.setEnabled(false);
+						saveSession.setEnabled(false);
 						saveAccelerometerData();
 						// avvio la SessionInfoActivity
 						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
@@ -239,6 +303,9 @@ public class RecordActivity extends Activity {
     @Override
     protected void onPause() {
     	super.onPause();
+    	// nel caso vada in background non deve chiudersi activity, mentre se ha salvato i dati
+    	// e passa nella infoActivity deve chiudersi in modo premendo back
+    	// si ritorna alla lista delle sessioni
     	if (insertComplete) finish();
     }
     
@@ -253,7 +320,11 @@ public class RecordActivity extends Activity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
-    	savedInstanceState.putLong("time", remaining_time);
+    	savedInstanceState.putLong(TIME_REMAINING, remaining_time);
+    	savedInstanceState.putInt(ORIENTATION, orientation);
+    	savedInstanceState.putBoolean(PAUSE, pause);
+    	savedInstanceState.putBoolean(STOP, stop);
+    	savedInstanceState.putBoolean(INIZIALIZED, initialized);
     	super.onSaveInstanceState(savedInstanceState);
     }
         
@@ -265,43 +336,71 @@ public class RecordActivity extends Activity {
     public void saveAccelerometerData(){
     	if(initialized){
 
-			// apro la connessione al db
-	    	dbAdapter.open();
+			try {
+				
+				Log.w("save Session", "inzio..");
+				final StringBuilder x_sb = new StringBuilder();
+				final StringBuilder y_sb = new StringBuilder();
+				final StringBuilder z_sb = new StringBuilder();
+				for (float value : data_x) x_sb.append(" " + value);
+				for (float value : data_y) y_sb.append(" " + value);
+				for (float value : data_z) z_sb.append(" " + value);
+				Log.w("save Session", "...dati preparati");
+				Log.w("save Session", "creazione immagine...");
+				
+				Thread t = new Thread("Thumbnail_Creation"){
+					public void run() {
+						// setta la priorità massia del thread
+				        setPriority(Thread.MAX_PRIORITY);
+				        
+				        //costruzione immagine
+				        Log.w("save Session", "...creata");
+						ImageBitmap.color(bmp, x_sb.toString().split(" "), y_sb.toString().split(" "), z_sb.toString().split(" "), (int)sessionId);	
+						String encodedImage = ImageBitmap.encodeImage(bmp);
+						Log.w("save Session", "...codificata");
+						
+						DbAdapter dba = new  DbAdapter(context);
+						dba.open();
+						dba.updateSessionImage(sessionId, encodedImage);
+						dba.close();
+						
+						runOnUiThread(new Runnable() {
+			                @Override
+			                public void run() {
+			                	try {
+									SessionInfoActivity.thumbnail.setImageBitmap(bmp);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+			                }
+			            });	
+					}
+				};
+				t.start();  
+				
+				// inserisce un immagine vuota nel database mentre il thread elabora quella vera
+				String encodedImage = ImageBitmap.encodeImage(bmp);
 
-	    	Log.w("save Session", "inzio..");
-	    	final StringBuilder x_sb = new StringBuilder();
-	    	final StringBuilder y_sb = new StringBuilder();
-	    	final StringBuilder z_sb = new StringBuilder();
-	    	for (float value : data_x) x_sb.append(" " + value);
-	    	for (float value : data_y) y_sb.append(" " + value);
-	    	for (float value : data_z) z_sb.append(" " + value);
-	    	Log.w("save Session", "...dati preparati");
-	    	Log.w("save Session", "creazione immagine...");
-	    	
-	    	Thread t = new Thread("Thumbnail_Creation"){
-				public void run() {
-					// setta la priorità massia del thread
-	                setPriority(Thread.MAX_PRIORITY);
-	                
-	                //costruzione immagine
-	    			ImageBitmap.color(bmp, x_sb.toString().split(" "), y_sb.toString().split(" "), z_sb.toString().split(" "), (int)sessionId);	
-				}
-			};
-			t.start();  
-			
-	    	Log.w("save Session", "...creata");
-			String encodedImage = ImageBitmap.encodeImage(bmp);
-			Log.w("save Session", "...codificata");
-			
-	    	// inserisco i dati della sessione nel database
-	    	//TODO: gestire nome vuoto se non viene inserito un nome per la sessione... con un messaggio che richiede l'inserimento del nome
-	    	sessionId = dbAdapter.createSession( nameSession.getText().toString(), encodedImage, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), x_sb.length(), y_sb.length(), z_sb.length() );
-	    	insertComplete = true;
-	    	Log.w("save Session", "sessione inserita");
-			// chiudo la connessione al db
-			dbAdapter.close();
+				// apro la connessione al db
+				dbAdapter.open();
+				// inserisco i dati della sessione nel database
+				sessionId = dbAdapter.createSession( nameSession.getText().toString(), encodedImage, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), x_sb.length(), y_sb.length(), z_sb.length() );
+				insertComplete = true;
+				Log.w("save Session", "sessione inserita");
+				// chiudo la connessione al db
+				dbAdapter.close();
+				
+			} catch (SQLException e) {
+				Toast.makeText(this, "Errore salvataggio nel database", Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
 		}
     }
+
+//////////////////////////////
+///// METODI AUSILIARI
+/////////////////////////////
+    
     public static void updateSample(){
 		rec_sample.setText("" + sample);
 		progressBarX.setProgress(x);

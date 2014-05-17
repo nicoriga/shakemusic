@@ -1,14 +1,14 @@
 package com.acceleraudio.util;
 
 import java.util.ArrayList;
-
+import android.annotation.SuppressLint;
 import android.hardware.SensorManager;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 public class Util{
 	
-	/**** Seleziona item dello spinner in base al valore passato ****/
+	/**** Seleziona elemento dello spinner in base al valore passato ****/
     public static void SelectSpinnerItemByValue(Spinner spinner, String value)
     {
     	SpinnerAdapter adapter = spinner.getAdapter();
@@ -20,6 +20,37 @@ public class Util{
             	spinner.setSelection(position);
                 return;
             }
+        } 
+    }
+    
+
+	/**** restituisce id in base al nome dell'upsampling ****/
+    @SuppressLint("DefaultLocale")
+	public static int getUpsamplingID(String value)
+    {
+    	switch(value.toLowerCase())
+        {
+    		case "note":
+    			return 1;
+    		case "lineare":
+    			return 2;
+    		default:
+    			return 0;
+        } 
+    }
+    
+    /**** restituisce nome dell'upsampling in base all'id****/
+    @SuppressLint("DefaultLocale")
+	public static String getUpsamplingName(int value)
+    {
+    	switch(value)
+        {
+    		case 1:
+    			return "Note";
+    		case 2:
+    			return "Lineare";
+    		default:
+    			return "";
         } 
     }
     
@@ -66,8 +97,8 @@ public class Util{
     public static int sensorRateByString(String n)
     {
     	if(n.equalsIgnoreCase("lento")) return SensorManager.SENSOR_DELAY_NORMAL;
-    	if(n.equalsIgnoreCase("normale")) return SensorManager.SENSOR_DELAY_GAME;
-    	if(n.equalsIgnoreCase("veloce")) return SensorManager.SENSOR_DELAY_FASTEST;
+    	if(n.equalsIgnoreCase("normale")) return SensorManager.SENSOR_DELAY_UI;
+    	if(n.equalsIgnoreCase("veloce")) return SensorManager.SENSOR_DELAY_GAME;
     	return SensorManager.SENSOR_DELAY_NORMAL;
     }
     
@@ -75,8 +106,8 @@ public class Util{
     public static String sensorRateName(int r)
     {
     	if(r == SensorManager.SENSOR_DELAY_NORMAL) return "Lento";
-    	if(r == SensorManager.SENSOR_DELAY_GAME) return "Normale";
-    	if(r == SensorManager.SENSOR_DELAY_FASTEST) return "Veloce";
+    	if(r == SensorManager.SENSOR_DELAY_UI) return "Normale";
+    	if(r == SensorManager.SENSOR_DELAY_GAME) return "Veloce";
     	
     	return "Normale";
     }

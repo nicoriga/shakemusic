@@ -14,13 +14,13 @@
 	        android:id="@+id/UI1_BT_newSession"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Nuovo" />
+	        android:text="Nuova Sessione" />
 	
 	    <Button
-	        android:id="@+id/UI1_BT_mergeSession"        
+	        android:id="@+id/UI1_BT_mergeSession"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Unisci" />
+	        android:text="Unisci Sessioni" />
 	
 	    <Button
 	        android:id="@+id/UI1_BT_preferences"

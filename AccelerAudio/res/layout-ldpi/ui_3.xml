@@ -178,15 +178,15 @@
    	        android:orientation="horizontal" >
 
 	        <RadioButton
-	            android:id="@+id/UI3_land"
+	            android:id="@+id/UI3_RB_landscape"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:checked="true"
 	            android:layout_marginLeft="20dp"
+	            android:checked="true"
 	            android:text="Landscape" />
 	
 	        <RadioButton
-	            android:id="@+id/UI3_port"
+	            android:id="@+id/UI3_RB_portrait"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_marginLeft="20dp"

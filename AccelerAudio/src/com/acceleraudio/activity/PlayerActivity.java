@@ -1,7 +1,5 @@
 package com.acceleraudio.activity;
 
-import java.util.ArrayList;
-
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.PlayerTrack;
 import com.malunix.acceleraudio.R;
@@ -25,20 +23,24 @@ import android.widget.Toast;
 
 public class PlayerActivity extends Activity {
 	
-	public static String ACC_DATA = "accelerotemer_data"; // dati accelerometro
-	public static String MUSIC_CURSOR = "music_cursor"; // puntatore array della musica in riproduzione
-	public static String SOUND_RATE = "soundRate";
+	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
+	public static String MUSIC_CURSOR = "playerActivity.music_cursor"; // puntatore array della musica in riproduzione
+	public static String SOUND_RATE = "playerActivity.soundRate";
+	public static String UPSAMPLING = "playerActivity.upsampling";
+	public static String INIZIALIZED = "playerActivity.inizialied";
+	public static String SAMPLE = "playerActivity.sample";
+	public static String IMAGE = "playerActivity.image";
 	
 	private Boolean inizialized = false, axis_x, axis_y, axis_z;
 	private TextView sessionName;
 	private Button play, pause, stop;
 	private ImageView thumbnail;
-	private ArrayList<Integer> sample = new ArrayList<Integer>();
+	private int[] sample;
 	private int sessionId, upsampling, musicCursor = 0; // musicCursos: puntatore array della musica in riproduzione
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
 	public Intent intentPlayer;
-	private static String[] data_x, data_y, data_z;
+	public static String[] data_x, data_y, data_z;
 	private String image;
 	private Thread t;
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -62,13 +64,6 @@ public class PlayerActivity extends Activity {
     	intentPlayer = new Intent(this, PlayerTrack.class);
     	
 ////////////////////////////////////////////////////////
-///////////// Prelevo dati dall'intent /////////////////
-///////////////////////////////////////////////////////  
-
-		Bundle b = getIntent().getExtras();
-		sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
-    	
-////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
@@ -78,51 +73,84 @@ public class PlayerActivity extends Activity {
 			pause = (Button) findViewById(R.id.UI4_BT_pause);
 			stop = (Button) findViewById(R.id.UI4_BT_stop);
 			thumbnail = (ImageView) findViewById(R.id.UI4_IV_thumbnail);
+			
+			play.setEnabled(true);
+			pause.setEnabled(false);
+			
+			if (savedInstanceState != null)
+			{
+				inizialized = savedInstanceState.getBoolean(INIZIALIZED);
+				musicCursor = savedInstanceState.getInt(MUSIC_CURSOR);
+				sample = savedInstanceState.getIntArray(SAMPLE);
+				upsampling = savedInstanceState.getInt(UPSAMPLING);
+				image = savedInstanceState.getString(IMAGE);
+				
+				if(inizialized)
+				{
+					play.setEnabled(false);
+					pause.setEnabled(true);
+				}
+			}
+			else
+			{
+				
+////////////////////////////////////////////////////////
+///////////// Prelevo dati dall'intent /////////////////
+///////////////////////////////////////////////////////  
+
+				Bundle b = getIntent().getExtras();
+				sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
     	
 ////////////////////////////////////////////////////////
 /// prelevo dati dal database e li carico nella vista///
 ///////////////////////////////////////////////////////
 
-			// apro la connessione al db
-			dbAdapter = new DbAdapter(this);
-			dbAdapter.open();
-			
-			// prelevo record by ID 
-			cursor = dbAdapter.fetchSessionById(sessionId);
-			cursor.moveToFirst();
-			
-			// carico dati
-			sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
-			image = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)));
-			data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
-			data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
-			data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
-			//TODO: si potrebbe togliere il numero dei sample presente nel database.
-			axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1");
-			axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1");
-			axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
-			upsampling = cursor.getInt(( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
-			
-			// chiudo connessioni
-			cursor.close();
-			dbAdapter.close();
-			
-			if(!(axis_x || axis_y || axis_z)) 
-			{
-					Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT).show();
-					finish();
+				// apro la connessione al db
+				dbAdapter = new DbAdapter(this);
+				dbAdapter.open();
+				
+				// prelevo record by ID 
+				cursor = dbAdapter.fetchSessionById(sessionId);
+				cursor.moveToFirst();
+				
+				// carico dati
+				sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
+				image = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)));
+				data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
+				data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
+				data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
+				//TODO: si potrebbe togliere il numero dei sample presente nel database.
+				axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1");
+				axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1");
+				axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
+				upsampling = cursor.getInt(( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
+				
+				// chiudo connessioni
+				cursor.close();
+				dbAdapter.close();
+				
+				if(!(axis_x || axis_y || axis_z)) 
+				{
+						Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT).show();
+						finish();
+				}
+				
+				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
+				sample = new int[(nSample > 0 ? nSample : 1)];
+				
+				if(axis_x)
+					for(int i = 0; i<data_x.length; i++)
+						if(data_x[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_x[i])*100));
+				if(axis_y)
+					for(int i = 0; i<data_y.length; i++)
+						if(data_y[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_y[i])*100));
+				if(axis_z)
+					for(int i = 0; i<data_z.length; i++)
+						if(data_z[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_z[i])*100));
+				
 			}
 			
-			if(axis_x)
-				for(int i = 0; i<data_x.length; i++)
-					if(data_x[i].length()>0)sample.add((int)(Float.parseFloat(data_x[i])*100));
-			if(axis_y)
-				for(int i = 0; i<data_y.length; i++)
-					if(data_y[i].length()>0)sample.add((int)(Float.parseFloat(data_y[i])*100));
-			if(axis_z)
-				for(int i = 0; i<data_z.length; i++)
-					if(data_z[i].length()>0)sample.add((int)(Float.parseFloat(data_z[i])*100));
-		
+			// TODO se possibile calcolare l'immagine solo la prima volta
 			t = new Thread("Thumbnail_Decoding"){
 				public void run() {
 					// setta la priorità massia del thread
@@ -140,7 +168,7 @@ public class PlayerActivity extends Activity {
                     });
 				}
 			};
-			t.start();    
+			t.start();
 			
 		} catch (NumberFormatException e) {
 			Toast.makeText(this, "Errore Caricamento Sample", Toast.LENGTH_SHORT).show();
@@ -173,11 +201,16 @@ public class PlayerActivity extends Activity {
 				// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
 				if(!inizialized)
 				{
+					// nel caso non ci siano sample ne aggiunge uno standard
+					if(sample.length == 0) sample[0] = 100;
 					intentPlayer.putExtra(ACC_DATA, sample);
 					intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
-					intentPlayer.putExtra(SOUND_RATE, upsampling);
+					intentPlayer.putExtra(UPSAMPLING, upsampling);
 					startService(intentPlayer);
 					inizialized = true;
+					play.setEnabled(false);
+					pause.setEnabled(true);
+					
 				}
 			}
 		});
@@ -188,6 +221,9 @@ public class PlayerActivity extends Activity {
 			public void onClick(View v) {
 				stopService(intentPlayer);
 				inizialized = false;
+				play.setEnabled(true);
+				pause.setEnabled(false);
+				
 			}
 		});
 		
@@ -221,6 +257,17 @@ public class PlayerActivity extends Activity {
 	    super.onBackPressed();
 	    stopService(intentPlayer); // stoppa il servizio della musica
 	    finish();
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) 
+    {
+    	savedInstanceState.putBoolean(INIZIALIZED, inizialized);
+    	savedInstanceState.putInt(MUSIC_CURSOR, musicCursor);
+    	savedInstanceState.putInt(UPSAMPLING, upsampling);
+    	savedInstanceState.putIntArray(SAMPLE, sample);
+    	savedInstanceState.putString(IMAGE, image);
+    	super.onSaveInstanceState(savedInstanceState);
     }
 
 }
