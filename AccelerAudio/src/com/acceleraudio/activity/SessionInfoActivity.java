@@ -31,6 +31,11 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class SessionInfoActivity extends Activity {
 	
+	private static String SESSION_ID = "sessionInfoActivity.session_id";
+	private static String CREATION_DATE = "sessionInfoActivity.creation_date";
+	private static String DATE_CHANGE = "sessionInfoActivity.date_change";
+	private static String IMAGE = "sessionInfoActivity.image";
+	
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
     private Button listSession, playSession;
@@ -38,7 +43,7 @@ public class SessionInfoActivity extends Activity {
     private EditText et_sessionName;
     private TextView creation_date, date_change;
     private CheckBox axis_x, axis_y, axis_z;
-    private Spinner spinner;
+    private Spinner sp_upsampling;
     private int sessionId;
     private String image;
     private Thread t;
@@ -48,19 +53,13 @@ public class SessionInfoActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_2);
-
-////////////////////////////////////////////////////////
-///////////// Prelevo dati dall'intent /////////////////
-///////////////////////////////////////////////////////  
     	
-    	Bundle b = getIntent().getExtras();
-    	sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
-    	 	
+    	try {
+    		
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
-    	
-    	try {
+    		
 			listSession = (Button) findViewById(R.id.UI2_BT_listsession);
 			playSession = (Button) findViewById(R.id.UI2_button_play);
 			et_sessionName = (EditText)findViewById(R.id.UI2_ET_sessionTitle);
@@ -71,70 +70,91 @@ public class SessionInfoActivity extends Activity {
 			axis_x = (CheckBox)findViewById(R.id.UI2_CB_X);
 			axis_y = (CheckBox)findViewById(R.id.UI2_CB_Y);
 			axis_z = (CheckBox)findViewById(R.id.UI2_CB_Z);
-			spinner = (Spinner) findViewById(R.id.UI2_SP_upsampling);
+			sp_upsampling = (Spinner) findViewById(R.id.UI2_SP_upsampling);
 			
 			/**** POPOLA LA LISTA DELLO SPINNER ****/
 			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.upsampling_array, android.R.layout.simple_spinner_item);
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			spinner.setAdapter(adapter);
-    	
+			sp_upsampling.setAdapter(adapter);
+			
+			if (savedInstanceState != null)
+			{
+				sessionId = savedInstanceState.getInt(SESSION_ID);
+				creation_date.setText(savedInstanceState.getString(CREATION_DATE));
+				date_change.setText(savedInstanceState.getString(DATE_CHANGE));
+				image = savedInstanceState.getString(IMAGE);
+			}
+			else
+			{
+					
+////////////////////////////////////////////////////////
+///////////// Prelevo dati dall'intent /////////////////
+///////////////////////////////////////////////////////  
+
+				Bundle b = getIntent().getExtras();
+				sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
+
 ////////////////////////////////////////////////////////
 /// prelevo dati dal database e li carico nella vista///
 ///////////////////////////////////////////////////////
     	
-			// apro la connessione al db
-			dbAdapter = new DbAdapter(this);
-			dbAdapter.open();
+				// apro la connessione al db
+				dbAdapter = new DbAdapter(this);
+				dbAdapter.open();
+				
+				// prelevo record by ID 
+				cursor = dbAdapter.fetchSessionById(sessionId);
+				cursor.moveToFirst();
+				
+				// carico dati
+				et_sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME))); // carico il nome della sessione
+				image = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)));
+				creation_date.setText(creation_date.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_CREATION_DATE))); // carico data creazione
+				date_change.setText(date_change.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE))); // carico data modifica
+				axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1")); // asse x
+				axis_y.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1")); // asse y
+				axis_z.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1")); // asse z
+				Util.SelectSpinnerItemByValue(sp_upsampling, Util.getUpsamplingName(Integer.parseInt(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)))));
+				
+				// chiudo connessioni
+				cursor.close();
+				dbAdapter.close();
+				
+				
+			}
 			
-			// prelevo record by ID 
-			cursor = dbAdapter.fetchSessionById(sessionId);
-			cursor.moveToFirst();
-			
-			// carico dati
-			et_sessionName.setText(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME))); // carico il nome della sessione
-			image = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)));
-			creation_date.setText(creation_date.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_CREATION_DATE))); // carico data creazione
-			date_change.setText(date_change.getText() + " " + cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE))); // carico data modifica
-			axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1")); // asse x
-			axis_y.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1")); // asse y
-			axis_z.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1")); // asse z
-			Util.SelectSpinnerItemByValue(spinner, Util.getUpsamplingName(Integer.parseInt(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)))));
-			
-			// chiudo connessioni
-			cursor.close();
-			dbAdapter.close();
-			
+			// TODO se possibile decodificare solo la prima volta il thumbnail
 			t = new Thread("Thumbnail_Decoding"){
-					public void run() {
-						// setta la priorità massia del thread
-			            setPriority(Thread.MAX_PRIORITY);
-			            
-			            // converto la stringa in una immagine bitmap
-			    		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
-			    		final Bitmap bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
-						
-						runOnUiThread(new Runnable() {
-			                @Override
-			                public void run() {
-			                	thumbnail.setImageBitmap(bmp);
-			                }
-			            });
-					}
+				public void run() {
+					// setta la priorità massia del thread
+		            setPriority(Thread.MAX_PRIORITY);
+		            
+		            // converto la stringa in una immagine bitmap
+		    		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
+		    		final Bitmap bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
+					
+					runOnUiThread(new Runnable() {
+		                @Override
+		                public void run() {
+		                	thumbnail.setImageBitmap(bmp);
+		                }
+		            });
+				}
 			};
 			t.start();
-			
+		
 		} catch (SQLException e) {
-			Toast.makeText(this, "Errore database", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} catch (RuntimeException e) {
-			Toast.makeText(this, "Errore caricamento interfaccia", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} 
     }
     
-    @SuppressLint("ShowToast")
+	@SuppressLint("ShowToast")
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -170,26 +190,27 @@ public class SessionInfoActivity extends Activity {
 		
 		final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				updateChange(arg1);
+			public void onItemSelected(AdapterView<?> arg0, View v, int arg2, long arg3) {
+				updateChange(v);
 			}
 		
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {				
 			}
 		};
-		spinner.setOnItemSelectedListener(spinner_change);
+		sp_upsampling.setOnItemSelectedListener(spinner_change);
 		
 /////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
 
-		final Toast toast = Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT);
+		final Toast toast = Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT);
 		
 		/**** TORNA ALLA LISTA DELLE SESSIONI ****/
 		listSession.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				// impedisco di tornare indietro se non viene selezionato almeno un asse
 				if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
 				{
 					toast.show();
@@ -211,6 +232,27 @@ public class SessionInfoActivity extends Activity {
 		});
     }
     
+	@Override
+	public void onBackPressed() {
+		// impedisce di tornare indietro se non viene selezionato nessun asse
+	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
+		{
+				Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+		}
+	    else
+	    	finish();
+    }
+	
+	@Override
+    public void onSaveInstanceState(Bundle savedInstanceState) 
+    {
+		savedInstanceState.putInt(SESSION_ID, sessionId);
+    	savedInstanceState.putString(CREATION_DATE, creation_date.getText().toString());
+    	savedInstanceState.putString(DATE_CHANGE, date_change.getText().toString());
+      	savedInstanceState.putString(IMAGE, image);
+    	super.onSaveInstanceState(savedInstanceState);
+    }
+	
 /////////////////////////////////////////////////////////
 ///////////  metodi ausiliari  /////////////////////////
 ////////////////////////////////////////////////////////
@@ -225,28 +267,20 @@ public class SessionInfoActivity extends Activity {
 				dbAdapter.open();
 				
 				// aggiorno i dati delle preferenze
-				dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Util.getUpsamplingID(spinner.getSelectedItem().toString()));
+				dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Util.getUpsamplingID(sp_upsampling.getSelectedItem().toString()));
 				
 				// chiudo la connessione al db
 				dbAdapter.close();
 				
 			} catch (NumberFormatException e) {
-				Toast.makeText(this, "Errore aggiornamento modifiche: formato numero ", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			} catch (SQLException e) {
-				Toast.makeText(this, "Errore caricamento modifiche: database", Toast.LENGTH_SHORT).show();
+				if(dbAdapter.isOpen()) dbAdapter.close();
+				Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	@Override
-	public void onBackPressed() {
-	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
-		{
-				Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT).show();
-		}
-	    else
-	    	finish();
-    }
 }

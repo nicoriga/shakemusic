@@ -59,6 +59,11 @@ public class DbAdapter {
 		database.close();
 		dbHelper.close();
 	}
+	
+	public boolean isOpen() 
+	{
+		return database.isOpen();
+	}
  
 	private String getDate() 
 	{
