@@ -33,7 +33,6 @@ import android.widget.Toast;
 
 public class RecordActivity extends Activity {
 	
-	public static String SESSION_ID = "recordActivity.session_id";
 	public static String TIME_REMAINING = "recordActivity.time_remaining";
 	public static String ORIENTATION = "recordActivity.orientation";
 	public static String PAUSE = "recordActivity.pause";
@@ -42,21 +41,19 @@ public class RecordActivity extends Activity {
 	
 	private boolean insertComplete = false;
 	private static boolean initialized;
-	private Button startSession, stopSession, pauseSession, saveSession;
-	private EditText nameSession;
-	private static TextView  rec_sample, time_remaining;
+	public static Button startSession, stopSession, pauseSession, saveSession;
+	protected static EditText nameSession;
+	public static TextView  rec_sample, time_remaining;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
 	private RadioGroup radioGroup;
 	private RadioButton radioOrientationButton;
-	// essendo pubblici e statici riesco a inserire i dati direttamente dal servizio, inoltre non vengono persi
-	// quando viene stoppato il servizio e si ruota lo schermo
 	public static ArrayList<Float> data_x, data_y, data_z;
-	public static int sample, x, y, z;
 	private DbAdapter dbAdapter;
-	private Intent intentRecord;
-	private long sessionId, remaining_time;
+	public static int sample, x, y, z;
+	public Intent intentRecord;
+	public static long sessionId, remaining_time;
 	private boolean axis_x, axis_y, axis_z;
-	private boolean pause, stop;
+	public static boolean pause, stop;
 	private int upsampling, sample_rate, orientation;
 	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
@@ -71,8 +68,11 @@ public class RecordActivity extends Activity {
     	
     	// creo intent per avviare il servizio di registrazione
     	intentRecord = new Intent(this, RecordTrack.class);
+    	
     	initialized = false;
+		
 		dbAdapter = new DbAdapter(this);
+		
 		context = this;
 		
 ////////////////////////////////////////////////////////
@@ -80,7 +80,6 @@ public class RecordActivity extends Activity {
 ///////////////////////////////////////////////////////
 
 		try {
-			
 			nameSession = (EditText) findViewById(R.id.UI3_ET_SessionName);
 			rec_sample = (TextView) findViewById(R.id.UI3_TV_RecordedSamples);
 			time_remaining = (TextView) findViewById(R.id.UI3_TV_timerRemaning);
@@ -113,10 +112,10 @@ public class RecordActivity extends Activity {
 			upsampling = pref.getInt(PreferencesActivity.UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)));
 			remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
 			
+			// Restore from the savedInstanceState
 			if (savedInstanceState != null)
 			{
 				resetProgressBar();
-				sessionId = savedInstanceState.getLong(SESSION_ID);
 				remaining_time = savedInstanceState.getLong(TIME_REMAINING);
 				orientation = savedInstanceState.getInt(ORIENTATION);
 				pause = savedInstanceState.getBoolean(PAUSE);
@@ -141,15 +140,27 @@ public class RecordActivity extends Activity {
 			}
 			else
 			{	
+				// TODO sistemare orientamento nel caso sia reverse
+//				int currOrient = getResources().getConfiguration().orientation;
+//				if(currOrient == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || currOrient == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
+//				{
 				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-				radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_portrait);
-				radioOrientationButton.setChecked(true);
-				
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+					radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_portrait);
+					radioOrientationButton.setChecked(true);
+//				}
+//				// il 2 sta per reverse landscape
+//				if(currOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE || currOrient == 2)
+//				{
+//					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//					radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_landscape);
+//					radioOrientationButton.setChecked(true);
+//				}
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
 				data_z = new ArrayList<Float>();
 				sample = 0;
+				rec_sample.setText("0");
 				x = 0;
 				y = 0;
 				z = 0;
@@ -157,135 +168,135 @@ public class RecordActivity extends Activity {
 				stop = false;
 			}
 			
-			rec_sample.setText("" + sample);
 			time_remaining.setText("" + remaining_time / 1000);
 			
-/////////////////////////////////////////////////////////
-////////////aggiungo listener ai bottoni ///////////////
-////////////////////////////////////////////////////////
-
-			/**** ROTAZIONE SCHERMO ****/
-			radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(RadioGroup group, int checkedId) {
-					int orientationID = radioGroup.getCheckedRadioButtonId();
-					radioOrientationButton = (RadioButton) findViewById(orientationID);
-					
-					if(radioOrientationButton.getText().toString().equalsIgnoreCase("portrait"))
-					{
-						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-						orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-					}
-					else
-					{
-						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-						orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-					}
-				}
-			});
-			
-			/**** AVVIA LA REGISTRAZIONE ****/
-			startSession.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					pause = false;
-					stop = false;
-					startSession.setEnabled(false);
-					pauseSession.setEnabled(true);
-					stopSession.setEnabled(true);
-					
-					intentRecord.putExtra(RecordTrack.SENSOR_DELAY, sample_rate);
-					startService(intentRecord);
-					
-					countDownTimer = new CountDownTimer(remaining_time, 1000) {
-						public void onTick(long millisUntilFinished) {
-							remaining_time = millisUntilFinished;
-							time_remaining.setText("" + millisUntilFinished / 1000);
-						}
-						
-						public void onFinish() {
-							time_remaining.setText("0");
-							if(!pause)
-							{
-								startSession.setEnabled(false);
-								pauseSession.setEnabled(false);
-								stopSession.setEnabled(false);
-								saveSession.setEnabled(true);
-								remaining_time = 0;
-							}
-							try{
-								resetProgressBar();
-								stopService(intentRecord);
-								stop = true;
-							}
-							catch(NullPointerException ex)
-							{
-								ex.printStackTrace();
-							}
-						}
-					};
-					countDownTimer.start();
-				}
-			});
-			
-			/**** PAUSA LA REGISTRAZIONE ****/
-			pauseSession.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					pause = true;
-					stop = false;
-					startSession.setEnabled(true);
-					pauseSession.setEnabled(false);
-					stopService(intentRecord);
-					if(countDownTimer != null) countDownTimer.cancel();
-					resetProgressBar();
-				}
-			});
-			
-			/**** STOPPA LA REGISTRAZIONE ****/
-			stopSession.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					pause = false;
-					stop = true;
-					startSession.setEnabled(false);
-					pauseSession.setEnabled(false);
-					stopSession.setEnabled(false);
-					saveSession.setEnabled(true);
-					
-					stopService(intentRecord);
-					if(countDownTimer != null) countDownTimer.cancel();
-					resetProgressBar();
-				}
-			});
-			
-			/**** SALVA LA REGISTRAZIONE ****/
-			saveSession.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// Verifica che siano stati presi dati dall'accelerometro
-					if(initialized)
-						if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
-						{
-							radioGroup.setEnabled(false);
-							saveSession.setEnabled(false);
-							saveAccelerometerData();
-							// avvio la SessionInfoActivity
-							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
-							i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
-							v.getContext().startActivity(i);
-						}
-						else Toast.makeText(v.getContext(), "INSERISCI NOME SESSIONE", Toast.LENGTH_SHORT).show();
-					else finish(); // se non ci sono dati chiude l'activity
-				}
-			});
-
-			
 		} catch (RuntimeException e) {
-			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Errore caricamento interfaccia", Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}
+		
+    }
+
+    @Override
+	public void onResume() {
+		super.onResume();
+		
+/////////////////////////////////////////////////////////
+////////////aggiungo listener ai bottoni ///////////////
+////////////////////////////////////////////////////////
+		
+		/**** ROTAZIONE SCHERMO ****/
+		radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				int orientationID = radioGroup.getCheckedRadioButtonId();
+				radioOrientationButton = (RadioButton) findViewById(orientationID);
+				
+				if(radioOrientationButton.getText().toString().equalsIgnoreCase("portrait"))
+				{
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+					orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+				}
+				else
+				{
+					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+				}
+			}
+		});
+
+		/**** AVVIA LA REGISTRAZIONE ****/
+		startSession.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				pause = false;
+				startSession.setEnabled(false);
+				pauseSession.setEnabled(true);
+				stopSession.setEnabled(true);
+				intentRecord.putExtra(RecordTrack.SENSOR_DELAY, sample_rate);
+				startService(intentRecord);
+				countDownTimer = new CountDownTimer(remaining_time, 1000) {
+					public void onTick(long millisUntilFinished) {
+						remaining_time = millisUntilFinished;
+						time_remaining.setText("" + millisUntilFinished / 1000);
+					}
+					
+					public void onFinish() {
+						time_remaining.setText("0");
+						if(!pause)
+						{
+							startSession.setEnabled(false);
+							pauseSession.setEnabled(false);
+							stopSession.setEnabled(false);
+							saveSession.setEnabled(true);
+							remaining_time = 0;
+						}
+						try{
+							resetProgressBar();
+							stopService(intentRecord);
+							stop = true;
+						}
+						catch(NullPointerException ex)
+						{
+							ex.printStackTrace();
+						}
+					}
+				};
+				countDownTimer.start();
+			}
+		});
+		
+		/**** PAUSA LA REGISTRAZIONE ****/
+		pauseSession.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				pause = true;
+				startSession.setEnabled(true);
+				pauseSession.setEnabled(false);
+				stopService(intentRecord);
+				if(countDownTimer != null) countDownTimer.cancel();
+				resetProgressBar();
+			}
+		});
+		
+		/**** STOPPA LA REGISTRAZIONE ****/
+		stopSession.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				pause = false;
+				stop = true;
+				startSession.setEnabled(false);
+				pauseSession.setEnabled(false);
+				stopSession.setEnabled(false);
+				saveSession.setEnabled(true);
+				
+				stopService(intentRecord);
+				if(countDownTimer != null) countDownTimer.cancel();
+				resetProgressBar();
+			}
+		});
+		
+		/**** SALVA LA REGISTRAZIONE ****/
+		saveSession.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Verifica che siano stati presi dati dall'accelerometro
+				if(initialized)
+					if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
+					{
+						radioGroup.setEnabled(false);
+						saveSession.setEnabled(false);
+						saveAccelerometerData();
+						// avvio la SessionInfoActivity
+						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
+						i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
+						v.getContext().startActivity(i);
+					}
+					else Toast.makeText(v.getContext(), "INSERISCI NOME SESSIONE", Toast.LENGTH_SHORT).show();
+				else finish(); // se non ci sono dati chiude l'activity
+			}
+		});
 		
     }
     
@@ -309,7 +320,6 @@ public class RecordActivity extends Activity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
-    	savedInstanceState.putLong(SESSION_ID, sessionId);
     	savedInstanceState.putLong(TIME_REMAINING, remaining_time);
     	savedInstanceState.putInt(ORIENTATION, orientation);
     	savedInstanceState.putBoolean(PAUSE, pause);
@@ -320,7 +330,7 @@ public class RecordActivity extends Activity {
         
 
 /////////////////////////////////////////////////////////    
-/////////////// Metodi AUSILIARI  ///////////////////////
+////////////////Metodi Utili  //////////////////////////
 ////////////////////////////////////////////////////////
 
     public void saveAccelerometerData(){
@@ -386,6 +396,10 @@ public class RecordActivity extends Activity {
 			}
 		}
     }
+
+//////////////////////////////
+///// METODI AUSILIARI
+/////////////////////////////
     
     public static void updateSample(){
 		rec_sample.setText("" + sample);

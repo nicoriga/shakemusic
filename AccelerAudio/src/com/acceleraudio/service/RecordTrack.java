@@ -28,7 +28,6 @@ public class RecordTrack extends IntentService{
 	private Sensor accelerometer;
 	private float noise = 1.2f;
 	private float oldX, oldY, oldZ;
-	private long remaining_time;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
         public void onSensorChanged(SensorEvent event) {
@@ -123,7 +122,6 @@ public class RecordTrack extends IntentService{
     	initialized = false;
     	isRecording = true;
     	noise = intent.getFloatExtra(NOISE, 1.0f);
-    	remaining_time = intent.getLongExtra(TIME_REMAINING, 60000);
    	  
     	try {
 			sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -131,8 +129,11 @@ public class RecordTrack extends IntentService{
 			// verifica presenza accelerometro
 			if (accelerometer != null) 
 			{
-				sensorManager.registerListener(mySensorEventListener, accelerometer, intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL));
-				long endTime = System.currentTimeMillis() + remaining_time;
+				sensorManager.registerListener(mySensorEventListener,
+						accelerometer, intent.getIntExtra(SENSOR_DELAY,
+								SensorManager.SENSOR_DELAY_NORMAL));
+				long endTime = System.currentTimeMillis()
+						+ RecordActivity.remaining_time;
 				while (isRecording && System.currentTimeMillis() < endTime) {
 					synchronized (this) {
 						try {
