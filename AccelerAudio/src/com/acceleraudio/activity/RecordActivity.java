@@ -270,13 +270,13 @@ public class RecordActivity extends Activity {
 							i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
 							v.getContext().startActivity(i);
 						}
-						else Toast.makeText(v.getContext(), "INSERISCI NOME SESSIONE", Toast.LENGTH_SHORT).show();
+						else Toast.makeText(v.getContext(), getString(R.string.error_no_session_name), Toast.LENGTH_SHORT).show();
 					else finish(); // se non ci sono dati chiude l'activity
 				}
 			});
 		
 		} catch (RuntimeException e) {
-			Toast.makeText(this, "Errore caricamento interfaccia", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}
@@ -325,9 +325,9 @@ public class RecordActivity extends Activity {
 				final StringBuilder x_sb = new StringBuilder();
 				final StringBuilder y_sb = new StringBuilder();
 				final StringBuilder z_sb = new StringBuilder();
-				for (float value : data_x) x_sb.append(" " + value);
-				for (float value : data_y) y_sb.append(" " + value);
-				for (float value : data_z) z_sb.append(" " + value);
+				for (float value : data_x) x_sb.append(value + " ");
+				for (float value : data_y) y_sb.append(value + " ");
+				for (float value : data_z) z_sb.append(value + " ");
 				Log.w("save Session", "...dati preparati");
 				Log.w("save Session", "creazione immagine...");
 				
@@ -338,7 +338,7 @@ public class RecordActivity extends Activity {
 				        
 				        //costruzione immagine
 				        Log.w("save Session", "...creata");
-						ImageBitmap.color(bmp, x_sb.toString().split(" "), y_sb.toString().split(" "), z_sb.toString().split(" "), (int)sessionId);	
+						ImageBitmap.color(bmp, data_x, data_y, data_z, (int)sessionId);	
 						String encodedImage = ImageBitmap.encodeImage(bmp);
 						Log.w("save Session", "...codificata");
 						

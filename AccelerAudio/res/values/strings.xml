@@ -11,6 +11,7 @@
     <string name="cancel">Cancel</string>
     <string name="note">Note</string>
     <string name="lineare">Lineare</string>
+    <string name="error_no_session_name">INSERISCI NOME SESSIONE</string>
     <string name="error_number_format">Errore: formato numero</string>
     <string name="error_no_axis_selected">Selezionare almeno un asse</string>
     <string name="error_no_accelerometer">Errore: Accelerometro non presente</string>
