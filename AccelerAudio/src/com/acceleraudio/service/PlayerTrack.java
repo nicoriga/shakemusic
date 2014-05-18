@@ -67,7 +67,7 @@ public class PlayerTrack extends IntentService{
 			        		// loop musicale con note
 					        while(isRunning){
 					        	// modifica la frequenza con i campioni prelevati dall'accelerometro
-					        	fr =  262 + (sample[x]*100);
+					        	fr =  262 + (sample[x]*10);
 					        	for(int i=0; i < buffsize; i++){
 					        		samples[i] = (short) (amp*Math.sin(ph));
 					        		ph += twoph*fr/sound_rate;

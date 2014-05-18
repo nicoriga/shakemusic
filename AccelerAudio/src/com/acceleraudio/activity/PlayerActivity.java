@@ -19,6 +19,7 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,9 +37,10 @@ public class PlayerActivity extends Activity {
 	private TextView sessionName, currentTimeTV, durationTV;
 	private Button play, pause, stop;
 	private ImageView thumbnail;
+	private SeekBar sb_musicProgress;
 	private int[] sample;
 	private int sessionId, upsampling, musicCursor = 0; // musicCursos: puntatore array della musica in riproduzione
-	private long duration, time_elapsed;
+	private static long duration;
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
 	public Intent intentPlayer;
@@ -53,7 +55,7 @@ public class PlayerActivity extends Activity {
     		Bundle bundle = intent.getExtras();
     		if (bundle != null) {
     			if(intent.hasExtra(MUSIC_CURSOR)) musicCursor = bundle.getInt(MUSIC_CURSOR);
-    			if(intent.hasExtra(PlayerTrack.DURATION)) duration = bundle.getLong(PlayerTrack.DURATION);
+    			//if(intent.hasExtra(PlayerTrack.DURATION)) duration = bundle.getLong(PlayerTrack.DURATION);
     		}
         }
     };
@@ -79,6 +81,7 @@ public class PlayerActivity extends Activity {
 			thumbnail = (ImageView) findViewById(R.id.UI4_IV_thumbnail);
 			currentTimeTV = (TextView) findViewById(R.id.UI4_TV_initialTimer);
 			durationTV = (TextView) findViewById(R.id.UI4_TV_finalTimer);
+			sb_musicProgress = (SeekBar) findViewById(R.id.UI4_SB_musicProgress);
 			
 			play.setEnabled(true);
 			pause.setEnabled(false);
@@ -147,13 +150,13 @@ public class PlayerActivity extends Activity {
 				
 				if(axis_x)
 					for(int i = 0; i<data_x.length; i++)
-						if(data_x[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_x[i])));
+						if(data_x[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_x[i])*10));
 				if(axis_y)
 					for(int i = 0; i<data_y.length; i++)
-						if(data_y[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_y[i])));
+						if(data_y[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_y[i])*10));
 				if(axis_z)
 					for(int i = 0; i<data_z.length; i++)
-						if(data_z[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_z[i])));
+						if(data_z[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_z[i])*10));
 				
 			}
 			
@@ -177,16 +180,83 @@ public class PlayerActivity extends Activity {
 			};
 			t.start();
 			
+    	
+/////////////////////////////////////////////////////////
+////////////aggiungo listener ai bottoni ///////////////
+////////////////////////////////////////////////////////
+
+			/**** play music ****/
+			play.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
+					if(!inizialized)
+					{
+						// nel caso non ci siano sample ne aggiunge uno standard
+						if(sample.length == 0) sample[0] = 100;
+						intentPlayer.putExtra(ACC_DATA, sample);
+						intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
+						intentPlayer.putExtra(UPSAMPLING, upsampling);
+						startService(intentPlayer);
+						inizialized = true;
+						play.setEnabled(false);
+						pause.setEnabled(true);
+						
+						// TODO valori di prova
+						duration = ((sample.length*3072)/44100)*1000;
+						durationTV.setText("" + duration/1000);
+						sb_musicProgress.setMax((int)duration/1000);
+						
+						
+						// TODO sistemare timer durata musica
+						countDownTimer = new CountDownTimer(duration, 1000) {
+							public void onTick(long millisUntilFinished) {
+								long time_elapsed = duration - millisUntilFinished;
+								currentTimeTV.setText("" + time_elapsed / 1000);
+								sb_musicProgress.setProgress((int)time_elapsed / 1000);
+							}
+							
+							public void onFinish() {
+								countDownTimer.start();
+							}
+						};
+						countDownTimer.start();
+					}
+				}
+			});
+			
+			/**** pause music ****/
+			pause.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					stopService(intentPlayer);
+					inizialized = false;
+					play.setEnabled(true);
+					pause.setEnabled(false);
+					
+				}
+			});
+			
+			/**** stop music ****/
+			stop.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					stopService(intentPlayer);
+					finish();
+				}
+			});
+	    	
+	    	
 		} catch (NumberFormatException e) {
-			Toast.makeText(this, "Errore Caricamento Sample", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} catch (SQLException e) {
-			Toast.makeText(this, "Errore database", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} catch (RuntimeException e) {
-			Toast.makeText(this, "Errore caricamento interfaccia", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}
@@ -196,70 +266,9 @@ public class PlayerActivity extends Activity {
     @Override
     protected void onResume() {
     	super.onResume();
-    	
-/////////////////////////////////////////////////////////
-////////////aggiungo listener ai bottoni ///////////////
-////////////////////////////////////////////////////////
-
-		/**** play music ****/
-		play.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
-				if(!inizialized)
-				{
-					// nel caso non ci siano sample ne aggiunge uno standard
-					if(sample.length == 0) sample[0] = 100;
-					intentPlayer.putExtra(ACC_DATA, sample);
-					intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
-					intentPlayer.putExtra(UPSAMPLING, upsampling);
-					startService(intentPlayer);
-					inizialized = true;
-					play.setEnabled(false);
-					pause.setEnabled(true);
-					
-					// TODO sistemare timer durata musica
-//					duration = 5000;
-//					countDownTimer = new CountDownTimer(duration, 1000) {
-//						public void onTick(long millisUntilFinished) {
-//							time_elapsed = duration - millisUntilFinished;
-//							currentTimeTV.setText("" + millisUntilFinished / 1000);
-//						}
-//						
-//						public void onFinish() {
-//							currentTimeTV.setText("0");
-//							countDownTimer.start();
-//						}
-//					};
-//					countDownTimer.start();
-				}
-			}
-		});
-		
-		/**** pause music ****/
-		pause.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				stopService(intentPlayer);
-				inizialized = false;
-				play.setEnabled(true);
-				pause.setEnabled(false);
-				
-			}
-		});
-		
-		/**** stop music ****/
-		stop.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				stopService(intentPlayer);
-				finish();
-			}
-		});
-    	
     	registerReceiver(receiver, new IntentFilter(PlayerTrack.NOTIFICATION));
     }
-    
+	    
     @Override
     protected void onPause() {
     	super.onPause();
