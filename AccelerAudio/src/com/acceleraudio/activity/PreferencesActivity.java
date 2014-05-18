@@ -116,7 +116,7 @@ public class PreferencesActivity extends Activity {
 			/**** incrementa i minuti ****/
 			minutesUp.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
-					if (minutes < 60) {
+					if (minutes < 2) {
 						minutes++;
 						minutesET.setText("" + minutes);
 						Editor prefEdit = pref.edit();
