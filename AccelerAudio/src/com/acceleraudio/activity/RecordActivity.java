@@ -48,6 +48,7 @@ public class RecordActivity extends Activity {
 	private RadioGroup radioGroup;
 	private RadioButton radioOrientationButton;
 	// essendo pubblici e statici, i dati non vengono persi durante la rotazione del display
+	// TODO verificare che questo sia il metodo piu adatto di procedere
 	public static ArrayList<Float> data_x, data_y, data_z;
 	public static int sample, x, y, z;
 	private DbAdapter dbAdapter;
@@ -374,7 +375,7 @@ public class RecordActivity extends Activity {
 				dbAdapter.close();
 				
 			} catch (SQLException e) {
-				Toast.makeText(this, "Errore salvataggio nel database", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.error_database_insert_new_session), Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			}
 		}

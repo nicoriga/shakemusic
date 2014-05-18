@@ -1,6 +1,7 @@
 package com.acceleraudio.service;
 
 import com.acceleraudio.activity.RecordActivity;
+import com.malunix.acceleraudio.R;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -26,7 +27,7 @@ public class RecordTrack extends IntentService{
 	private boolean initialized, isRecording;
 	private SensorManager sensorManager;
 	private Sensor accelerometer;
-	private float noise = 1.2f;
+	private float noise = 1.0f;
 	private float oldX, oldY, oldZ;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
@@ -129,11 +130,8 @@ public class RecordTrack extends IntentService{
 			// verifica presenza accelerometro
 			if (accelerometer != null) 
 			{
-				sensorManager.registerListener(mySensorEventListener,
-						accelerometer, intent.getIntExtra(SENSOR_DELAY,
-								SensorManager.SENSOR_DELAY_NORMAL));
-				long endTime = System.currentTimeMillis()
-						+ RecordActivity.remaining_time;
+				sensorManager.registerListener(mySensorEventListener, accelerometer, intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL));
+				long endTime = System.currentTimeMillis() + RecordActivity.remaining_time;
 				while (isRecording && System.currentTimeMillis() < endTime) {
 					synchronized (this) {
 						try {
@@ -153,7 +151,7 @@ public class RecordTrack extends IntentService{
 			else
 				initialized = false;
 		} catch (Exception e) {
-			Toast.makeText(this, "Errore: accelerometro", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			initialized = false;
 		}
@@ -161,7 +159,7 @@ public class RecordTrack extends IntentService{
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "start recording", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.notify_start_recording), Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent,flags,startId);
     }
     
@@ -172,7 +170,7 @@ public class RecordTrack extends IntentService{
     	synchronized (this) {
 			this.notify();
 		}
-		Toast.makeText(this, "stop recording", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, getString(R.string.notify_stop_recording), Toast.LENGTH_SHORT).show();
     	
     }
     
