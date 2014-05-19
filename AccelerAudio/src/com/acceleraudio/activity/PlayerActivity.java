@@ -35,7 +35,7 @@ public class PlayerActivity extends Activity {
 	
 	private Boolean inizialized = false, axis_x, axis_y, axis_z;
 	private TextView sessionName, currentTimeTV, durationTV;
-	private Button play, pause, stop;
+	private Button play, pause, stop, export;
 	private ImageView thumbnail;
 	private SeekBar sb_musicProgress;
 	private int[] sample;
@@ -78,6 +78,7 @@ public class PlayerActivity extends Activity {
 			play = (Button) findViewById(R.id.UI4_BT_play);
 			pause = (Button) findViewById(R.id.UI4_BT_pause);
 			stop = (Button) findViewById(R.id.UI4_BT_stop);
+			export = (Button) findViewById(R.id.UI4_BT_export);
 			thumbnail = (ImageView) findViewById(R.id.UI4_IV_thumbnail);
 			currentTimeTV = (TextView) findViewById(R.id.UI4_TV_initialTimer);
 			durationTV = (TextView) findViewById(R.id.UI4_TV_finalTimer);
@@ -245,6 +246,15 @@ public class PlayerActivity extends Activity {
 					finish();
 				}
 			});
+			
+			/**** Avvia l'activity per esportare session ****/
+			 export.setOnClickListener(new View.OnClickListener() {
+				 @Override
+				 public void onClick(View view) {
+					 Intent i = new Intent(view.getContext(), FileExplore.class);
+					 view.getContext().startActivity(i);
+				 }
+			 });
 	    	
 	    	
 		} catch (NumberFormatException e) {

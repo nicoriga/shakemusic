@@ -3,7 +3,7 @@ package com.acceleraudio.activity;
 import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
-import com.acceleraudio.design.CustomListSession;
+import com.acceleraudio.design.ListSessionAdapter;
 import com.acceleraudio.design.RenameDialog;
 import com.acceleraudio.design.RenameDialog.RenameDialogListener;
 import com.malunix.acceleraudio.R;
@@ -30,13 +30,13 @@ import android.widget.Toast;
  
 public class ListSessionActivity extends FragmentActivity  implements RenameDialogListener{
 
-	private Button newSession, preferences;
+	private Button newSession, preferences, merge;
 	private ListView list;
 	private ArrayList<Integer> sessionIdList;
 	private ArrayList<String> sessionNameList, sessionDataMod, image;
 	private DbAdapter dbAdapter; 
     private Context context;
-    private CustomListSession adaperList;
+    private ListSessionAdapter adaperList, adaperListCheck;
     private Thread t;
     
 	@Override
@@ -52,6 +52,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
     	try {
 			newSession = (Button)findViewById(R.id.UI1_BT_newSession);
 			preferences = (Button)findViewById(R.id.UI1_BT_preferences);
+			merge = (Button)findViewById(R.id.UI1_BT_mergeSession);
 			list = (ListView)findViewById(R.id.UI1_LV_listSession);
 			
 			
@@ -90,6 +91,13 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
 					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(position));
 					view.getContext().startActivity(i);
+				}
+			});
+			
+			/**** visualizza checkbox per selezionare le sessioni da unire ****/
+			merge.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View view) {
+					list.setAdapter(adaperListCheck);
 				}
 			});
 			
@@ -134,7 +142,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			cursor.close();
 			dbAdapter.close();
 			
-			adaperList = new CustomListSession(this, sessionIdList, sessionNameList, sessionDataMod, image);
+			adaperListCheck = new ListSessionAdapter(this, R.layout.list_session_select_layout, sessionIdList, sessionNameList, sessionDataMod, image);
+			adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessionIdList, sessionNameList, sessionDataMod, image);
 			list.setAdapter(adaperList);
 			
 			registerForContextMenu(list);	
@@ -216,7 +225,10 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				return true;
 			
 			case 2:
-				//TODO: esporta la sessione
+				// esporta la sessione
+				// Avvio il File Manager
+				 Intent i1 = new Intent(context, FileExplore.class);
+				 context.startActivity(i1);
 				return true;
 			
 			case 3:

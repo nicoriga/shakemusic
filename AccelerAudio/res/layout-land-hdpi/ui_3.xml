@@ -118,7 +118,6 @@
 	        android:layout_height="wrap_content"
 	        android:text="Landscape" 
 	        android:checked="true" />
-	
 	    
 	    <RadioButton
 	        android:id="@+id/UI3_RB_portrait"

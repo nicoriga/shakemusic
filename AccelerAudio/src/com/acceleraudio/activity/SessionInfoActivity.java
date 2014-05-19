@@ -37,7 +37,7 @@ public class SessionInfoActivity extends Activity {
 	
 	private DbAdapter dbAdapter; 
     private Cursor cursor;
-    private Button listSession, playSession;
+    private Button listSession, playSession, export;
     public static ImageView thumbnail;
     private EditText et_sessionName;
     private TextView creation_date, date_change;
@@ -61,6 +61,7 @@ public class SessionInfoActivity extends Activity {
     		
 			listSession = (Button) findViewById(R.id.UI2_BT_listsession);
 			playSession = (Button) findViewById(R.id.UI2_button_play);
+			export = (Button) findViewById(R.id.UI2_button_export);
 			et_sessionName = (EditText)findViewById(R.id.UI2_ET_sessionTitle);
 			thumbnail = (ImageView) findViewById(R.id.UI2_IV_thumbnail);
 			thumbnail.setImageResource(R.drawable.ic_launcher);
@@ -214,6 +215,15 @@ public class SessionInfoActivity extends Activity {
 					v.getContext().startActivity(i);
 				}
 			});
+			
+			/**** Avvia l'activity per esportare session ****/
+			 export.setOnClickListener(new View.OnClickListener() {
+				 @Override
+				 public void onClick(View view) {
+					 Intent i = new Intent(view.getContext(), FileExplore.class);
+					 view.getContext().startActivity(i);
+				 }
+			 });
 		
 		} catch (SQLException e) {
 			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
