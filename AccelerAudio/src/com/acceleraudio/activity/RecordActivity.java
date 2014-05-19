@@ -9,7 +9,6 @@ import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -33,14 +32,16 @@ import android.widget.Toast;
 
 public class RecordActivity extends Activity {
 	
+	public static String SAMPLE_RATE = "recordActivity.sample_rate";
 	public static String TIME_REMAINING = "recordActivity.time_remaining";
 	public static String ORIENTATION = "recordActivity.orientation";
 	public static String PAUSE = "recordActivity.pause";
 	public static String STOP = "recordActivity.stop";
-	public static String INIZIALIZED = "recordActivity.inizialized";
+	public static String DATA_X = "recordActivity.data_x";
+	public static String DATA_Y = "recordActivity.data_y";
+	public static String DATA_Z = "recordActivity.data_z";
 	
 	private boolean insertComplete = false;
-	private static boolean initialized;
 	private static Button startSession, stopSession, pauseSession, saveSession;
 	private static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
@@ -54,15 +55,12 @@ public class RecordActivity extends Activity {
 	private DbAdapter dbAdapter;
 	public Intent intentRecord;
 	public static long sessionId, remaining_time;
-	private boolean axis_x, axis_y, axis_z;
 	public static boolean pause, stop;
-	private int upsampling, sample_rate, orientation;
+	private int sample_rate, orientation;
 	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
-	static final Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-	private Context context;
 	
-    @Override
+	@Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_3);
@@ -70,9 +68,8 @@ public class RecordActivity extends Activity {
     	
     	// creo intent per avviare il servizio di registrazione
     	intentRecord = new Intent(this, RecordTrack.class);	
-    	initialized = false;	
 		dbAdapter = new DbAdapter(this);	
-		context = this;
+		
 		
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
@@ -103,24 +100,19 @@ public class RecordActivity extends Activity {
 ///////////// prelevo le impostazioni predefinite ////////
 //////////////////////////////////////////////////////////
 
-			// imposto preferenze
-			axis_x = pref.getBoolean(PreferencesActivity.AXIS_X, true); // asse x
-			axis_y = pref.getBoolean(PreferencesActivity.AXIS_Y, true); // asse y
-			axis_z = pref.getBoolean(PreferencesActivity.AXIS_Z, true); // asse z
-			sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
-			upsampling = pref.getInt(PreferencesActivity.UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)));
-			remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
-			
-			// Restore from the savedInstanceState
 			if (savedInstanceState != null)
 			{
 				resetProgressBar();
+				sample_rate = savedInstanceState.getInt(SAMPLE_RATE);
 				remaining_time = savedInstanceState.getLong(TIME_REMAINING);
 				orientation = savedInstanceState.getInt(ORIENTATION);
 				pause = savedInstanceState.getBoolean(PAUSE);
 				stop = savedInstanceState.getBoolean(STOP);
-				initialized = savedInstanceState.getBoolean(INIZIALIZED);
+				data_x = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_X));
+				data_y = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_Y));
+				data_z = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_Z));
 				setRequestedOrientation(orientation);
+				startSession.setText(getString(R.string.resume));
 				
 				if(remaining_time == 0 || stop)
 				{
@@ -143,6 +135,11 @@ public class RecordActivity extends Activity {
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 				radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_portrait);
 				radioOrientationButton.setChecked(true);
+				
+				// imposto preferenze
+				sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
+				remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
+				
 				
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
@@ -189,11 +186,13 @@ public class RecordActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					pause = false;
+					startSession.setText(getString(R.string.resume));
 					startSession.setEnabled(false);
 					pauseSession.setEnabled(true);
 					stopSession.setEnabled(true);
 					intentRecord.putExtra(RecordTrack.SENSOR_DELAY, sample_rate);
 					startService(intentRecord);
+					
 					countDownTimer = new CountDownTimer(remaining_time, 1000) {
 						public void onTick(long millisUntilFinished) {
 							remaining_time = millisUntilFinished;
@@ -260,7 +259,7 @@ public class RecordActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					// Verifica che siano stati presi dati dall'accelerometro
-					if(initialized)
+					if(data_x.size() > 0 || data_y.size() > 0 || data_z.size() > 0)
 						if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
 						{
 							radioGroup.setEnabled(false);
@@ -272,7 +271,11 @@ public class RecordActivity extends Activity {
 							v.getContext().startActivity(i);
 						}
 						else Toast.makeText(v.getContext(), getString(R.string.error_no_session_name), Toast.LENGTH_SHORT).show();
-					else finish(); // se non ci sono dati chiude l'activity
+					else
+					{
+						Toast.makeText(v.getContext(), getString(R.string.error_no_recorded_data), Toast.LENGTH_SHORT).show();
+						finish(); // se non ci sono dati da salvare quindi chiude l'activity
+					}
 				}
 			});
 		
@@ -304,11 +307,14 @@ public class RecordActivity extends Activity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
+    	savedInstanceState.putInt(SAMPLE_RATE, sample_rate);
     	savedInstanceState.putLong(TIME_REMAINING, remaining_time);
     	savedInstanceState.putInt(ORIENTATION, orientation);
     	savedInstanceState.putBoolean(PAUSE, pause);
     	savedInstanceState.putBoolean(STOP, stop);
-    	savedInstanceState.putBoolean(INIZIALIZED, initialized);
+    	savedInstanceState.putFloatArray(DATA_X, Util.toArrayFloat(data_x));
+    	savedInstanceState.putFloatArray(DATA_Y, Util.toArrayFloat(data_y));
+    	savedInstanceState.putFloatArray(DATA_Z, Util.toArrayFloat(data_z));
     	super.onSaveInstanceState(savedInstanceState);
     }
         
@@ -318,66 +324,39 @@ public class RecordActivity extends Activity {
 ////////////////////////////////////////////////////////
 
     public void saveAccelerometerData(){
-    	if(initialized){
+		try {
+			
+			Log.w("save Session", "inzio..");
+			final StringBuilder x_sb = new StringBuilder();
+			final StringBuilder y_sb = new StringBuilder();
+			final StringBuilder z_sb = new StringBuilder();
+			for (float value : data_x) x_sb.append(value + " ");
+			for (float value : data_y) y_sb.append(value + " ");
+			for (float value : data_z) z_sb.append(value + " ");
+			Log.w("save Session", "...dati preparati");
+			Log.w("save Session", "creazione immagine...");
+			
+			        
+	        //costruzione immagine
+	        Log.w("save Session", "...creata");
+	        final Bitmap bmpT = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+			ImageBitmap.color(bmpT, data_x, data_y, data_z, (int)sessionId);	
+			String encodedImage = ImageBitmap.encodeImage(bmpT);
+			Log.w("save Session", "...codificata");
+					
 
-			try {
-				
-				Log.w("save Session", "inzio..");
-				final StringBuilder x_sb = new StringBuilder();
-				final StringBuilder y_sb = new StringBuilder();
-				final StringBuilder z_sb = new StringBuilder();
-				for (float value : data_x) x_sb.append(value + " ");
-				for (float value : data_y) y_sb.append(value + " ");
-				for (float value : data_z) z_sb.append(value + " ");
-				Log.w("save Session", "...dati preparati");
-				Log.w("save Session", "creazione immagine...");
-				
-				Thread t = new Thread("Thumbnail_Creation"){
-					public void run() {
-						// setta la priorità massia del thread
-				        setPriority(Thread.MAX_PRIORITY);
-				        
-				        //costruzione immagine
-				        Log.w("save Session", "...creata");
-						ImageBitmap.color(bmp, data_x, data_y, data_z, (int)sessionId);	
-						String encodedImage = ImageBitmap.encodeImage(bmp);
-						Log.w("save Session", "...codificata");
-						
-						DbAdapter dba = new  DbAdapter(context);
-						dba.open();
-						dba.updateSessionImage(sessionId, encodedImage);
-						dba.close();
-						
-						runOnUiThread(new Runnable() {
-			                @Override
-			                public void run() {
-			                	try {
-									SessionInfoActivity.thumbnail.setImageBitmap(bmp);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-			                }
-			            });	
-					}
-				};
-				t.start();  
-				
-				// inserisce un immagine vuota nel database mentre il thread elabora quella vera
-				String encodedImage = ImageBitmap.encodeImage(bmp);
-
-				// apro la connessione al db
-				dbAdapter.open();
-				// inserisco i dati della sessione nel database
-				sessionId = dbAdapter.createSession( nameSession.getText().toString(), encodedImage, (axis_x? 1:0), (axis_y? 1:0), (axis_z? 1:0), upsampling, x_sb.toString(), y_sb.toString(), z_sb.toString(), x_sb.length(), y_sb.length(), z_sb.length() );
-				insertComplete = true;
-				Log.w("save Session", "sessione inserita");
-				// chiudo la connessione al db
-				dbAdapter.close();
-				
-			} catch (SQLException e) {
-				Toast.makeText(this, getString(R.string.error_database_insert_new_session), Toast.LENGTH_SHORT).show();
-				e.printStackTrace();
-			}
+			// apro la connessione al db
+			dbAdapter.open();
+			// inserisco i dati della sessione nel database
+			sessionId = dbAdapter.createSession( nameSession.getText().toString(), encodedImage, (pref.getBoolean(PreferencesActivity.AXIS_X, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Y, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Z, true)? 1:0), pref.getInt(PreferencesActivity.UPSAMPLING, Util.getUpsamplingID(getString(R.string.note))), x_sb.toString(), y_sb.toString(), z_sb.toString(), x_sb.length(), y_sb.length(), z_sb.length() );
+			insertComplete = true;
+			Log.w("save Session", "sessione inserita");
+			// chiudo la connessione al db
+			dbAdapter.close();
+			
+		} catch (SQLException e) {
+			Toast.makeText(this, getString(R.string.error_database_insert_new_session), Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
 		}
     }
 
@@ -390,7 +369,6 @@ public class RecordActivity extends Activity {
 		progressBarX.setProgress(x);
 		progressBarY.setProgress(y);
 		progressBarZ.setProgress(z);
-		initialized = true;
     }
     public static void setProgressBarMax(int max)
     {
@@ -404,4 +382,5 @@ public class RecordActivity extends Activity {
 		progressBarY.setProgress(0);
 		progressBarZ.setProgress(0);
     }
+    
 }

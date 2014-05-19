@@ -5,6 +5,7 @@
     <string name="thumbnail">Thumbnail</string>
     <string name="session_name">Nome Sessione</string>
     <string name="play">Riproduci</string>
+    <string name="resume">Riprendi</string>
     <string name="pause">Pausa</string>
     <string name="stop">Stop</string>
     <string name="duplicate">Duplica</string>
@@ -21,6 +22,7 @@
     <string name="notify_stop_recording">stop registrazione</string>
     
     <string name="error_no_session_name">INSERISCI NOME SESSIONE</string>
+    <string name="error_no_recorded_data">Nessun campione registrato</string>
     <string name="error_number_format">Errore: formato numero</string>
     <string name="error_no_axis_selected">Selezionare almeno un asse</string>
     <string name="error_no_accelerometer">Errore: Accelerometro non presente</string>

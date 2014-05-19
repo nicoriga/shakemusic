@@ -55,41 +55,29 @@ public class Util{
     }
     
     /**** Copia Object[] in int[] ****/
-    public static int[] copyArrayInt(Object[] obA)
+    public static int[] toArrayInt(ArrayList<Integer> ali)
     {
-    	int[] intA = new int[obA.length];
-    	
-    	for(int i = 0; i < obA.length; i++)
-    	{
-    		intA[i] = (int) obA[i];
-    	}
-    	
+    	int[] intA = new int[ali.size()];
+    	for(int i = 0; i < ali.size(); i++)
+    		intA[i] = ali.get(i);
     	return intA;
     }
     
     /**** Copia Object[] in Float[] ****/
-    public static float[] copyArrayFloat(Object[] obA)
+    public static float[] toArrayFloat(ArrayList<Float> alf)
     {
-    	float[] floatA = new float[obA.length];
-    	
-    	for(int i = 0; i < obA.length; i++)
-    	{
-    		floatA[i] = (int) obA[i];
-    	}
-    	
+    	float[] floatA = new float[alf.size()];
+    	for(int i = 0; i < alf.size(); i++)
+    		floatA[i] = alf.get(i);
     	return floatA;
     }
     
     /**** Copia float[] in ArrayList<Float> ****/
-    public static ArrayList<Float> copyListFloat(float[] obA)
+    public static ArrayList<Float> toArrayListFloat(float[] f)
     {
     	ArrayList<Float> floatL = new ArrayList<Float>();
-    	
-    	for(int i = 0; i < obA.length; i++)
-    	{
-    		floatL.add((float)obA[i]);
-    	}
-    	
+    	for(int i = 0; i < f.length; i++)
+    		floatL.add(f[i]);
     	return floatL;
     }
     

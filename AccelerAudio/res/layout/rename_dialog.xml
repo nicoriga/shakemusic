@@ -7,27 +7,39 @@
 
     <TextView
         android:id="@+id/rename_TV_newName" 
-        android:text="Nome Sessione" 
+        android:text="@string/session_name" 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" />
       
     <EditText
         android:id="@+id/rename_newName"
-        android:layout_width="match_parent"  
-        android:layout_height="wrap_content"  />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:singleLine="true" >
 
-    <Button
-        android:id="@+id/rename_confirm"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Conferma" />
-    
-    <Button
-        android:id="@+id/rename_cancel"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Annulla" />
+    	<requestFocus />
+	</EditText>
+	
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/rename_confirm"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/confirm" />
+
+        <Button
+            android:id="@+id/rename_cancel"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel" />
+
+    </TableRow>
 
 </LinearLayout>
