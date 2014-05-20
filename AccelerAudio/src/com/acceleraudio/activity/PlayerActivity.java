@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -151,16 +152,35 @@ public class PlayerActivity extends Activity {
 				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
 				sample = new int[(nSample > 0 ? nSample : 1)];
 				
+				int z=0;
 				if(axis_x)
 					for(int i = 0; i<data_x.length; i++)
-						if(data_x[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_x[i])*10));
+						if(data_x[i].length()>0)
+						{
+							sample[z] = ((int)(Float.parseFloat(data_x[i])*10)); 
+							z++;
+						}
+						else
+							Log.w("x data l<0", ""+data_x[i]);
 				if(axis_y)
 					for(int i = 0; i<data_y.length; i++)
-						if(data_y[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_y[i])*10));
+						if(data_y[i].length()>0)
+						{ 
+							sample[z] = ((int)(Float.parseFloat(data_y[i])*10)); 
+							z++;
+						}
+						else
+							Log.w("y data l<0", ""+data_y[i]);
 				if(axis_z)
 					for(int i = 0; i<data_z.length; i++)
-						if(data_z[i].length()>0)sample[i] = ((int)(Float.parseFloat(data_z[i])*10));
-				
+						if(data_z[i].length()>0)
+						{ 
+							sample[z] = ((int)(Float.parseFloat(data_z[i])*10)); 
+							z++;
+						}
+						else
+							Log.w("z data l<0", ""+data_z[i]);
+				Log.w("sample z:", ""+z);
 			}
 			
 			// TODO se possibile calcolare l'immagine solo la prima volta
@@ -220,7 +240,7 @@ public class PlayerActivity extends Activity {
 							}
 							
 							public void onFinish() {
-//								scountDownTimer.start();
+								countDownTimer.start();
 							}
 						};
 						countDownTimer.start();

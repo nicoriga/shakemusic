@@ -86,13 +86,13 @@ public class PlayerTrack extends IntentService{
 			        		// loop musicale con upscaling lineare
 					        while(isRunning){
 					        	
-					        	//for (int z = 0; z < 22000; z++) {
+//					        	for (int z = 0; z < 10; z++) {
 									for (int i = 0; i < buffsize; i++) {
-										samples[i] = (short) (sample[x]*10000);
-									}
+										samples[i] = (short) (sample[x]*10000*Math.sin((Math.PI*2*400)/44100));
+//									}
 									
 									audioTrack.write(samples, 0, buffsize);
-								//}
+								}
 								
 								x++;
 					        	if(x == sample.length) x = 0;
