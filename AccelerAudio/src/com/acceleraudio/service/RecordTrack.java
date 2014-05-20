@@ -47,11 +47,15 @@ public class RecordTrack extends IntentService{
 	    			
 	    		} else {
 	    			
-	    			float deltaX = Math.abs(oldX - x);
-	    			float deltaY = Math.abs(oldY - y);
-	    			float deltaZ = Math.abs(oldZ - z);
+//	    			float deltaX = Math.abs(oldX - x);
+//	    			float deltaY = Math.abs(oldY - y);
+//	    			float deltaZ = Math.abs(oldZ - z);
 	    			
-	    			if (deltaX < noise)
+	    			float deltaX = oldX - x;
+	    			float deltaY = oldY - y;
+	    			float deltaZ = oldZ - z;
+	    			
+	    			if (Math.abs(deltaX) < noise)
 	    			{
 	    				deltaX = (float) 0.0;
 	    				RecordActivity.x = (int) deltaX;
@@ -61,13 +65,13 @@ public class RecordTrack extends IntentService{
 	    			{
 	    				synchronized (this) {
 							RecordActivity.sample++;
-							RecordActivity.x = (int) deltaX;
+							RecordActivity.x = (int) Math.abs(deltaX);
 							RecordActivity.data_x.add(deltaX);
 							RecordActivity.updateSample();
 						}
 	    			}
 	    			
-	    			if (deltaY < noise)
+	    			if (Math.abs(deltaY) < noise)
 	    			{
 	    				deltaY = (float) 0.0;
 	    				RecordActivity.y = (int) deltaY;
@@ -77,13 +81,13 @@ public class RecordTrack extends IntentService{
 	    			{
 	    				synchronized (this) {
 							RecordActivity.sample++;
-							RecordActivity.y = (int) deltaY;
+							RecordActivity.y = (int) Math.abs(deltaY);
 							RecordActivity.data_y.add(deltaY);
 							RecordActivity.updateSample();
 						}
 	    			}
 	    			
-	    			if (deltaZ < noise)
+	    			if (Math.abs(deltaZ) < noise)
 	    			{
 	    				deltaZ = (float) 0.0;
 	    				RecordActivity.z = (int) deltaZ;
@@ -93,7 +97,7 @@ public class RecordTrack extends IntentService{
 	    			{
 	    				synchronized (this) {
 							RecordActivity.sample++;
-							RecordActivity.z = (int) deltaZ;
+							RecordActivity.z = (int) Math.abs(deltaZ);
 							RecordActivity.data_z.add(deltaZ);
 							RecordActivity.updateSample();
 						}

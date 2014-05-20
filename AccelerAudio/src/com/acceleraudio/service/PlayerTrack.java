@@ -44,15 +44,20 @@ public class PlayerTrack extends IntentService{
 			        
 			    	// crea oggetto audiotrack
 			        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrack.MODE_STREAM);
-			        short samples[] = new short[buffsize];
 			        
 			        // avvia l'audio
 			        audioTrack.play();
 			  
 			        switch(upsampling){
 			        	case 1:
+			        		// loop musicale con note
 			        		
-			        		long duration = (sample.length*buffsize)/44100;
+			        		int sizeBuff = buffsize+2000;
+			        		
+			        		short samples1[] = new short[sizeBuff];
+			        		
+			        		// TODO creare un metodo statico per richiedere la lunghezza
+			        		long duration = (sample.length*sizeBuff)/44100;
 					        Log.w("PlayerTrack", "duration " +duration);
 			                
 			        		Intent intent = new Intent(NOTIFICATION);
@@ -60,19 +65,18 @@ public class PlayerTrack extends IntentService{
 			                sendBroadcast(intent);
 			        		
 					        int amp = 10000;
-					        double twoph = Math.PI*2; // 2pi grego
+					        double twophi = Math.PI*2; // 2pi grego
 					        double fr; // frequenza
-					        double ph = 0.0; // pi greco
+					        double phi = 0.0; // pi greco
 					        
-			        		// loop musicale con note
 					        while(isRunning){
 					        	// modifica la frequenza con i campioni prelevati dall'accelerometro
 					        	fr =  262 + (sample[x]*10);
-					        	for(int i=0; i < buffsize; i++){
-					        		samples[i] = (short) (amp*Math.sin(ph));
-					        		ph += twoph*fr/sound_rate;
+					        	for(int i=0; i < sizeBuff; i++){
+					        		samples1[i] = (short) (amp*Math.sin(phi));
+					        		phi += twophi*fr/sound_rate;
 					        	}
-					        	audioTrack.write(samples, 0, buffsize);
+					        	audioTrack.write(samples1, 0, sizeBuff);
 					        	x++;
 					        	if(x == sample.length-1) 
 					        		{
@@ -82,17 +86,17 @@ public class PlayerTrack extends IntentService{
 					        	
 					        }	
 			        		break;
+			        		
 			        	case 2: 
 			        		// loop musicale con upscaling lineare
+			        		short samples2[] = new short[buffsize+2000];
+			        		
 					        while(isRunning){
 					        	
-//					        	for (int z = 0; z < 10; z++) {
-									for (int i = 0; i < buffsize; i++) {
-										samples[i] = (short) (sample[x]*10000*Math.sin((Math.PI*2*400)/44100));
-//									}
-									
-									audioTrack.write(samples, 0, buffsize);
+								for (int i = 0; i < buffsize+2000; i++) {
+									samples2[i] = (short) (sample[x]*20000*Math.sin((Math.PI*2*600)/44100));
 								}
+								audioTrack.write(samples2, 0, buffsize+2000);
 								
 								x++;
 					        	if(x == sample.length) x = 0;
