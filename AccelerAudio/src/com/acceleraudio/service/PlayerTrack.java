@@ -88,7 +88,7 @@ public class PlayerTrack extends IntentService{
 					        	
 					        	//for (int z = 0; z < 22000; z++) {
 									for (int i = 0; i < buffsize; i++) {
-										samples[i] = (short) (sample[x]*10);
+										samples[i] = (short) (sample[x]*10000);
 									}
 									
 									audioTrack.write(samples, 0, buffsize);

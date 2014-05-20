@@ -33,6 +33,7 @@ import android.widget.Toast;
 public class RecordActivity extends Activity {
 	
 	public static String SAMPLE_RATE = "recordActivity.sample_rate";
+	public static String SAMPLE = "recordActivity.sample";
 	public static String TIME_REMAINING = "recordActivity.time_remaining";
 	public static String ORIENTATION = "recordActivity.orientation";
 	public static String PAUSE = "recordActivity.pause";
@@ -104,6 +105,7 @@ public class RecordActivity extends Activity {
 			{
 				resetProgressBar();
 				sample_rate = savedInstanceState.getInt(SAMPLE_RATE);
+				sample = savedInstanceState.getInt(SAMPLE);
 				remaining_time = savedInstanceState.getLong(TIME_REMAINING);
 				orientation = savedInstanceState.getInt(ORIENTATION);
 				pause = savedInstanceState.getBoolean(PAUSE);
@@ -308,6 +310,7 @@ public class RecordActivity extends Activity {
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
     	savedInstanceState.putInt(SAMPLE_RATE, sample_rate);
+    	savedInstanceState.putInt(SAMPLE, sample);
     	savedInstanceState.putLong(TIME_REMAINING, remaining_time);
     	savedInstanceState.putInt(ORIENTATION, orientation);
     	savedInstanceState.putBoolean(PAUSE, pause);
