@@ -25,8 +25,8 @@ private TextView myPath;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// TODO da sistemare le viste
-		setContentView(R.layout.ui_1);
-		myPath = (TextView)findViewById(R.id.UI1_BT_preferences);
+		setContentView(R.layout.file_manager_layout);
+		myPath = (TextView)findViewById(R.id.path);
 		getDir(root);
 	}
 

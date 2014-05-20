@@ -69,7 +69,7 @@
         android:layout_alignBaseline="@+id/UI4_BT_pause"
         android:layout_alignBottom="@+id/UI4_BT_pause"
         android:layout_centerHorizontal="true"
-        android:text="Play" />
+        android:text="@string/play" />
 
     <SeekBar
         android:id="@+id/UI4_SB_musicProgress"
@@ -85,6 +85,7 @@
         android:layout_height="200dp"
         android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/UI4_BT_stop"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/ic_launcher" 
+        android:contentDescription="@string/thumbnail"/>
 
 </RelativeLayout>

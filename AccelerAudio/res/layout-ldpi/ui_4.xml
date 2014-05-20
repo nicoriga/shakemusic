@@ -37,7 +37,7 @@
             android:showDividers="none" >
             
 	        <TextView
-	            android:id="@+id/UI4textView2"
+	            android:id="@+id/UI4_TV_initialTimer"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="01:25"
@@ -54,7 +54,7 @@
             android:showDividers="none" >
 	        
 	        <TextView
-	            android:id="@+id/UI4textView1"
+	            android:id="@+id/UI4_TV_finalTimer"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="00:00"
@@ -73,10 +73,9 @@
         android:layout_marginRight="10dp" >
         
 		<SeekBar
-	        android:id="@+id/UI4seekBar1"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"/>
-        
+		    android:id="@+id/UI4_SB_musicProgress"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" />
 
     </TableRow>
 
@@ -127,7 +126,7 @@
 	        android:src="@drawable/ic_launcher" />
         
 	    <Button
-	        android:id="@+id/UI4ButtonEsporta"
+	        android:id="@+id/UI4_BT_export"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="20dp"

@@ -120,9 +120,14 @@ public class RecordTrack extends IntentService{
     
     @Override
     protected void onHandleIntent(Intent intent) {
-    	initialized = false;
-    	isRecording = true;
-    	noise = intent.getFloatExtra(NOISE, 1.0f);
+    	try {
+			initialized = false;
+			isRecording = true;
+			noise = intent.getFloatExtra(NOISE, 1.0f);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
    	  
     	try {
 			sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);

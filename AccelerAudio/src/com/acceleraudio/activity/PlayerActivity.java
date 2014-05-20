@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 public class PlayerActivity extends Activity {
 	
+	public static String SESSION_NAME = "playerActivity.session_Name";
 	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
 	public static String MUSIC_CURSOR = "playerActivity.music_cursor"; // puntatore array della musica in riproduzione
 	public static String SOUND_RATE = "playerActivity.soundRate";
@@ -89,6 +90,7 @@ public class PlayerActivity extends Activity {
 			
 			if (savedInstanceState != null)
 			{
+				sessionName.setText(savedInstanceState.getString(SESSION_NAME));
 				inizialized = savedInstanceState.getBoolean(INIZIALIZED);
 				musicCursor = savedInstanceState.getInt(MUSIC_CURSOR);
 				sample = savedInstanceState.getIntArray(SAMPLE);
@@ -194,7 +196,7 @@ public class PlayerActivity extends Activity {
 					if(!inizialized)
 					{
 						// nel caso non ci siano sample ne aggiunge uno standard
-						if(sample.length == 0) sample[0] = 100;
+						//if(sample.length == 0) sample[0] = 100;
 						intentPlayer.putExtra(ACC_DATA, sample);
 						intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
 						intentPlayer.putExtra(UPSAMPLING, upsampling);
@@ -218,7 +220,7 @@ public class PlayerActivity extends Activity {
 							}
 							
 							public void onFinish() {
-								countDownTimer.start();
+//								scountDownTimer.start();
 							}
 						};
 						countDownTimer.start();
@@ -302,6 +304,7 @@ public class PlayerActivity extends Activity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
+    	savedInstanceState.putString(SESSION_NAME, sessionName.getText().toString());
     	savedInstanceState.putBoolean(INIZIALIZED, inizialized);
     	savedInstanceState.putInt(MUSIC_CURSOR, musicCursor);
     	savedInstanceState.putInt(UPSAMPLING, upsampling);

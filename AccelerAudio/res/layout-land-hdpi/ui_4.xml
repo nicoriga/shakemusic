@@ -73,7 +73,7 @@
 
     <Button
         android:id="@+id/UI4_BT_export"
-        android:layout_width="80dp"
+        android:layout_width="104dp"
         android:layout_height="50dp"
         android:text="Esporta" />
 

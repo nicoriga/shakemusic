@@ -16,7 +16,7 @@ public class PlayerTrack extends IntentService{
 	private Thread t;
 	private int sound_rate;
 	private boolean isRunning ;
-	private int[] sample = {10};
+	private int[] sample;
 	int x, upsampling;
     
     public PlayerTrack (){
@@ -74,7 +74,7 @@ public class PlayerTrack extends IntentService{
 					        	}
 					        	audioTrack.write(samples, 0, buffsize);
 					        	x++;
-					        	if(x == sample.length) 
+					        	if(x == sample.length-1) 
 					        		{
 					        			x = 0;
 					        			Log.w("PlayerTrack", "restart loop " +sample.length);
