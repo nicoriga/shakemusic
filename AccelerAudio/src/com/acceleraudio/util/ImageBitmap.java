@@ -21,13 +21,14 @@ public class ImageBitmap
 	 */
 	public static void color(Bitmap bmp, String[] data_x, String[] data_y, String[] data_z, int id)
 	{
+		id++;
 		int _x = 1, _y = 1, _z = 1;
 		double val;
 		
 		//algoritmo di colorazione
 		for (int y = 0; y < bmp.getHeight(); y++) 			//selezione la riga
         {
-			for (int x = 0; x < bmp.getWidth()-9; x++) 		//seleziona la colonna e quindi il pixel
+			for (int x = 0; x < bmp.getWidth(); x++) 		//seleziona la colonna e quindi il pixel
 			{
 				int p = x/10;
 				int r = y/10;
@@ -85,19 +86,18 @@ public class ImageBitmap
 				
 				
 				int v = (int)(val*id);
-				//bmp.setPixel(x, y, colorSelect(v%12));
-				bmp.setPixel(x, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				
+				bmp.setPixel(x, y, Color.argb(250, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				x--;
 			}
 			_x = 1;
 			_y = 1;
@@ -107,19 +107,20 @@ public class ImageBitmap
 	
 	public static void color(Bitmap bmp, ArrayList<Float> data_x, ArrayList<Float> data_y, ArrayList<Float> data_z, int id)
 	{
+		id++;
 		int _x = 1, _y = 1, _z = 1;
 		double val = 1;
 		
 		//algoritmo di colorazione
 		for (int y = 0; y < bmp.getHeight(); y++) 			//selezione la riga
         {
-			for (int x = 0; x < bmp.getWidth()-9; x++) 		//seleziona la colonna e quindi il pixel
+			for (int x = 0; x < bmp.getWidth(); x++) 		//seleziona la colonna e quindi il pixel
 			{
 				int p = x/10;
 				int r = y/10;
 				switch ((p+r)%4) 
 				{
-					case 0:		//pesco da x	attenzione il primo valore 
+					case 0:		//pesco da x
 						if(_x+1 >= data_x.size())
 							_x = 1;
 						else
@@ -174,19 +175,19 @@ public class ImageBitmap
 				
 				
 				int v = (int)(val*id);
-				//bmp.setPixel(x, y, colorSelect(v%12));
-				bmp.setPixel(x, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
 				
+				bmp.setPixel(x, y, Color.argb(250, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				x--;
 			}
 			_x = 1;
 			_y = 1;
