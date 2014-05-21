@@ -180,7 +180,7 @@ public class PlayerActivity extends Activity {
 						}
 						else
 							Log.w("z data l<0", ""+data_z[i]);
-				Log.w("sample z:", ""+z);
+				Log.w("sample tot:", ""+z);
 			}
 			
 			// TODO se possibile calcolare l'immagine solo la prima volta
@@ -240,7 +240,7 @@ public class PlayerActivity extends Activity {
 							}
 							
 							public void onFinish() {
-								countDownTimer.start();
+//								countDownTimer.start();
 							}
 						};
 						countDownTimer.start();
