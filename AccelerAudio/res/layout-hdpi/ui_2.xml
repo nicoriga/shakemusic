@@ -13,7 +13,7 @@
             android:id="@+id/UI2_BT_listsession"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Lista Sessioni" />
+            android:text="@string/list_session" />
     </LinearLayout>
 
 
@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:text="Nome Sessione"
+            android:text="@string/session_name"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <EditText
@@ -30,7 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:ems="10" />
+            android:ems="10"
+            android:inputType="text"
+            android:singleLine="true" />
 
         <TableRow
             android:id="@+id/UI2_tableRow1"
@@ -42,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:text="Seleziona Assi:"
+                android:text="@string/axes_select"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <CheckBox
@@ -50,21 +52,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="X" />
+                android:text="@string/x" />
 
             <CheckBox
                 android:id="@+id/UI2_CB_Y"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="Y" />
+                android:text="@string/y" />
 
             <CheckBox
                 android:id="@+id/UI2_CB_Z"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="Z" />
+                android:text="@string/z" />
 
         </TableRow>
 
@@ -73,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:text="Upsampling"
+            android:text="@string/upsampling"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
@@ -88,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
-            android:text="Data Creazione:"
+            android:text="@string/creation_date"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
@@ -97,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
-            android:text="Data Modifica:"
+            android:text="@string/modified_date"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TableRow
@@ -110,14 +112,14 @@
                 android:layout_width="90dp"
                 android:layout_height="40dp"
                 android:layout_marginRight="40dp"
-                android:text="Riproduci" />
+                android:text="@string/play" />
 
             <Button
                 android:id="@+id/UI2_button_export"
                 android:layout_width="90dp"
                 android:layout_height="40dp"
                 android:layout_marginRight="40dp"
-                android:text="Esporta" />
+                android:text="@string/export" />
 
         </TableRow>
 
@@ -125,6 +127,7 @@
         android:id="@+id/UI2_IV_thumbnail"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/ic_launcher"
+        android:contentDescription="@string/thumbnail" />
 
 </LinearLayout>

@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:layout_marginLeft="20dp"
-            android:text="Nome Sessione"
+            android:text="@string/session_name"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="25sp" />
 
@@ -26,7 +26,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:ems="10" >
+            android:ems="10"
+            android:inputType="text"
+            android:singleLine="true" >
 
             <requestFocus />
         </EditText>
@@ -44,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginLeft="20dp"
-            android:text="Campioni Registrati:"
+            android:text="@string/recorded_samples"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="25sp" />
 
@@ -52,7 +54,7 @@
             android:id="@+id/UI3_TV_RecordedSamples"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium Text"
+            android:text="@string/medium_text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="25sp" />
 
@@ -108,7 +110,7 @@
             android:layout_height="75dp"
             android:layout_gravity="center"
             android:layout_marginLeft="50dp"
-            android:text="Salva" />
+            android:text="@string/save" />
 
     </TableRow>
 
@@ -116,7 +118,7 @@
         android:id="@+id/UI3_TV_timerRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Medium Text"
+        android:text="@string/medium_text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TableRow
@@ -132,20 +134,20 @@
             android:id="@+id/UI3_BT_stop"
             android:layout_width="100dp"
             android:layout_height="75dp"
-            android:text="Stop" />
+            android:text="@string/stop" />
 
         <Button
             android:id="@+id/UI3_BT_record"
             android:layout_width="100dp"
             android:layout_height="75dp"
             android:layout_marginBottom="52dp"
-            android:text="Record" />
+            android:text="@string/record" />
 
         <Button
             android:id="@+id/UI3_BT_pause"
             android:layout_width="100dp"
             android:layout_height="75dp"
-            android:text="Pause" />
+            android:text="@string/pause" />
 
     </TableRow>
 
@@ -169,13 +171,13 @@
             android:layout_gravity="center|center_horizontal|fill_horizontal"
             android:layout_marginLeft="180dp"
             android:checked="true"
-            android:text="Landscape" />
+            android:text="@string/landscape" />
 
         <RadioButton
             android:id="@+id/UI3_RB_portrait"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Portrait" />
+            android:text="@string/portrait" />
 		</RadioGroup>
 
     </TableRow>

@@ -42,7 +42,6 @@ public class RecordActivity extends Activity {
 	public static String DATA_Y = "recordActivity.data_y";
 	public static String DATA_Z = "recordActivity.data_z";
 	
-	private boolean insertComplete = false;
 	private static Button startSession, stopSession, pauseSession, saveSession;
 	private static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
@@ -271,6 +270,7 @@ public class RecordActivity extends Activity {
 							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
 							i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
 							v.getContext().startActivity(i);
+							finish();
 						}
 						else Toast.makeText(v.getContext(), getString(R.string.error_no_session_name), Toast.LENGTH_SHORT).show();
 					else
@@ -289,16 +289,6 @@ public class RecordActivity extends Activity {
 		
     }
     
-    @Override
-    protected void onPause() {
-    	super.onPause();
-    	// nel caso vada in background non deve chiudersi activity, mentre se ha salvato i dati
-    	// e passa nella SessionInfoActivity deve chiudersi in modo che premendo back
-    	// si ritorna alla lista delle sessioni
-    	if (insertComplete) finish();
-    }
-    
-   
     @Override
     protected void onDestroy() {
     	super.onDestroy();
@@ -352,7 +342,6 @@ public class RecordActivity extends Activity {
 			Log.w("save Session", "...codificata");
 			dbAdapter.updateSessionImage(sessionId, encodedImage);
 			Log.w("save Session", "sessione inserita");
-			insertComplete = true;
 			// chiudo la connessione al db
 			dbAdapter.close();
 			

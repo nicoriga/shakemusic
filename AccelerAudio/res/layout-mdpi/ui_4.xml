@@ -10,7 +10,7 @@
         android:layout_height="75dp"
         android:layout_below="@+id/UI4_BT_pause"
         android:layout_centerHorizontal="true"
-        android:text="Esporta" />
+        android:text="@string/export" />
 
     <Button
         android:id="@+id/UI4_BT_stop"
@@ -18,7 +18,7 @@
         android:layout_height="75dp"
         android:layout_above="@+id/UI4_BT_export"
         android:layout_toLeftOf="@+id/UI4_BT_play"
-        android:text="Stop" />
+        android:text="@string/stop" />
 
     <Button
         android:id="@+id/UI4_BT_pause"
@@ -26,7 +26,7 @@
         android:layout_height="75dp"
         android:layout_alignRight="@+id/UI4_SB_musicProgress"
         android:layout_alignTop="@+id/UI4_BT_play"
-        android:text="Pause"  />
+        android:text="@string/pause"  />
 
     <Button
         android:id="@+id/UI4_BT_play"
@@ -35,7 +35,7 @@
         android:layout_below="@+id/UI4_IV_thumbnail"
         android:layout_marginTop="100dp"
         android:layout_toLeftOf="@+id/UI4_BT_pause"
-        android:text="Play" />
+        android:text="@string/play" />
 
     <TextView
         android:id="@+id/UI4_TV_sessionName"
@@ -44,7 +44,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="74dp"
         android:layout_toLeftOf="@+id/UI4_BT_export"
-        android:text="Nome Sessione"
+        android:text="@string/session_name"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <SeekBar
@@ -63,7 +63,8 @@
         android:layout_below="@+id/UI4_TV_sessionName"
         android:layout_marginTop="30dp"
         android:layout_toRightOf="@+id/UI4_TV_initialTimer"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/ic_launcher"
+        android:contentDescription="@string/thumbnail" />
 
     <TextView
         android:id="@+id/UI4_TV_initialTimer"
@@ -71,7 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/UI4_SB_musicProgress"
         android:layout_below="@+id/UI4_IV_thumbnail"
-        android:text="00:00"
+        android:text="@string/time_00_00"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -80,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/UI4_SB_musicProgress"
         android:layout_below="@+id/UI4_IV_thumbnail"
-        android:text="01:25"
+        android:text="@string/timer_end"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

@@ -14,16 +14,18 @@
 	        android:layout_marginLeft="20dp"
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
-	        android:text="Nome Sessione"
+	        android:text="@string/session_name"
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/UI3_ET_SessionName"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:ems="10" >
+            android:ems="10"
+            android:inputType="text"
+            android:singleLine="true" >
 
             <requestFocus />
         </EditText>
@@ -55,14 +57,14 @@
 		            android:id="@+id/UI3textView2" 
 			        android:layout_height="wrap_content" 
 			        android:layout_width="wrap_content"
-			        android:text="Campioni Registrati:"
+			        android:text="@string/recorded_samples"
 			        android:textAppearance="?android:attr/textAppearanceMedium" />
 		
 		        <TextView
 		            android:id="@+id/UI3_TV_RecordedSamples"
 			        android:layout_height="wrap_content" 
 			        android:layout_width="wrap_content"
-			        android:text="Numero"
+			        android:text="@string/recorded_samples"
 			        android:textAppearance="?android:attr/textAppearanceMedium" />
 		   	</LinearLayout>   
 		   	
@@ -78,14 +80,14 @@
 		            android:id="@+id/UI3textView4" 
 			        android:layout_height="wrap_content" 
 			        android:layout_width="wrap_content"
-			        android:text="Tempo Rimanente:"
+			        android:text="@string/time_00_00"
 			        android:textAppearance="?android:attr/textAppearanceMedium" />
 		
 		        <TextView
 		            android:id="@+id/UI3_TV_timerRemaning"
 			        android:layout_height="wrap_content" 
 			        android:layout_width="wrap_content"
-			        android:text="Tempo"
+			        android:text="@string/time"
 			        android:textAppearance="?android:attr/textAppearanceMedium" />
         
 			</LinearLayout>
@@ -112,13 +114,13 @@
 			            android:layout_width="wrap_content"
 			            android:layout_height="wrap_content"
 			            android:checked="true"
-			            android:text="Landscape" />
+			            android:text="@string/landscape" />
 			
 			        <RadioButton
 			            android:id="@+id/UI3_RB_portrait"
 			            android:layout_width="wrap_content"
 			            android:layout_height="wrap_content"
-			            android:text="Portrait" />
+			            android:text="@string/portrait" />
 			  	
 			  	</RadioGroup>
             
@@ -188,14 +190,14 @@
 				        style="?android:attr/buttonStyleSmall"
 				        android:layout_height="wrap_content"
 				        android:layout_width="70dp"
-				        android:text="Stop" />
+				        android:text="@string/stop" />
 		   	    
 			   	    <Button
 				       	android:id="@+id/UI3_BT_record"
 				        style="?android:attr/buttonStyleSmall"
 				        android:layout_height="wrap_content"
 				        android:layout_width="70dp"
-				        android:text="Record" />
+				        android:text="@string/record" />
 			   	    
 			   	</LinearLayout>
 		   	    
@@ -212,14 +214,14 @@
 				        style="?android:attr/buttonStyleSmall"
 				        android:layout_height="wrap_content"
 				        android:layout_width="70dp"
-				        android:text="Pause" />
+				        android:text="@string/pause" />
 			   	    
 			   	    <Button
 				        android:id="@+id/UI3_BT_save"
 				        style="?android:attr/buttonStyleSmall"
 				        android:layout_height="wrap_content"
 				        android:layout_width="70dp"
-				        android:text="Salva" />
+				        android:text="@string/save" />
 			 	
 			 	</LinearLayout>
 			   	    
