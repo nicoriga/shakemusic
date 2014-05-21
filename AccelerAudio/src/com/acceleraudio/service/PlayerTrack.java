@@ -3,10 +3,14 @@ package com.acceleraudio.service;
 import com.acceleraudio.activity.PlayerActivity;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,11 +18,29 @@ public class PlayerTrack extends IntentService{
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.playertrack";
 	public static final String DURATION = "com.acceleraudio.service.playertrack.duration";
-	private Thread t;
+	public static final String PAUSE = "com.acceleraudio.service.playertrack.pause";
+	public static final String RESUME = "com.acceleraudio.service.playertrack.resume";
+//	private Thread t;
 	private int sound_rate;
 	private boolean isRunning ;
 	private int[] sample;
 	int x, upsampling;
+	AudioTrack audioTrack;
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+    	
+    	@Override
+        public void onReceive(Context context, Intent intent) {
+    		Bundle bundle = intent.getExtras();
+    		if (bundle != null) {
+    			if(intent.hasExtra(PAUSE))
+    					if(bundle.getInt(PlayerTrack.PAUSE) == 1)
+    						audioTrack.pause();
+    			if(intent.hasExtra(RESUME))
+					if(bundle.getInt(PlayerTrack.RESUME) == 1)
+						audioTrack.play();
+    		}
+        }
+    };
     
     public PlayerTrack (){
     	super("PlayerTrack");
@@ -26,11 +48,13 @@ public class PlayerTrack extends IntentService{
     
     @Override
     protected void onHandleIntent(Intent intent) {
-    	try {
+    	registerReceiver(receiver, new IntentFilter(PlayerActivity.NOTIFICATION));
+    	
+//    	try {
     		
     		sample = intent.getIntArrayExtra(PlayerActivity.ACC_DATA);
 			Log.w("PlayerTrack", "sample: " +sample.length);
-			x = intent.getIntExtra(PlayerActivity.MUSIC_CURSOR, 0);
+//			x = intent.getIntExtra(PlayerActivity.MUSIC_CURSOR, 0);
 			sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 44100);
 			upsampling = intent.getIntExtra(PlayerActivity.UPSAMPLING, 1);
 			isRunning = true;
@@ -38,13 +62,13 @@ public class PlayerTrack extends IntentService{
 			 // setta dimensione buffer
 	        final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 	        
-			t = new Thread("Player Thread") {
-			    public void run() {
-			    	// setta la priorità massia del thread
-			        setPriority(Thread.MAX_PRIORITY);
+//			t = new Thread("Player Thread") {
+//			    public void run() {
+//			    	// setta la priorità massia del thread
+//			        setPriority(Thread.MAX_PRIORITY);
 			        
 			    	// crea oggetto audiotrack
-			        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrack.MODE_STREAM);
+			        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrack.MODE_STREAM);
 			        
 			        // avvia l'audio
 			        audioTrack.play();
@@ -61,9 +85,9 @@ public class PlayerTrack extends IntentService{
 			        		long duration = (sample.length*sizeBuff)/44100;
 					        Log.w("PlayerTrack", "duration " +duration);
 			                
-			        		Intent intent = new Intent(NOTIFICATION);
-			                intent.putExtra(PlayerTrack.DURATION, duration);
-			                sendBroadcast(intent);
+			        		Intent intent1 = new Intent(NOTIFICATION);
+			                intent1.putExtra(PlayerTrack.DURATION, duration);
+			                sendBroadcast(intent1);
 			        		
 					        int amp = 10000;
 					        double twophi = Math.PI*2; // 2pi grego
@@ -109,12 +133,12 @@ public class PlayerTrack extends IntentService{
 			        
 			        audioTrack.stop();
 			        audioTrack.release();
-			    }
-			};
-			t.run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//			    }
+//			};
+//			t.run();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
     }
     
     @Override
@@ -127,14 +151,16 @@ public class PlayerTrack extends IntentService{
     public void onDestroy() {
     	super.onDestroy();
     	
+    	unregisterReceiver(receiver);
+    	
     	isRunning = false;
     	
-    	try {
-    		t.join();
-    	} 
-    	catch (InterruptedException e) {
-    		e.printStackTrace();
-    	}
+//    	try {
+//    		t.join();
+//    	} 
+//    	catch (InterruptedException e) {
+//    		e.printStackTrace();
+//    	}
     	
     	Toast.makeText(this, "Play stop", Toast.LENGTH_SHORT).show();
     	
@@ -142,5 +168,4 @@ public class PlayerTrack extends IntentService{
         intent.putExtra(PlayerActivity.MUSIC_CURSOR, x);
         sendBroadcast(intent);
     }
-
 }

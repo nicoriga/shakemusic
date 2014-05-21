@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 public class PlayerActivity extends Activity {
 	
+	public static final String NOTIFICATION = "com.acceleraudio.service.playerActivity";
 	public static String SESSION_NAME = "playerActivity.session_Name";
 	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
 	public static String MUSIC_CURSOR = "playerActivity.music_cursor"; // puntatore array della musica in riproduzione
@@ -50,6 +51,7 @@ public class PlayerActivity extends Activity {
 	private String image;
 	private Thread t;
 	private CountDownTimer countDownTimer;
+	private boolean isPause;
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
     	
     	@Override
@@ -93,6 +95,7 @@ public class PlayerActivity extends Activity {
 			{
 				sessionName.setText(savedInstanceState.getString(SESSION_NAME));
 				inizialized = savedInstanceState.getBoolean(INIZIALIZED);
+				isPause = savedInstanceState.getBoolean(PlayerTrack.PAUSE);
 				musicCursor = savedInstanceState.getInt(MUSIC_CURSOR);
 				sample = savedInstanceState.getIntArray(SAMPLE);
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
@@ -107,6 +110,7 @@ public class PlayerActivity extends Activity {
 			}
 			else
 			{
+				isPause = false;
 				
 ////////////////////////////////////////////////////////
 ///////////// Prelevo dati dall'intent /////////////////
@@ -160,8 +164,6 @@ public class PlayerActivity extends Activity {
 							sample[z] = ((int)(Float.parseFloat(data_x[i])*10)); 
 							z++;
 						}
-						else
-							Log.w("x data l<0", ""+data_x[i]);
 				if(axis_y)
 					for(int i = 0; i<data_y.length; i++)
 						if(data_y[i].length()>0)
@@ -169,8 +171,6 @@ public class PlayerActivity extends Activity {
 							sample[z] = ((int)(Float.parseFloat(data_y[i])*10)); 
 							z++;
 						}
-						else
-							Log.w("y data l<0", ""+data_y[i]);
 				if(axis_z)
 					for(int i = 0; i<data_z.length; i++)
 						if(data_z[i].length()>0)
@@ -178,8 +178,7 @@ public class PlayerActivity extends Activity {
 							sample[z] = ((int)(Float.parseFloat(data_z[i])*10)); 
 							z++;
 						}
-						else
-							Log.w("z data l<0", ""+data_z[i]);
+				
 				Log.w("sample tot:", ""+z);
 			}
 			
@@ -213,14 +212,21 @@ public class PlayerActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
-					if(!inizialized)
-					{
+//					if(!inizialized)
+//					{
 						// nel caso non ci siano sample ne aggiunge uno standard
 						//if(sample.length == 0) sample[0] = 100;
 						intentPlayer.putExtra(ACC_DATA, sample);
 						intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
 						intentPlayer.putExtra(UPSAMPLING, upsampling);
-						startService(intentPlayer);
+						if(!isPause)
+							startService(intentPlayer);
+						else
+						{
+							Intent intent = new Intent(NOTIFICATION);
+					        intent.putExtra(PlayerTrack.RESUME, 1);
+					        sendBroadcast(intent);
+						}
 						inizialized = true;
 						play.setEnabled(false);
 						pause.setEnabled(true);
@@ -244,7 +250,7 @@ public class PlayerActivity extends Activity {
 							}
 						};
 						countDownTimer.start();
-					}
+//					}
 				}
 			});
 			
@@ -252,7 +258,15 @@ public class PlayerActivity extends Activity {
 			pause.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					stopService(intentPlayer);
+//					stopService(intentPlayer);
+					
+					countDownTimer.cancel();
+
+					isPause = true;
+					Intent intent = new Intent(NOTIFICATION);
+			        intent.putExtra(PlayerTrack.PAUSE, 1);
+			        sendBroadcast(intent);
+					
 					inizialized = false;
 					play.setEnabled(true);
 					pause.setEnabled(false);
@@ -326,6 +340,7 @@ public class PlayerActivity extends Activity {
     {
     	savedInstanceState.putString(SESSION_NAME, sessionName.getText().toString());
     	savedInstanceState.putBoolean(INIZIALIZED, inizialized);
+    	savedInstanceState.putBoolean(PlayerTrack.PAUSE, isPause);
     	savedInstanceState.putInt(MUSIC_CURSOR, musicCursor);
     	savedInstanceState.putInt(UPSAMPLING, upsampling);
     	savedInstanceState.putIntArray(SAMPLE, sample);
