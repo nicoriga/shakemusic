@@ -13,14 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class ListSessionAdapter extends ArrayAdapter<String>
 {
 	private final Activity context;
 	private final ArrayList<Integer> sessionIdList;
 	private final ArrayList<String> sessionNameList, dateMod, image;
+	private final ArrayList<Boolean> isSelected;
 	private final int layout;
 	
 	// TODO eliminare sessionIdList
@@ -33,6 +36,13 @@ public class ListSessionAdapter extends ArrayAdapter<String>
 		this.dateMod = dateMod;
 		this.image = imageId;
 		this.layout = layout;
+		if(layout == R.layout.list_session_select_layout)
+		{
+			this.isSelected = new ArrayList<Boolean>();
+			for(int i=0; i<sessionIdList.size(); i++) this.isSelected.add(false);
+		}
+		else
+			this.isSelected = null;
 	}
 	
 	@Override
@@ -70,28 +80,51 @@ public class ListSessionAdapter extends ArrayAdapter<String>
 			e.printStackTrace();
 		}
 		
+		if(layout == R.layout.list_session_select_layout)
+		{
+			holder.select.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked) isSelected.set(position, true);
+					else isSelected.set(position, false);
+					
+				}
+			});
+			if(isSelected.get(position)) holder.select.setChecked(true);
+			else holder.select.setChecked(false);
+		}
 		return rowView;
 	}
 	
 	class ViewRowHolder {
 
 		int layout = 0;
+		boolean selected = false;
 		TextView txtName = null;
 		TextView txtData = null;
 		ImageView imageView = null;
 		CheckBox select = null;
 		
-		// TODO verificare se ha senso passare il layout
 		ViewRowHolder(View rowView, int layout) {
 			this.layout = layout;
 			this.txtName = (TextView) rowView.findViewById(R.id.txtNomeSessione);
 			this.txtData = (TextView) rowView.findViewById(R.id.txtDataModifica);
 			this.imageView = (ImageView) rowView.findViewById(R.id.img);
 			if(layout == R.layout.list_session_select_layout)
-			{
 				this.select = (CheckBox) rowView.findViewById(R.id.selectSession);
-				select.setChecked(false);
-			}
 		}
+	}
+	
+	// restituisce un arraylist degli id delle sessioni selezionate
+	public ArrayList<Integer>  getSelectedSession()
+	{
+		ArrayList<Integer> selectedSessionId = new  ArrayList<Integer>();
+		for (int i=0; i<isSelected.size(); i++) if(isSelected.get(i)) selectedSessionId.add(sessionIdList.get(i));
+		return selectedSessionId;
+	}
+	
+	// deseleziona tutte le sessioni
+	public void resetSelectedSession(){
+		for (int i=0; i<isSelected.size(); i++) isSelected.set(i,false);
 	}
 }

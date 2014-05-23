@@ -50,7 +50,6 @@ public class PlayerActivity extends Activity {
 	public static String[] data_x, data_y, data_z;
 	private String image;
 	private Thread t;
-	private CountDownTimer countDownTimer;
 	private boolean isPause;
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
     	
@@ -63,6 +62,18 @@ public class PlayerActivity extends Activity {
     		}
         }
     };
+    // TODO sistemare timer durata musica
+    private CountDownTimer countDownTimer = new CountDownTimer(duration, 1000) {
+		public void onTick(long millisUntilFinished) {
+			long time_elapsed = duration - millisUntilFinished;
+			currentTimeTV.setText("" + time_elapsed / 1000);
+			sb_musicProgress.setProgress((int)time_elapsed / 1000);
+		}
+		
+		public void onFinish() {
+//			countDownTimer.start();
+		}
+	};
 	
     @Override
     
@@ -180,6 +191,17 @@ public class PlayerActivity extends Activity {
 						}
 				
 				Log.w("sample tot:", ""+z);
+				
+				// avvio subito la riproduzione della musica
+				intentPlayer.putExtra(ACC_DATA, sample);
+				intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
+				intentPlayer.putExtra(UPSAMPLING, upsampling);
+				startService(intentPlayer);
+				
+				countDownTimer.start();
+				
+				play.setEnabled(false);
+				pause.setEnabled(true);
 			}
 			
 			// TODO se possibile calcolare l'immagine solo la prima volta
@@ -214,42 +236,23 @@ public class PlayerActivity extends Activity {
 					// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
 //					if(!inizialized)
 //					{
-						// nel caso non ci siano sample ne aggiunge uno standard
-						//if(sample.length == 0) sample[0] = 100;
-						intentPlayer.putExtra(ACC_DATA, sample);
-						intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
-						intentPlayer.putExtra(UPSAMPLING, upsampling);
-						if(!isPause)
-							startService(intentPlayer);
-						else
+						if(isPause)
 						{
 							Intent intent = new Intent(NOTIFICATION);
 					        intent.putExtra(PlayerTrack.RESUME, 1);
 					        sendBroadcast(intent);
-						}
-						inizialized = true;
-						play.setEnabled(false);
-						pause.setEnabled(true);
 						
-						// TODO valori di prova
-						duration = ((sample.length*3072)/44100)*1000;
-						durationTV.setText("" + duration/1000);
-						sb_musicProgress.setMax((int)duration/1000);
-						
-						
-						// TODO sistemare timer durata musica
-						countDownTimer = new CountDownTimer(duration, 1000) {
-							public void onTick(long millisUntilFinished) {
-								long time_elapsed = duration - millisUntilFinished;
-								currentTimeTV.setText("" + time_elapsed / 1000);
-								sb_musicProgress.setProgress((int)time_elapsed / 1000);
-							}
+							inizialized = true;
+							play.setEnabled(false);
+							pause.setEnabled(true);
 							
-							public void onFinish() {
-//								countDownTimer.start();
-							}
-						};
-						countDownTimer.start();
+							// TODO valori di prova
+							duration = ((sample.length*3072)/44100)*1000;
+							durationTV.setText("" + duration/1000);
+							sb_musicProgress.setMax((int)duration/1000);
+							
+							countDownTimer.start();
+						}
 //					}
 				}
 			});
@@ -287,6 +290,7 @@ public class PlayerActivity extends Activity {
 			 export.setOnClickListener(new View.OnClickListener() {
 				 @Override
 				 public void onClick(View view) {
+					 stopService(intentPlayer);
 					 Intent i = new Intent(view.getContext(), FileExplore.class);
 					 view.getContext().startActivity(i);
 				 }
