@@ -12,7 +12,7 @@ public class MusicUpsampling{
         int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         int musicSize = buffsize * sample.length;
         short sampleS[] = new short[musicSize];
-        int amp = 10000;
+        int amp = 20000;
         double twoph = Math.PI*2; // 2pi grego
         double fr; // frequenza
         double ph = 0.0; // pi greco
@@ -21,11 +21,11 @@ public class MusicUpsampling{
         for(int x=0; x < sample.length; x++){
         	// modifica la frequenza con i campioni prelevati dall'accelerometro
         	fr =  262 + sample[x];
-        	for(int i=y; i < buffsize; i++){
-        		sampleS[i] = (short) (amp*Math.sin(ph));
+        	for(int i=0; i < buffsize; i++){
+        		sampleS[y] = (short) (amp*Math.sin(ph));
         		ph += twoph*fr/sound_rate;
+        		y++;
         	}
-        	y += (buffsize++);
         }
         
         return sampleS;

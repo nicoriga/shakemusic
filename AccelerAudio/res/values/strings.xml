@@ -45,6 +45,7 @@
 	<string name="preferences">Preferenze</string>
 	<string name="next">Avanti</string>
 	<string name="new_session">Nuova Sessione</string>
+	<string name="merge">Unisci</string>
 	<string name="merge_session">Unisci Sessioni</string>
 	<string name="list_session">Lista Sessioni</string>
 	<string name="axes_select">Seleziona Assi:</string>

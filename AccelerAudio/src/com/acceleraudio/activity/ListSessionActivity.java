@@ -72,6 +72,12 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		try {
 			loadInterface();
 			
+			// TODO: ricaricare i dati dal database solo se viene registrata una nuova
+			// session, attraverso un contatore delle sessioni che verifica ogni volta
+			// quando sono presenti nel db.
+			// alternativamente vedere di passare i nuovi dati da aggiungere alla lista
+			// e aggiornarla
+			
 			// apro la connessione al db
 			dbAdapter.open();
 			
@@ -325,6 +331,9 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			/**** avvia activity per riordinare le sessioni da unire ****/
 			next.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
+					Intent i = new Intent(view.getContext(), MergeSessionActivity.class);
+					i.putExtra(DbAdapter.T_SESSION_SESSIONID, adaperListCheck.getSelectedSession());
+					view.getContext().startActivity(i);
 				}
 			});
 			

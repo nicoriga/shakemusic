@@ -26,6 +26,7 @@
         <activity android:name="com.acceleraudio.activity.RecordActivity" android:screenOrientation="portrait" ></activity>
         <service android:name="com.acceleraudio.service.PlayerTrack"></service>
         <service android:name="com.acceleraudio.service.RecordTrack"></service>
+        <activity android:name="com.acceleraudio.activity.MergeSessionActivity"></activity>
         
     </application>
 
