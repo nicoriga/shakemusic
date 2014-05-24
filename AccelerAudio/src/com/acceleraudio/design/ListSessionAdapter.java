@@ -46,7 +46,7 @@ public class ListSessionAdapter extends ArrayAdapter<String>
 	}
 	
 	@Override
-	public View getView(final int position, View rowView, ViewGroup parent) 
+	public View getView(final int position, View rowView, ViewGroup parent) throws IndexOutOfBoundsException
 	{	
 		ViewRowHolder holder = null;
 		if (rowView == null) 
@@ -126,5 +126,14 @@ public class ListSessionAdapter extends ArrayAdapter<String>
 	// deseleziona tutte le sessioni
 	public void resetSelectedSession(){
 		for (int i=0; i<isSelected.size(); i++) isSelected.set(i,false);
+	}
+	
+	public void addRowAtPosition(int position, int id, String name, String dataMod, String image){
+		sessionIdList.add(position, id);
+		sessionNameList.add(position, name);
+		dateMod.add(position, dataMod);
+		this.image.add(position, image);
+		if(layout == R.layout.list_session_select_layout)
+			this.isSelected.add(position, false);
 	}
 }

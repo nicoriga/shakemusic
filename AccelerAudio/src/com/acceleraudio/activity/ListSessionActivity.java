@@ -169,18 +169,22 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 								dbAdapter.open();
 								String[] s = dbAdapter.duplicateSessionById(sessionIdList.get(x));
 								dbAdapter.close();
-								sessionIdList.add(x, Integer.parseInt(s[0]));
-								sessionNameList.add(x, s[1]);
-								sessionDataMod.add(x, s[2]);
-								image.add(x, s[3]);
+								//sessionIdList.add(x, Integer.parseInt(s[0]));
+								//sessionNameList.add(x, s[1]);
+								//sessionDataMod.add(x, s[2]);
+								//image.add(x, s[3]);
+								adaperListCheck.addRowAtPosition(x, Integer.parseInt(s[0]), s[1], s[2], s[3]);
 							} catch (NumberFormatException e) {
 								e.printStackTrace();
 							} catch (SQLException e) {
+								e.printStackTrace();
+							} catch (NullPointerException e) {
 								e.printStackTrace();
 							}
 							runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
+									
 									adaperList.notifyDataSetChanged();
 								}
 							});
@@ -275,6 +279,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		{
 			merge.setEnabled(true);
 			list.setAdapter(adaperList);
+			registerForContextMenu(list);
 		}
 		
 		// verifico presenza accelerometro
