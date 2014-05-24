@@ -4,24 +4,24 @@ import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.design.ListSessionAdapter;
+import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Color;
+import android.database.SQLException;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class MergeSessionActivity extends Activity{
 	
@@ -33,9 +33,9 @@ public class MergeSessionActivity extends Activity{
 	private ArrayList<Integer> sessionIdList;
 	private ArrayList<String> sessionNameList, sessionDataMod, image;
 	long rowId;
+	private SharedPreferences pref;
 	private GestureDetector gestureDetector;
-    View.OnTouchListener gestureListener;
-    private int position;
+	private View.OnTouchListener gestureListener;
     
     // Distanza minima richiesta sull'asse Y
     private static final int SWIPE_MIN_DISTANCE = 5;
@@ -49,6 +49,7 @@ public class MergeSessionActivity extends Activity{
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_1);
     	dbAdapter = new DbAdapter(this);
+    	pref = PreferenceManager.getDefaultSharedPreferences(this);
     	
     	Bundle b = getIntent().getExtras();
     	sessionIdList = b.getIntegerArrayList(DbAdapter.T_SESSION_SESSIONID);
@@ -69,6 +70,13 @@ public class MergeSessionActivity extends Activity{
     		adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessionIdList, sessionNameList, sessionDataMod, image);
     		list.setAdapter(adaperList);
     		
+    		gestureDetector = new GestureDetector(list.getContext(), new MyGestureDetector());
+    		gestureListener = new View.OnTouchListener() {
+    		        public boolean onTouch(View v, MotionEvent event) {
+    		            return gestureDetector.onTouchEvent(event); 
+    		}};
+    		list.setOnTouchListener(gestureListener);
+    		
     /////////////////////////////////////////////////////////
     ///////////  aggiungo listener  /////////////////////////
     ////////////////////////////////////////////////////////
@@ -82,23 +90,6 @@ public class MergeSessionActivity extends Activity{
 //    			}
 //    		});
             
-            final GestureDetector gestureDetector = new GestureDetector(list.getContext(), new MyGestureDetector());
-            View.OnTouchListener gestureListener = new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                	position = list.getPositionForView(v);
-                    return gestureDetector.onTouchEvent(event); 
-                }};
-            list.setOnTouchListener(gestureListener);
-    		
-//    		/**** cambia l'ordine delle sessioni ****/
-//    		list.setOnItemLongClickListener(new OnItemLongClickListener() {
-//
-//				@Override
-//				public boolean onItemLongClick(AdapterView<?> adapter, View view,int position, long id) {
-//					view.setBackgroundColor(Color.CYAN);
-//					return false;
-//				}
-//			});
     		
     		/**** torna alla lista delle sessioni ****/
     		cancel.setOnClickListener(new View.OnClickListener() {
@@ -107,9 +98,38 @@ public class MergeSessionActivity extends Activity{
     			}
     		});
     		
+    		final Toast toast = Toast.makeText(this, getString(R.string.error_no_session_name), Toast.LENGTH_SHORT);
+    		
     		/**** unisce le sessioni nell'ordine impostato ****/
     		merge.setOnClickListener(new View.OnClickListener() {
-    			public void onClick(View view) {
+    			public void onClick(View v) {
+    				if (sessionName.getText().length()>0) {
+						try {
+							// apro la connessione al db
+							dbAdapter.open();
+							// unisco le sessioni
+							long sessionId = dbAdapter.mergeSession(
+											sessionIdList,
+											sessionName.getText().toString(),
+											(pref.getBoolean(PreferencesActivity.AXIS_X,true) ? 1 : 0),
+											(pref.getBoolean(PreferencesActivity.AXIS_Y,true) ? 1 : 0),
+											(pref.getBoolean(PreferencesActivity.AXIS_Z,true) ? 1 : 0),
+											pref.getInt(PreferencesActivity.UPSAMPLING,	Util.getUpsamplingID(getString(R.string.note))));
+							// chiudo la connessione
+							dbAdapter.close();
+							
+							// avvia activity con le info della sessione
+							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
+							i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
+							v.getContext().startActivity(i);
+							finish();
+							
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+    				else
+    					toast.show();
     			}
     		});
     		
@@ -120,6 +140,47 @@ public class MergeSessionActivity extends Activity{
 		}
 	}
 	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+	        if (gestureDetector.onTouchEvent(event))
+	                return true;
+	        else
+	                return false;
+	}
+	
+	/*** classe per la gestione dello swipe ***/
+	class MyGestureDetector extends SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                try {
+                        if (Math.abs(e1.getX() - e2.getX()) > dpTopx(SWIPE_MAX_OFF_PATH))
+                                return false;
+                        
+                        // Swipe in alto
+                        if (e1.getY() - e2.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
+                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
+                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
+                                switchListRow(start_position, stop_position);
+                        } else 
+                        // swipe in basso
+                        	if (e2.getY() - e1.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
+                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
+                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
+                                switchListRow(start_position, stop_position);
+                        }
+                } catch (Exception e) {
+                	e.printStackTrace();
+                }
+                return false;
+        }
+	}
+
+	
+///////////////////////////////////////
+/////////// METODI UTILI /////////////
+//////////////////////////////////////
+	
+	/*** carica le sessioni nell'interfaccia ***/
 	public void loadSession()
 	{
 		// apro la connessione al db
@@ -146,68 +207,36 @@ public class MergeSessionActivity extends Activity{
 		dbAdapter.close();
 		
 	}
-
-	class MyGestureDetector extends SimpleOnGestureListener {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                try {
-                        if (Math.abs(e1.getX() - e2.getX()) > dp2px(SWIPE_MAX_OFF_PATH))
-                                return false;
-                        // Swipe alto e basso
-                        if (e1.getY() - e2.getY() > dp2px(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dp2px(SWIPE_THRESHOLD_VELOCITY)) {
-//                                Toast.makeText(getApplicationContext(), "Swipe in alto", Toast.LENGTH_SHORT).show();
-                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
-                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
-                                switchListRow(start_position, stop_position);
-                        } else 
-                        	if (e2.getY() - e1.getY() > dp2px(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dp2px(SWIPE_THRESHOLD_VELOCITY)) {
-//                                Toast.makeText(getApplicationContext(), "Swipe in basso", Toast.LENGTH_SHORT).show();
-                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
-                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
-                                switchListRow(start_position, stop_position);
-                        }
-                } catch (Exception e) {
-                	e.printStackTrace();
-                }
-                return false;
-        }
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-	        if (gestureDetector.onTouchEvent(event))
-	                return true;
-	        else
-	                return false;
-	}
 	
-	public float dp2px(int dip) {
-	        float scale = getResources().getDisplayMetrics().density;
-	        return dip * scale + 0.5f;
-	}
+	/*** metodo per convertire i pixel in dp***/
+	public float dpTopx(int dip) {
+        float scale = getResources().getDisplayMetrics().density;
+        return dip * scale + 0.5f;
+}
 	
+	/*** scambia l'ordine di due righe ***/
 	public void switchListRow(int start_position, int stop_position)
 	{
-		// scambia id
-		int tempId = sessionIdList.get(start_position);
-		sessionIdList.set(start_position, sessionIdList.get(stop_position));
-		sessionIdList.set(stop_position, tempId);
-		
-		// scambia il nome
-		String tempName = sessionNameList.get(start_position);
-        sessionNameList.set(start_position, sessionNameList.get(stop_position));
-        sessionNameList.set(stop_position, tempName);
-        
-        // scambia la data di modifica
-        String tempDate = sessionDataMod.get(start_position);
-        sessionDataMod.set(start_position, sessionDataMod.get(stop_position));
-        sessionDataMod.set(stop_position, tempDate);
-        
-        // scambia la data di modifica
-        String tempImage = image.get(start_position);
-        image.set(start_position, image.get(stop_position));
-        image.set(stop_position, tempImage);
-        
-        adaperList.notifyDataSetChanged();
+		if (start_position >= 0 && stop_position >= 0) {
+			// scambia id
+			int tempId = sessionIdList.get(start_position);
+			sessionIdList.set(start_position, sessionIdList.get(stop_position));
+			sessionIdList.set(stop_position, tempId);
+			// scambia il nome
+			String tempName = sessionNameList.get(start_position);
+			sessionNameList.set(start_position,
+					sessionNameList.get(stop_position));
+			sessionNameList.set(stop_position, tempName);
+			// scambia la data di modifica
+			String tempDate = sessionDataMod.get(start_position);
+			sessionDataMod.set(start_position,
+					sessionDataMod.get(stop_position));
+			sessionDataMod.set(stop_position, tempDate);
+			// scambia la data di modifica
+			String tempImage = image.get(start_position);
+			image.set(start_position, image.get(stop_position));
+			image.set(stop_position, tempImage);
+			adaperList.notifyDataSetChanged();
+		}
 	}
 }
