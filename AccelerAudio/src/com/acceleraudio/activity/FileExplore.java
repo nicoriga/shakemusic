@@ -9,7 +9,9 @@ import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +22,7 @@ private List<String> item = null;
 private List<String> path = null;
 private String root="/";
 private TextView myPath;
+private Button save;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -27,7 +30,15 @@ private TextView myPath;
 		// TODO da sistemare le viste
 		setContentView(R.layout.file_manager_layout);
 		myPath = (TextView)findViewById(R.id.path);
+		save = (Button) findViewById(R.id.UI_fileManager_BT_save);
 		getDir(root);
+		
+		save.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
 	}
 
     
@@ -49,11 +60,13 @@ private TextView myPath;
 		 for(int i=0; i < files.length; i++)
 		 {
 			 File file = files[i];
-			 path.add(file.getPath());
-			 if(file.isDirectory())
-				 item.add(file.getName() + "/");
-			 else
-				 item.add(file.getName());
+			 if (file.canRead()) {
+				path.add(file.getPath());
+				if (file.isDirectory())
+					item.add(file.getName() + "/");
+				else
+					item.add(file.getName());
+			}
 		 }
 		
 		 ArrayAdapter<String> fileList = new ArrayAdapter<String>(this, R.layout.row, item);

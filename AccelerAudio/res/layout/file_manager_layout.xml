@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-	<TextView
- 		android:id="@+id/path"
- 		android:layout_width="fill_parent" 
- 		android:layout_height="wrap_content" />
-	
-	<ListView
-	    android:id="@android:id/list"
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#929395"
+        android:orientation="horizontal" >
 
-	<TextView
-	    android:id="@android:id/empty"
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:text="No Data" />
+        <Button
+            android:id="@+id/UI_fileManager_BT_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.23"
+            android:text="@string/save" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="350dp"
+        android:layout_weight="0.90" >
+    </ListView>
+
+    <TextView
+        android:id="@+id/path"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="No Data" />
 
 </LinearLayout>

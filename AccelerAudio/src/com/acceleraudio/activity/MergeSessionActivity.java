@@ -218,20 +218,22 @@ public class MergeSessionActivity extends Activity{
 	public void switchListRow(int start_position, int stop_position)
 	{
 		if (start_position >= 0 && stop_position >= 0) {
+			
 			// scambia id
 			int tempId = sessionIdList.get(start_position);
 			sessionIdList.set(start_position, sessionIdList.get(stop_position));
 			sessionIdList.set(stop_position, tempId);
+			
 			// scambia il nome
 			String tempName = sessionNameList.get(start_position);
-			sessionNameList.set(start_position,
-					sessionNameList.get(stop_position));
+			sessionNameList.set(start_position,sessionNameList.get(stop_position));
 			sessionNameList.set(stop_position, tempName);
+			
 			// scambia la data di modifica
 			String tempDate = sessionDataMod.get(start_position);
-			sessionDataMod.set(start_position,
-					sessionDataMod.get(stop_position));
+			sessionDataMod.set(start_position,sessionDataMod.get(stop_position));
 			sessionDataMod.set(stop_position, tempDate);
+			
 			// scambia la data di modifica
 			String tempImage = image.get(start_position);
 			image.set(start_position, image.get(stop_position));
