@@ -221,6 +221,7 @@ public class SessionInfoActivity extends Activity {
 				 @Override
 				 public void onClick(View view) {
 					 Intent i = new Intent(view.getContext(), FileExplore.class);
+					 i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 					 view.getContext().startActivity(i);
 				 }
 			 });
