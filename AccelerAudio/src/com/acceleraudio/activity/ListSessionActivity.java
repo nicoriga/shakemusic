@@ -338,7 +338,13 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				public void onClick(View view) {
 					Intent i = new Intent(view.getContext(), MergeSessionActivity.class);
 					i.putExtra(DbAdapter.T_SESSION_SESSIONID, adaperListCheck.getSelectedSession());
-					view.getContext().startActivity(i);
+					
+					if(adaperListCheck.getSelectedSize() > 1)
+					{
+						view.getContext().startActivity(i);
+					}
+					else
+						Toast.makeText(view.getContext(), getString(R.string.error_no_selected_session), Toast.LENGTH_SHORT).show();
 				}
 			});
 			

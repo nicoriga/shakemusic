@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.GestureDetector;
@@ -36,13 +37,14 @@ public class MergeSessionActivity extends Activity{
 	private SharedPreferences pref;
 	private GestureDetector gestureDetector;
 	private View.OnTouchListener gestureListener;
+	private int start_position, stop_position;
     
     // Distanza minima richiesta sull'asse Y
     private static final int SWIPE_MIN_DISTANCE = 5;
     // Distanza massima consentita sull'asse X
     private static final int SWIPE_MAX_OFF_PATH = 400;
     // Velocità minima richiesta sull'asse Y
-    private static final int SWIPE_THRESHOLD_VELOCITY = 5;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 0;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,10 +72,39 @@ public class MergeSessionActivity extends Activity{
     		adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessionIdList, sessionNameList, sessionDataMod, image);
     		list.setAdapter(adaperList);
     		
-    		gestureDetector = new GestureDetector(list.getContext(), new MyGestureDetector());
+//    		gestureDetector = new GestureDetector(list.getContext(), new MyGestureDetector());
     		gestureListener = new View.OnTouchListener() {
     		        public boolean onTouch(View v, MotionEvent event) {
-    		            return gestureDetector.onTouchEvent(event); 
+//    		            return gestureDetector.onTouchEvent(event); 
+    		        	int action = event.getAction();
+    		        	switch(action)
+    		        	{
+    		        		// quando viene messo il dito nello schermo viene salvata la posizione della
+    		        		// riga dove avviene la pressione
+    		        		case MotionEvent.ACTION_DOWN:
+    		        			start_position = list.pointToPosition((int)event.getX(), (int)event.getY());
+    		        			list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
+    		        			break;
+    		        		// quando si rimuove il dito dallo schermo avviene lo spostamento della sessione
+    		        		// nella posizione di arrivo
+    		        		case MotionEvent.ACTION_CANCEL: 
+    		        		case MotionEvent.ACTION_UP:
+    	                        stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
+    	                        moveListRowTo(start_position, stop_position);
+    	                        list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
+    		        			break;
+    		        		case MotionEvent.ACTION_HOVER_ENTER:
+    		        			// TODO: coloro la riga dove si trova il dito
+    		        			list.getChildAt(list.pointToPosition((int)event.getX(), (int)event.getY())).setBackgroundColor(Color.GREEN);
+    		        			break;
+    		        		case MotionEvent.ACTION_HOVER_EXIT:
+    		        			// TODO: rimuovo il colore dalla riga dove si trovava il dito
+    		        			list.getChildAt(list.pointToPosition((int)event.getX(), (int)event.getY())).setBackgroundColor(Color.WHITE);
+    		        			break;
+    		        		default:
+    		        			break;
+    		        	}
+    		        	return true;
     		}};
     		list.setOnTouchListener(gestureListener);
     		
@@ -142,10 +173,26 @@ public class MergeSessionActivity extends Activity{
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-	        if (gestureDetector.onTouchEvent(event))
-	                return true;
-	        else
-	                return false;
+//	        if (gestureDetector.onTouchEvent(event))
+//	        {
+	        	int action = event.getAction();
+	        	switch(action)
+	        	{
+	        		case MotionEvent.ACTION_DOWN:
+	        			start_position = list.pointToPosition((int)event.getX(), (int)event.getY());
+	        			break;
+	        		case MotionEvent.ACTION_CANCEL:
+	        		case MotionEvent.ACTION_UP:
+                        stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
+                        moveListRowTo(start_position, stop_position);
+	        			break;
+	        		default:
+	        			break;
+	        	}
+	        	return true;
+//	        }
+//	        else
+//	        	return false;
 	}
 	
 	/*** classe per la gestione dello swipe ***/
@@ -160,18 +207,18 @@ public class MergeSessionActivity extends Activity{
                         if (e1.getY() - e2.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
                                 int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
                                 int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
-                                switchListRow(start_position, stop_position);
+                                moveListRowTo(start_position, stop_position);
                         } else 
                         // swipe in basso
                         	if (e2.getY() - e1.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
                                 int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
                                 int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
-                                switchListRow(start_position, stop_position);
+                                moveListRowTo(start_position, stop_position);
                         }
                 } catch (Exception e) {
                 	e.printStackTrace();
                 }
-                return false;
+                return true;
         }
 	}
 
@@ -194,7 +241,7 @@ public class MergeSessionActivity extends Activity{
 		for(int sessionID: sessionIdList)
 		{
 			// prelevo i campi per ogni sessione
-			Cursor cursor = dbAdapter.fetchSessionById(sessionID);
+			Cursor cursor = dbAdapter.fetchSessionByIdMinimal(sessionID);
 			cursor.moveToFirst();
 			
 			sessionNameList.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
@@ -210,10 +257,11 @@ public class MergeSessionActivity extends Activity{
 	
 	/*** metodo per convertire i pixel in dp***/
 	public float dpTopx(int dip) {
-        float scale = getResources().getDisplayMetrics().density;
-        return dip * scale + 0.5f;
-}
+		float scale = getResources().getDisplayMetrics().density;
+		return dip * scale + 0.5f;
+	}
 	
+	/*** scambia due righe nelle posizioni indicate ***/
 	/*** scambia l'ordine di due righe ***/
 	public void switchListRow(int start_position, int stop_position)
 	{
@@ -234,10 +282,31 @@ public class MergeSessionActivity extends Activity{
 			sessionDataMod.set(start_position,sessionDataMod.get(stop_position));
 			sessionDataMod.set(stop_position, tempDate);
 			
-			// scambia la data di modifica
+			// scambia l'immagine
 			String tempImage = image.get(start_position);
 			image.set(start_position, image.get(stop_position));
 			image.set(stop_position, tempImage);
+			adaperList.notifyDataSetChanged();
+		}
+	}
+	
+	/*** sposta una riga nella posizione indicata ***/
+	public void moveListRowTo(int start_position, int stop_position)
+	{
+		if (start_position >= 0 && stop_position >= 0) {
+			
+			// sposta id
+			sessionIdList.add(stop_position, sessionIdList.remove(start_position));
+			
+			// sposta il nome
+			sessionNameList.add(stop_position,sessionNameList.remove(start_position));
+			
+			// sposta la data di modifica
+			sessionDataMod.add(stop_position,sessionDataMod.remove(start_position));
+			
+			// sposta l'immagine
+			image.add(stop_position, image.remove(start_position));
+			
 			adaperList.notifyDataSetChanged();
 		}
 	}

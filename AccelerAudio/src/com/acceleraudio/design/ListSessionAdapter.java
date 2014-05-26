@@ -22,6 +22,7 @@ public class ListSessionAdapter extends ArrayAdapter<String>
 {
 	private final Activity context;
 	private final ArrayList<Integer> sessionIdList;
+	private ArrayList<Integer> selectedSessionId = null;
 	private final ArrayList<String> sessionNameList, dateMod, image;
 	private final ArrayList<Boolean> isSelected;
 	private final int layout;
@@ -118,9 +119,16 @@ public class ListSessionAdapter extends ArrayAdapter<String>
 	// restituisce un arraylist degli id delle sessioni selezionate
 	public ArrayList<Integer>  getSelectedSession()
 	{
-		ArrayList<Integer> selectedSessionId = new  ArrayList<Integer>();
+		selectedSessionId = new  ArrayList<Integer>();
 		for (int i=0; i<isSelected.size(); i++) if(isSelected.get(i)) selectedSessionId.add(sessionIdList.get(i));
 		return selectedSessionId;
+	}
+	
+	public int getSelectedSize()
+	{
+		if(selectedSessionId !=null)
+			return selectedSessionId.size();
+		else return 0;
 	}
 	
 	// deseleziona tutte le sessioni

@@ -21,6 +21,7 @@
     <string name="notify_start_recording">inizio a registrare</string>
     <string name="notify_stop_recording">stop registrazione</string>
     
+    <string name="error_no_selected_session">SELEZIONA UNA SESSIONE</string>
     <string name="error_no_session_name">INSERISCI NOME SESSIONE</string>
     <string name="error_no_recorded_data">Nessun campione registrato</string>
     <string name="error_number_format">Errore: formato numero</string>
