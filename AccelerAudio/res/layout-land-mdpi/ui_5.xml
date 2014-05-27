@@ -17,25 +17,6 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <CheckBox
-        android:id="@+id/UI5_CB_Z"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI5_CB_Y"
-        android:layout_alignBottom="@+id/UI5_CB_Y"
-        android:layout_toRightOf="@+id/UI5_TV_duration"
-        android:text="Z" />
-
-    <TextView
-        android:id="@+id/UI5_TV_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/UI5_SP_frequency"
-        android:layout_alignRight="@+id/UI5_CB_Y"
-        android:layout_marginLeft="20dp"
-        android:text="Durata Massima"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <CheckBox
         android:id="@+id/UI5_CB_Y"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -95,18 +76,8 @@
         android:text="Freuenza di Campionamento"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/UI5_BT_minutePlus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI5_SP_upsampling"
-        android:layout_alignBottom="@+id/UI5_SP_upsampling"
-        android:layout_alignLeft="@+id/UI5_TV_duration"
-        android:layout_toLeftOf="@+id/UI5_CB_Y"
-        android:text="+" />
-
     <EditText
-        android:id="@+id/UI5_ET_hour"
+        android:id="@+id/UI5_ET_minute"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/UI5_SP_upsampling"
@@ -118,32 +89,42 @@
         <requestFocus />
     </EditText>
 
+    <TextView
+        android:id="@+id/UI5_TV_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI5_SP_frequency"
+        android:layout_alignLeft="@+id/UI5_CB_X"
+        android:text="Durata Massima"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <CheckBox
+        android:id="@+id/UI5_CB_Z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/UI5_TV_axes"
+        android:layout_toRightOf="@+id/UI5_CB_Y"
+        android:text="Z" />
+
     <EditText
         android:id="@+id/UI5_ET_second"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/UI5_ET_hour"
+        android:layout_alignBaseline="@+id/UI5_ET_minute"
+        android:layout_alignBottom="@+id/UI5_ET_minute"
         android:layout_alignLeft="@+id/UI5_BT_secondPlus"
         android:layout_alignRight="@+id/UI5_BT_secondPlus"
         android:ems="10"
         android:inputType="number" />
 
     <Button
-        android:id="@+id/UI5_BT_secondMinus"
-        android:layout_width="60dp"
+        android:id="@+id/UI5_BT_minutePlus"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI5_BT_minuteMinus"
-        android:layout_alignBottom="@+id/UI5_BT_minuteMinus"
-        android:layout_alignLeft="@+id/UI5_ET_second"
-        android:text="-" />
-
-    <Button
-        android:id="@+id/UI5_BT_minuteMinus"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/UI5_ET_hour"
-        android:layout_toLeftOf="@+id/UI5_CB_Y"
-        android:text="-" />
+        android:layout_alignLeft="@+id/UI5_TV_duration"
+        android:layout_alignRight="@+id/UI5_BT_minuteMinus"
+        android:layout_alignTop="@+id/UI5_TV_upsampling"
+        android:text="+" />
 
     <Button
         android:id="@+id/UI5_BT_secondPlus"
@@ -151,7 +132,23 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/UI5_BT_minutePlus"
         android:layout_alignBottom="@+id/UI5_BT_minutePlus"
-        android:layout_alignRight="@+id/UI5_CB_Z"
+        android:layout_alignRight="@+id/UI5_TV_duration"
         android:text="+" />
+
+    <Button
+        android:id="@+id/UI5_BT_minuteMinus"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI5_TV_duration"
+        android:layout_below="@+id/UI5_ET_minute"
+        android:text="-" />
+
+    <Button
+        android:id="@+id/UI5_BT_secondMinus"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/UI5_ET_second"
+        android:layout_below="@+id/UI5_ET_second"
+        android:text="-" />
 
 </RelativeLayout>

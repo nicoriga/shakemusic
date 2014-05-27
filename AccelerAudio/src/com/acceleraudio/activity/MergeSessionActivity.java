@@ -37,7 +37,8 @@ public class MergeSessionActivity extends Activity{
 	private SharedPreferences pref;
 	private GestureDetector gestureDetector;
 	private View.OnTouchListener gestureListener;
-	private int start_position, stop_position;
+	private int start_position, stop_position, previus_position;
+	private long sessionId; 
     
     // Distanza minima richiesta sull'asse Y
     private static final int SWIPE_MIN_DISTANCE = 5;
@@ -83,23 +84,30 @@ public class MergeSessionActivity extends Activity{
     		        		// riga dove avviene la pressione
     		        		case MotionEvent.ACTION_DOWN:
     		        			start_position = list.pointToPosition((int)event.getX(), (int)event.getY());
-    		        			list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
+    		        			if(start_position >= 0) list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
     		        			break;
     		        		// quando si rimuove il dito dallo schermo avviene lo spostamento della sessione
     		        		// nella posizione di arrivo
     		        		case MotionEvent.ACTION_CANCEL: 
     		        		case MotionEvent.ACTION_UP:
-    	                        stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
-    	                        moveListRowTo(start_position, stop_position);
-    	                        list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
+    		        			if(start_position >= 0)
+    		        			{
+	    	                        stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
+	    	                        moveListRowTo(start_position, stop_position);
+	    	                        list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
+	    	                        list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+    		        			}
     		        			break;
     		        		case MotionEvent.ACTION_HOVER_ENTER:
+    		        		case MotionEvent.ACTION_MOVE:
     		        			// TODO: coloro la riga dove si trova il dito
-    		        			list.getChildAt(list.pointToPosition((int)event.getX(), (int)event.getY())).setBackgroundColor(Color.GREEN);
-    		        			break;
-    		        		case MotionEvent.ACTION_HOVER_EXIT:
-    		        			// TODO: rimuovo il colore dalla riga dove si trovava il dito
-    		        			list.getChildAt(list.pointToPosition((int)event.getX(), (int)event.getY())).setBackgroundColor(Color.WHITE);
+    		        			int position = list.pointToPosition((int)event.getX(), (int)event.getY());
+    		        			if(position >= 0 && position != start_position && start_position >= 0)
+    		        				{
+    		        					list.getChildAt(position).setBackgroundColor(Color.GREEN);
+    		        					if(previus_position >= 0 && previus_position != position)list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+    		        					previus_position = position;
+    		        				}
     		        			break;
     		        		default:
     		        			break;
@@ -136,18 +144,23 @@ public class MergeSessionActivity extends Activity{
     			public void onClick(View v) {
     				if (sessionName.getText().length()>0) {
 						try {
-							// apro la connessione al db
-							dbAdapter.open();
+							merge.setEnabled(false);
+							cancel.setEnabled(false);
+							
 							// unisco le sessioni
-							long sessionId = dbAdapter.mergeSession(
-											sessionIdList,
-											sessionName.getText().toString(),
-											(pref.getBoolean(PreferencesActivity.AXIS_X,true) ? 1 : 0),
-											(pref.getBoolean(PreferencesActivity.AXIS_Y,true) ? 1 : 0),
-											(pref.getBoolean(PreferencesActivity.AXIS_Z,true) ? 1 : 0),
-											pref.getInt(PreferencesActivity.UPSAMPLING,	Util.getUpsamplingID(getString(R.string.note))));
-							// chiudo la connessione
-							dbAdapter.close();
+									// apro la connessione al db
+									dbAdapter.open();
+									sessionId = dbAdapter
+											.mergeSession(
+													sessionIdList,
+													sessionName.getText().toString(),
+													(pref.getBoolean(PreferencesActivity.AXIS_X,true) ? 1 : 0),
+													(pref.getBoolean(PreferencesActivity.AXIS_Y,true) ? 1 : 0),
+													(pref.getBoolean(PreferencesActivity.AXIS_Z,true) ? 1 : 0),
+													pref.getInt(PreferencesActivity.UPSAMPLING,
+													Util.getUpsamplingID(getString(R.string.note))));
+									// chiudo la connessione
+									dbAdapter.close();
 							
 							// avvia activity con le info della sessione
 							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);

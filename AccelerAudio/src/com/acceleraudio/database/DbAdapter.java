@@ -183,7 +183,7 @@ public class DbAdapter {
 			
 			Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 			//costruzione immagine
-			ImageBitmap.color(bmp, sensor_data_x.toString().split(" "), sensor_data_y.toString().split(" "), sensor_data_z.toString().split(" "), (int)sessionId);	
+			ImageBitmap.color(bmp, sensor_data_x.toString().split(" ", 200), sensor_data_y.toString().split(" ", 200), sensor_data_z.toString().split(" ", 200), (int)sessionId);	
 			image = ImageBitmap.encodeImage(bmp);
 			updateSessionImage(sessionId, image);
 			String[] s = new String[4];
@@ -240,7 +240,7 @@ public class DbAdapter {
 		
 		Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 		//costruzione immagine
-		ImageBitmap.color(bmp, sensor_data_x.toString().split(" "), sensor_data_y.toString().split(" "), sensor_data_z.toString().split(" "), (int)sessionId);	
+		ImageBitmap.color(bmp, sensor_data_x.toString().split(" ", 200), sensor_data_y.toString().split(" ", 200), sensor_data_z.toString().split(" ", 200), (int)sessionId);	
 		String image = ImageBitmap.encodeImage(bmp);
 		updateSessionImage(sessionId, image);
 		

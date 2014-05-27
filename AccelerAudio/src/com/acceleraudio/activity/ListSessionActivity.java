@@ -283,13 +283,14 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		}
 		
 		// verifico presenza accelerometro
-		SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		if (accelerometer == null)
-		{
-			newSession.setEnabled(false);
-			Toast.makeText(this, getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
-		}
+		// TODO: con emulatore si blocca qua... scopriere perchè
+//		SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+//		Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//		if (accelerometer == null)
+//		{
+//			newSession.setEnabled(false);
+//			Toast.makeText(this, getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
+//		}
 		
 /////////////////////////////////////////////////////////
 ///////////  aggiungo listener  /////////////////////////
