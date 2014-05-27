@@ -139,29 +139,29 @@
 	        android:id="@+id/UI3_BT_stop"
 	        style="?android:attr/buttonStyleSmall"
 	        android:layout_height="wrap_content"
-	        android:layout_width="70dp"
-	        android:text="Stop" />
+	        android:layout_width="80dp"
+	        android:text="@string/stop" />
 	   	    
    	    <Button
 	       	android:id="@+id/UI3_BT_record"
 	        style="?android:attr/buttonStyleSmall"
 	        android:layout_height="wrap_content"
-	        android:layout_width="70dp"
-	        android:text="Record" />
+	        android:layout_width="80dp"
+	        android:text="@string/record" />
 	   	    
   	    <Button
 	        android:id="@+id/UI3_BT_pause"
 	        style="?android:attr/buttonStyleSmall"
 	        android:layout_height="wrap_content"
-	        android:layout_width="70dp"
-	        android:text="Pause" />
+	        android:layout_width="80dp"
+	        android:text="@string/pause" />
 	   	    
    	    <Button
 	        android:id="@+id/UI3_BT_save"
 	        style="?android:attr/buttonStyleSmall"
 	        android:layout_height="wrap_content"
-	        android:layout_width="70dp"
-	        android:text="Salva" />
+	        android:layout_width="80dp"
+	        android:text="@string/save" />
    	    
    	</TableRow>
    	

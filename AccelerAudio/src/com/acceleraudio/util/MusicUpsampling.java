@@ -40,7 +40,7 @@ public class MusicUpsampling
 		// setta dimensione buffer
         int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         short sampleS[] = new short[buffsize];
-        int musicSize = buffsize * sample.length;
+        int musicSize = buffsize * sample.length * 2;
         int amp = 10000;
         double twoph = Math.PI*2; // 2pi grego
         double fr; // frequenza

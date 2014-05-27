@@ -38,11 +38,11 @@ public class MergeSessionActivity extends Activity{
 	private View.OnTouchListener gestureListener;
     
     // Distanza minima richiesta sull'asse Y
-    private static final int SWIPE_MIN_DISTANCE = 5;
+    private static final int SWIPE_MIN_DISTANCE = 2;
     // Distanza massima consentita sull'asse X
     private static final int SWIPE_MAX_OFF_PATH = 400;
     // Velocità minima richiesta sull'asse Y
-    private static final int SWIPE_THRESHOLD_VELOCITY = 5;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 0;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
