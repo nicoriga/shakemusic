@@ -50,7 +50,7 @@ public class PlayerActivity extends Activity {
 	public static String[] data_x, data_y, data_z;
 	private String image;
 	private Thread t;
-	private boolean isPause;
+	public static boolean isPause;
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
     	
     	@Override

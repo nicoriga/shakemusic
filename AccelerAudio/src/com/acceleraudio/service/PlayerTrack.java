@@ -37,7 +37,7 @@ public class PlayerTrack extends IntentService{
     						audioTrack.pause();
     			if(intent.hasExtra(RESUME))
 					if(bundle.getInt(PlayerTrack.RESUME) == 1)
-						audioTrack.play();
+						resume();
     		}
         }
     };
@@ -49,7 +49,6 @@ public class PlayerTrack extends IntentService{
     @Override
     protected void onHandleIntent(Intent intent) {
     	registerReceiver(receiver, new IntentFilter(PlayerActivity.NOTIFICATION));
-    	
 //    	try {
     		
     		sample = intent.getIntArrayExtra(PlayerActivity.ACC_DATA);
@@ -95,6 +94,14 @@ public class PlayerTrack extends IntentService{
 					        double phi = 0.0; // pi greco
 					        
 					        while(isRunning){
+					        	if(audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PAUSED)
+									try {
+										synchronized (this) {
+											this.wait();
+										}
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
 					        	// modifica la frequenza con i campioni prelevati dall'accelerometro
 					        	fr =  262 + (Math.abs(sample[x])*10);
 					        	for(int i=0; i < sizeBuff; i++){
@@ -167,5 +174,13 @@ public class PlayerTrack extends IntentService{
     	Intent intent = new Intent(NOTIFICATION);
         intent.putExtra(PlayerActivity.MUSIC_CURSOR, x);
         sendBroadcast(intent);
+    }
+    
+    public void resume()
+    {
+    	synchronized (this) {
+			this.notify();
+			audioTrack.play();
+		}
     }
 }
