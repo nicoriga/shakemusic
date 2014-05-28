@@ -182,17 +182,17 @@ public class PlayerActivity extends Activity {
 				intentPlayer.putExtra(UPSAMPLING, upsampling);
 				startService(intentPlayer);
 				
-				countDownTimer.start();
+//				countDownTimer.start();
 				
 				play.setEnabled(false);
 				pause.setEnabled(true);
 			}
 			
 			// TODO se possibile calcolare l'immagine solo la prima volta
-			t = new Thread("Thumbnail_Decoding"){
-				public void run() {
-					// setta la priorità massia del thread
-	                setPriority(Thread.MAX_PRIORITY);
+//			t = new Thread("Thumbnail_Decoding"){
+//				public void run() {
+//					// setta la priorità massia del thread
+//	                setPriority(Thread.MAX_PRIORITY);
 	                
 	                // converto la stringa in una immagine bitmap
 	        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
@@ -204,9 +204,9 @@ public class PlayerActivity extends Activity {
                         	thumbnail.setImageBitmap(bmp);
                         }
                     });
-				}
-			};
-			t.start();
+//				}
+//			};
+//			t.start();
 			
     	
 /////////////////////////////////////////////////////////
@@ -233,7 +233,7 @@ public class PlayerActivity extends Activity {
 						durationTV.setText("" + duration/1000);
 						sb_musicProgress.setMax((int)duration/1000);
 						
-						countDownTimer.start();
+//						countDownTimer.start();
 					}
 				}
 			});
@@ -242,7 +242,7 @@ public class PlayerActivity extends Activity {
 			pause.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					countDownTimer.cancel();
+//					countDownTimer.cancel();
 
 					isPause = true;
 					Intent intent = new Intent(NOTIFICATION);
@@ -260,9 +260,10 @@ public class PlayerActivity extends Activity {
 			stop.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent intent = new Intent(NOTIFICATION);
-			        intent.putExtra(PlayerTrack.STOP, 1);
-			        sendBroadcast(intent);
+//					Intent intent = new Intent(NOTIFICATION);
+//			        intent.putExtra(PlayerTrack.STOP, 1);
+//			        sendBroadcast(intent);
+//					countDownTimer.cancel();
 			        stopService(intentPlayer);
 					finish();
 				}

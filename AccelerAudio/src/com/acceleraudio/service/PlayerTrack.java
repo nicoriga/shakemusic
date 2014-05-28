@@ -12,7 +12,6 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -78,7 +77,6 @@ public class PlayerTrack extends IntentService{
             }
         }
     };
-	private Looper looper;
     private int sound_rate;
 	private boolean isRunning ;
 	private int[] sample;
@@ -97,9 +95,9 @@ public class PlayerTrack extends IntentService{
     			if(intent.hasExtra(PLAY))
 					if(bundle.getInt(PlayerTrack.PLAY) == 1)
 						playMusic();
-    			if(intent.hasExtra(STOP))
-					if(bundle.getInt(PlayerTrack.STOP) == 1)
-						stopMusic();
+//    			if(intent.hasExtra(STOP))
+//					if(bundle.getInt(PlayerTrack.STOP) == 1)
+//						stopMusic();
     		}
         }
     };
@@ -108,7 +106,6 @@ public class PlayerTrack extends IntentService{
     	super("PlayerTrack");
     }
     
-    @SuppressWarnings("static-access")
 	@Override
     protected void onHandleIntent(Intent intent) {
     	registerReceiver(receiver, new IntentFilter(PlayerActivity.NOTIFICATION));
@@ -127,9 +124,14 @@ public class PlayerTrack extends IntentService{
         playMusic();
         
         // serve per mantenere il servizio attivo
-        looper =  Looper.myLooper();
-        Looper.loop();
-			        
+        synchronized (this) {
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+        
     }
     
     @Override
@@ -143,36 +145,35 @@ public class PlayerTrack extends IntentService{
     	super.onDestroy();
     	
     	unregisterReceiver(receiver);
-    	
-    	isRunning = false;
+    	stopMusic();
     	
     	Toast.makeText(this, "Play stop", Toast.LENGTH_SHORT).show();
     }
 
     /*** AVVIA LA RIPRODUZIONE AUDIO ***/
-    public void playMusic(){
+    private void playMusic(){
     	audioTrack.play();
     	isRunning = true;
     	// crea un nuovo thread in runTime che genera la musica dai sample
 		new Thread(runPlayer, "Player Thread").start();
-//    	t.start();
     }
 
     /*** METTE IN PAUSA LA RIPRODUZIONE AUDIO ***/
-    public void pauseMusic(){
+    private void pauseMusic(){
     	// settando isRunning false il thread finisce il suo lavoro e si autodistrugge
     	isRunning = false;
     	audioTrack.pause();
     }
     
     /*** STOPPA LA RIPRODUZIONE AUDIO ***/
-    public void stopMusic(){
-    	audioTrack.flush();
-    	audioTrack.stop();
+    private void stopMusic(){
+        isRunning = false;
+        
+        audioTrack.stop();
         audioTrack.release();
         
-        isRunning = false;
-        // sblocca il loop del servizio che si autochiude
-    	looper.quit();
+        synchronized (this) {
+			this.notify();
+		}
     }
 }
