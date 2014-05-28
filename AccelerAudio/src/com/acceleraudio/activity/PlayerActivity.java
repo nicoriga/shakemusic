@@ -29,7 +29,6 @@ public class PlayerActivity extends Activity {
 	public static final String NOTIFICATION = "com.acceleraudio.service.playerActivity";
 	public static String SESSION_NAME = "playerActivity.session_Name";
 	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
-	public static String MUSIC_CURSOR = "playerActivity.music_cursor"; // puntatore array della musica in riproduzione
 	public static String SOUND_RATE = "playerActivity.soundRate";
 	public static String UPSAMPLING = "playerActivity.upsampling";
 	public static String INIZIALIZED = "playerActivity.inizialied";
@@ -37,12 +36,13 @@ public class PlayerActivity extends Activity {
 	public static String IMAGE = "playerActivity.image";
 	
 	private Boolean inizialized = false, axis_x, axis_y, axis_z;
-	private TextView sessionName, currentTimeTV, durationTV;
+	private TextView sessionName, durationTV;
+	public static TextView currentTimeTV;
 	private Button play, pause, stop, export;
 	private ImageView thumbnail;
-	private SeekBar sb_musicProgress;
+	public static SeekBar sb_musicProgress;
 	private int[] sample;
-	private int sessionId, upsampling, musicCursor = 0; // musicCursos: puntatore array della musica in riproduzione
+	private int sessionId, upsampling;
 	private static long duration;
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
@@ -51,32 +51,46 @@ public class PlayerActivity extends Activity {
 	private String image;
 	private Thread t;
 	public static boolean isPause;
+	// TODO sistemare timer durata musica
+	private CountDownTimer countDownTimer;
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
     	
     	@Override
         public void onReceive(Context context, Intent intent) {
     		Bundle bundle = intent.getExtras();
     		if (bundle != null) {
-    			if(intent.hasExtra(MUSIC_CURSOR)) musicCursor = bundle.getInt(MUSIC_CURSOR);
-    			//if(intent.hasExtra(PlayerTrack.DURATION)) duration = bundle.getLong(PlayerTrack.DURATION);
+    			if(intent.hasExtra(PlayerTrack.DURATION))
+    			{
+					duration = bundle.getLong(PlayerTrack.DURATION);
+					durationTV.setText("" + duration/1000);
+					sb_musicProgress.setMax((int)duration);
+    			}
+    			if(intent.hasExtra(PlayerTrack.PAUSE))
+    				if(bundle.getInt(PlayerTrack.PAUSE) == PlayerTrack.PAUSE_MUSIC)
+    					if(countDownTimer != null)
+    						countDownTimer.cancel();
+    			if(intent.hasExtra(PlayerTrack.PLAY))
+					if(bundle.getInt(PlayerTrack.PLAY) == PlayerTrack.PLAY_MUSIC)
+					{
+						countDownTimer = new CountDownTimer(duration, 1000) {
+							public void onTick(long millisUntilFinished) {
+								long time_elapsed = duration - millisUntilFinished;
+								currentTimeTV.setText("" + time_elapsed / 1000);
+								sb_musicProgress.setProgress((int)time_elapsed);
+							}
+							
+							public void onFinish() {
+									currentTimeTV.setText("0");
+									sb_musicProgress.setProgress(0);
+							}
+						};
+						countDownTimer.start();
+					}
     		}
         }
     };
-    // TODO sistemare timer durata musica
-    private CountDownTimer countDownTimer = new CountDownTimer(duration, 1000) {
-		public void onTick(long millisUntilFinished) {
-			long time_elapsed = duration - millisUntilFinished;
-			currentTimeTV.setText("" + time_elapsed / 1000);
-			sb_musicProgress.setProgress((int)time_elapsed / 1000);
-		}
-		
-		public void onFinish() {
-//			countDownTimer.start();
-		}
-	};
 	
     @Override
-    
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_4);
@@ -107,7 +121,6 @@ public class PlayerActivity extends Activity {
 				sessionName.setText(savedInstanceState.getString(SESSION_NAME));
 				inizialized = savedInstanceState.getBoolean(INIZIALIZED);
 				isPause = savedInstanceState.getBoolean(PlayerTrack.PAUSE);
-				musicCursor = savedInstanceState.getInt(MUSIC_CURSOR);
 				sample = savedInstanceState.getIntArray(SAMPLE);
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
 				image = savedInstanceState.getString(IMAGE);
@@ -194,11 +207,8 @@ public class PlayerActivity extends Activity {
 				
 				// avvio subito la riproduzione della musica
 				intentPlayer.putExtra(ACC_DATA, sample);
-				intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
 				intentPlayer.putExtra(UPSAMPLING, upsampling);
 				startService(intentPlayer);
-				
-				countDownTimer.start();
 				
 				play.setEnabled(false);
 				pause.setEnabled(true);
@@ -239,19 +249,13 @@ public class PlayerActivity extends Activity {
 						if(isPause)
 						{
 							Intent intent = new Intent(NOTIFICATION);
-					        intent.putExtra(PlayerTrack.RESUME, 1);
+					        intent.putExtra(PlayerTrack.PLAY, PlayerTrack.PLAY_MUSIC);
 					        sendBroadcast(intent);
 						
 							inizialized = true;
 							play.setEnabled(false);
 							pause.setEnabled(true);
 							
-							// TODO valori di prova
-							duration = ((sample.length*3072)/44100)*1000;
-							durationTV.setText("" + duration/1000);
-							sb_musicProgress.setMax((int)duration/1000);
-							
-							countDownTimer.start();
 						}
 //					}
 				}
@@ -261,13 +265,10 @@ public class PlayerActivity extends Activity {
 			pause.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					stopService(intentPlayer);
-					
-					countDownTimer.cancel();
 
 					isPause = true;
 					Intent intent = new Intent(NOTIFICATION);
-			        intent.putExtra(PlayerTrack.PAUSE, 1);
+			        intent.putExtra(PlayerTrack.PAUSE, PlayerTrack.PAUSE_MUSIC);
 			        sendBroadcast(intent);
 					
 					inizialized = false;
@@ -290,7 +291,8 @@ public class PlayerActivity extends Activity {
 			 export.setOnClickListener(new View.OnClickListener() {
 				 @Override
 				 public void onClick(View view) {
-					 stopService(intentPlayer);
+//					 stopService(intentPlayer);
+					 pause.performClick();
 					 Intent i = new Intent(view.getContext(), FileExplore.class);
 					 view.getContext().startActivity(i);
 				 }
@@ -330,13 +332,16 @@ public class PlayerActivity extends Activity {
     	super.onDestroy();
     	//stopService(intentPlayer);
     	inizialized = false;
+    	if(countDownTimer != null)
+			countDownTimer.cancel();
     }
     
     @Override
 	public void onBackPressed() {
 	    super.onBackPressed();
 	    stopService(intentPlayer); // stoppa il servizio della musica
-	    finish();
+	    if(countDownTimer != null)
+			countDownTimer.cancel();
     }
     
     @Override
@@ -345,7 +350,6 @@ public class PlayerActivity extends Activity {
     	savedInstanceState.putString(SESSION_NAME, sessionName.getText().toString());
     	savedInstanceState.putBoolean(INIZIALIZED, inizialized);
     	savedInstanceState.putBoolean(PlayerTrack.PAUSE, isPause);
-    	savedInstanceState.putInt(MUSIC_CURSOR, musicCursor);
     	savedInstanceState.putInt(UPSAMPLING, upsampling);
     	savedInstanceState.putIntArray(SAMPLE, sample);
     	savedInstanceState.putString(IMAGE, image);
