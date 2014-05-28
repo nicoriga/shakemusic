@@ -93,9 +93,9 @@ public class MergeSessionActivity extends Activity{
     		        			if(start_position >= 0)
     		        			{
 	    	                        stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
-	    	                        moveListRowTo(start_position, stop_position);
-	    	                        list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
-	    	                        list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+//	    	                        moveListRowTo(start_position, stop_position);
+	    	                        if(stop_position >= 0) list.getChildAt(stop_position).setBackgroundColor(Color.WHITE);
+//	    	                        list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
     		        			}
     		        			break;
     		        		case MotionEvent.ACTION_HOVER_ENTER:
@@ -104,9 +104,13 @@ public class MergeSessionActivity extends Activity{
     		        			int position = list.pointToPosition((int)event.getX(), (int)event.getY());
     		        			if(position >= 0 && position != start_position && start_position >= 0)
     		        				{
-    		        					list.getChildAt(position).setBackgroundColor(Color.GREEN);
-    		        					if(previus_position >= 0 && previus_position != position)list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
-    		        					previus_position = position;
+//    		        					list.getChildAt(position).setBackgroundColor(Color.GREEN);
+//    		        					if(previus_position >= 0 && previus_position != position)list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+//    		        					previus_position = position;
+    		        					list.getChildAt(position).setBackgroundColor(Color.WHITE);
+    		        					list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
+    		        					moveListRowTo(start_position, position);
+    		        					start_position = position;
     		        				}
     		        			break;
     		        		default:
@@ -275,7 +279,6 @@ public class MergeSessionActivity extends Activity{
 	}
 	
 	/*** scambia due righe nelle posizioni indicate ***/
-	/*** scambia l'ordine di due righe ***/
 	public void switchListRow(int start_position, int stop_position)
 	{
 		if (start_position >= 0 && stop_position >= 0) {

@@ -7,38 +7,16 @@ import java.nio.ByteBuffer;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 
-
 public class MusicUpsampling
 {
-	public static short[] note(int sound_rate, int[] sample)
-	{
-		// setta dimensione buffer
-        int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-        int musicSize = buffsize * sample.length;
-        short sampleS[] = new short[musicSize];
-        int amp = 10000;
-        double twoph = Math.PI*2; // 2pi grego
-        double fr; // frequenza
-        double ph = 0.0; // pi greco
-        int y = 0;
-        
-        for(int x=0; x < sample.length; x++){
-        	// modifica la frequenza con i campioni prelevati dall'accelerometro
-        	fr =  262 + (Math.abs(sample[x])*10);
-        	for(int i=0; i < buffsize; i++){
-        		sampleS[y] = (short) (amp*Math.sin(ph));
-        		ph += twoph*fr/sound_rate;
-        		y++;
-        	}
-        }
-        
-        return sampleS;
-	}
+	public final static int NOTE = 1;
+	public final static int LINEAR = 2;
 	
+	/*** scrive audio PCM nel file di output usando Upsampling: note ***/
 	public static int note(OutputStream out, int sound_rate, int[] sample) throws IOException
 	{
 		// setta dimensione buffer
-        int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         short sampleS[] = new short[buffsize];
         int musicSize = buffsize * sample.length;
         int amp = 10000;
@@ -59,6 +37,23 @@ public class MusicUpsampling
         	byteBuff.clear();
         }
         return musicSize;
+	}
+	
+	/*** restituisce la durata della musica in secondi***/
+	public static long duration(int upsampling, int num_sample, int sound_rate)
+	{
+		int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		
+		switch(upsampling)
+		{
+			case NOTE: 
+				return (num_sample* buffsize)/sound_rate;
+			case LINEAR: 
+				return (num_sample* buffsize)/sound_rate;
+			default:
+				return 0;
+		}
+		
 	}
 	
 }

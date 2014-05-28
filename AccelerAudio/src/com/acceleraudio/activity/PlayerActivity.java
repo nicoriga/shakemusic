@@ -5,10 +5,7 @@ import com.acceleraudio.service.PlayerTrack;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
@@ -29,7 +26,6 @@ public class PlayerActivity extends Activity {
 	public static final String NOTIFICATION = "com.acceleraudio.service.playerActivity";
 	public static String SESSION_NAME = "playerActivity.session_Name";
 	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
-	public static String MUSIC_CURSOR = "playerActivity.music_cursor"; // puntatore array della musica in riproduzione
 	public static String SOUND_RATE = "playerActivity.soundRate";
 	public static String UPSAMPLING = "playerActivity.upsampling";
 	public static String INIZIALIZED = "playerActivity.inizialied";
@@ -42,27 +38,17 @@ public class PlayerActivity extends Activity {
 	private ImageView thumbnail;
 	private SeekBar sb_musicProgress;
 	private int[] sample;
-	private int sessionId, upsampling, musicCursor = 0; // musicCursos: puntatore array della musica in riproduzione
+	private int sessionId, upsampling;
 	private static long duration;
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
-	public Intent intentPlayer;
+	private Intent intentPlayer;
 	public static String[] data_x, data_y, data_z;
 	private String image;
 	private Thread t;
 	private boolean isPause;
-	private BroadcastReceiver receiver = new BroadcastReceiver() {
-    	
-    	@Override
-        public void onReceive(Context context, Intent intent) {
-    		Bundle bundle = intent.getExtras();
-    		if (bundle != null) {
-    			if(intent.hasExtra(MUSIC_CURSOR)) musicCursor = bundle.getInt(MUSIC_CURSOR);
-    			//if(intent.hasExtra(PlayerTrack.DURATION)) duration = bundle.getLong(PlayerTrack.DURATION);
-    		}
-        }
-    };
-    // TODO sistemare timer durata musica
+
+	// TODO sistemare timer durata musica
     private CountDownTimer countDownTimer = new CountDownTimer(duration, 1000) {
 		public void onTick(long millisUntilFinished) {
 			long time_elapsed = duration - millisUntilFinished;
@@ -107,7 +93,6 @@ public class PlayerActivity extends Activity {
 				sessionName.setText(savedInstanceState.getString(SESSION_NAME));
 				inizialized = savedInstanceState.getBoolean(INIZIALIZED);
 				isPause = savedInstanceState.getBoolean(PlayerTrack.PAUSE);
-				musicCursor = savedInstanceState.getInt(MUSIC_CURSOR);
 				sample = savedInstanceState.getIntArray(SAMPLE);
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
 				image = savedInstanceState.getString(IMAGE);
@@ -194,7 +179,6 @@ public class PlayerActivity extends Activity {
 				
 				// avvio subito la riproduzione della musica
 				intentPlayer.putExtra(ACC_DATA, sample);
-				intentPlayer.putExtra(MUSIC_CURSOR, musicCursor);
 				intentPlayer.putExtra(UPSAMPLING, upsampling);
 				startService(intentPlayer);
 				
@@ -234,26 +218,23 @@ public class PlayerActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
-//					if(!inizialized)
-//					{
-						if(isPause)
-						{
-							Intent intent = new Intent(NOTIFICATION);
-					        intent.putExtra(PlayerTrack.RESUME, 1);
-					        sendBroadcast(intent);
+					if(isPause)
+					{
+						Intent intent = new Intent(NOTIFICATION);
+				        intent.putExtra(PlayerTrack.PLAY, 1);
+				        sendBroadcast(intent);
+					
+						inizialized = true;
+						play.setEnabled(false);
+						pause.setEnabled(true);
 						
-							inizialized = true;
-							play.setEnabled(false);
-							pause.setEnabled(true);
-							
-							// TODO valori di prova
-							duration = ((sample.length*3072)/44100)*1000;
-							durationTV.setText("" + duration/1000);
-							sb_musicProgress.setMax((int)duration/1000);
-							
-							countDownTimer.start();
-						}
-//					}
+						// TODO valori di prova
+						duration = ((sample.length*3072)/44100)*1000;
+						durationTV.setText("" + duration/1000);
+						sb_musicProgress.setMax((int)duration/1000);
+						
+						countDownTimer.start();
+					}
 				}
 			});
 			
@@ -261,8 +242,6 @@ public class PlayerActivity extends Activity {
 			pause.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					stopService(intentPlayer);
-					
 					countDownTimer.cancel();
 
 					isPause = true;
@@ -281,7 +260,10 @@ public class PlayerActivity extends Activity {
 			stop.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					stopService(intentPlayer);
+					Intent intent = new Intent(NOTIFICATION);
+			        intent.putExtra(PlayerTrack.STOP, 1);
+			        sendBroadcast(intent);
+			        stopService(intentPlayer);
 					finish();
 				}
 			});
@@ -316,19 +298,16 @@ public class PlayerActivity extends Activity {
     @Override
     protected void onResume() {
     	super.onResume();
-    	registerReceiver(receiver, new IntentFilter(PlayerTrack.NOTIFICATION));
     }
 	    
     @Override
     protected void onPause() {
     	super.onPause();
-    	unregisterReceiver(receiver);
     }
     
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	//stopService(intentPlayer);
     	inizialized = false;
     }
     
@@ -336,7 +315,6 @@ public class PlayerActivity extends Activity {
 	public void onBackPressed() {
 	    super.onBackPressed();
 	    stopService(intentPlayer); // stoppa il servizio della musica
-	    finish();
     }
     
     @Override
@@ -345,7 +323,6 @@ public class PlayerActivity extends Activity {
     	savedInstanceState.putString(SESSION_NAME, sessionName.getText().toString());
     	savedInstanceState.putBoolean(INIZIALIZED, inizialized);
     	savedInstanceState.putBoolean(PlayerTrack.PAUSE, isPause);
-    	savedInstanceState.putInt(MUSIC_CURSOR, musicCursor);
     	savedInstanceState.putInt(UPSAMPLING, upsampling);
     	savedInstanceState.putIntArray(SAMPLE, sample);
     	savedInstanceState.putString(IMAGE, image);

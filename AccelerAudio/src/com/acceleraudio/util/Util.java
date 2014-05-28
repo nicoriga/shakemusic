@@ -23,7 +23,6 @@ public class Util{
         } 
     }
     
-
 	/**** restituisce id in base al nome dell'upsampling ****/
     @SuppressLint("DefaultLocale")
 	public static int getUpsamplingID(String value)
@@ -31,9 +30,9 @@ public class Util{
     	switch(value.toLowerCase())
         {
     		case "note":
-    			return 1;
+    			return MusicUpsampling.NOTE;
     		case "lineare":
-    			return 2;
+    			return MusicUpsampling.LINEAR;
     		default:
     			return 0;
         } 
@@ -45,25 +44,16 @@ public class Util{
     {
     	switch(value)
         {
-    		case 1:
+    		case MusicUpsampling.NOTE:
     			return "Note";
-    		case 2:
+    		case MusicUpsampling.LINEAR:
     			return "Lineare";
     		default:
     			return "";
         } 
     }
     
-    /**** Copia Object[] in int[] ****/
-    public static int[] toArrayInt(ArrayList<Integer> ali)
-    {
-    	int[] intA = new int[ali.size()];
-    	for(int i = 0; i < ali.size(); i++)
-    		intA[i] = ali.get(i);
-    	return intA;
-    }
-    
-    /**** Copia Object[] in Float[] ****/
+    /**** Copia ArrayList<Float> in Float[] ****/
     public static float[] toArrayFloat(ArrayList<Float> alf)
     {
     	float[] floatA = new float[alf.size()];
@@ -96,7 +86,6 @@ public class Util{
     	if(r == SensorManager.SENSOR_DELAY_NORMAL) return "Lento";
     	if(r == SensorManager.SENSOR_DELAY_UI) return "Normale";
     	if(r == SensorManager.SENSOR_DELAY_GAME) return "Veloce";
-    	
     	return "Normale";
     }
 }
