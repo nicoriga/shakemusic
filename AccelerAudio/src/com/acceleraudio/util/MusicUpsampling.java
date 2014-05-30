@@ -12,11 +12,19 @@ public class MusicUpsampling
 	public final static int NOTE = 1;
 	public final static int LINEAR = 2;
 	
-	/*** scrive audio PCM nel file di output usando Upsampling: note ***/
-	public static int note(OutputStream out, int sound_rate, int[] sample) throws IOException
+	/**
+	 * scrive audio PCM nel file di output usando Upsampling: note 
+	 * 
+	 * @param out file su cui viene scritto audio PCM
+	 * @param sample_rate sample rate espresso in Hz
+	 * @param sample array di campioni
+	 * @return 
+	 * @throws IOException nel caso sussiste un problema nella scrittura sul file
+	 */
+	public static int note(OutputStream out, int sample_rate, int[] sample) throws IOException
 	{
 		// setta dimensione buffer
-		int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		int buffsize = AudioTrack.getMinBufferSize(sample_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         short sampleS[] = new short[buffsize];
         int musicSize = buffsize * sample.length;
         int amp = 10000;
@@ -30,7 +38,7 @@ public class MusicUpsampling
         	fr =  262 + (Math.abs(sample[x])*10);
         	for(int i=0; i < buffsize; i++){
         		sampleS[i] = (short) (amp*Math.sin(ph));
-        		ph += twoph*fr/sound_rate;
+        		ph += twoph*fr/sample_rate;
         		byteBuff.putShort(Short.reverseBytes(sampleS[i]));
         	}
         	out.write(byteBuff.array());
@@ -39,17 +47,24 @@ public class MusicUpsampling
         return musicSize;
 	}
 	
-	/*** restituisce la durata della musica in millisecondi***/
-	public static long duration(int upsampling, int num_sample, int sound_rate)
+	/**
+	 * restituisce la durata della musica in millisecondi
+	 * 
+	 * @param upsampling quantita di upsampling scelta
+	 * @param num_sample numero di campioni
+	 * @param sample_rate sample rate espresso in Hz
+	 * @return durata della riproduzione in millisecondi
+	 */
+	public static long duration(int upsampling, int num_sample, int sample_rate)
 	{
-		int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		int buffsize = AudioTrack.getMinBufferSize(sample_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 		
 		switch(upsampling)
 		{
 			case NOTE: 
-				return ((num_sample* buffsize)/sound_rate)*1000;
+				return ((num_sample* buffsize)/sample_rate)*1000;
 			case LINEAR: 
-				return (num_sample* buffsize)/sound_rate;
+				return (num_sample* buffsize)/sample_rate;
 			default:
 				return 0;
 		}

@@ -24,7 +24,7 @@ public class PlayerTrack extends IntentService{
 	public static final int PLAY_MUSIC = 1;
 	public static final int PAUSE_MUSIC = 1;
 //	private Thread t;
-	private int sound_rate;
+	private int sample_rate;
 	private boolean isRunning ;
 	private int[] sample;
 	int x, upsampling;
@@ -61,10 +61,10 @@ public class PlayerTrack extends IntentService{
     	
 		sample = intent.getIntArrayExtra(PlayerActivity.ACC_DATA);
 		Log.w("PlayerTrack", "sample: " +sample.length);
-		sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 44100);
+		sample_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 44100);
 		upsampling = intent.getIntExtra(PlayerActivity.UPSAMPLING, 1);
 		
-		duration = MusicUpsampling.duration(upsampling, sample.length, sound_rate);
+		duration = MusicUpsampling.duration(upsampling, sample.length, sample_rate);
 		Log.w("PlayerTrack", "duration " +duration);
 		
 		isRunning = true;
@@ -109,13 +109,13 @@ public class PlayerTrack extends IntentService{
 		        	fr =  262 + (Math.abs(sample[x])*10);
 		        	for(int i=0; i < sizeBuff; i++){
 		        		samples1[i] = (short) (amp*Math.sin(phi));
-		        		phi += twophi*fr/sound_rate;
+		        		phi += twophi*fr/sample_rate;
 		        	}
 		        	audioTrack.write(samples1, 0, sizeBuff);
 		        	x++;
 		        	if(x == sample.length) 
 		        		{
-		        		// stoppo e rivvio il coutdowntimer
+		        		// stoppo e riavvio il coutdowntimer
 			        		Intent intentPause = new Intent(NOTIFICATION);
 			        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
 					        sendBroadcast(intentPause);

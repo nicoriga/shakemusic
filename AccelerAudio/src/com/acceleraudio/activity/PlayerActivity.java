@@ -43,7 +43,7 @@ public class PlayerActivity extends Activity {
 	public static SeekBar sb_musicProgress;
 	private int[] sample;
 	private int sessionId, upsampling;
-	private static long duration;
+	private static long duration, remaining_millis;
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
 	public Intent intentPlayer;
@@ -62,6 +62,7 @@ public class PlayerActivity extends Activity {
     			if(intent.hasExtra(PlayerTrack.DURATION))
     			{
 					duration = bundle.getLong(PlayerTrack.DURATION);
+					remaining_millis = duration;
 					durationTV.setText("" + duration/1000);
 					sb_musicProgress.setMax((int)duration);
     			}
@@ -72,18 +73,7 @@ public class PlayerActivity extends Activity {
     			if(intent.hasExtra(PlayerTrack.PLAY))
 					if(bundle.getInt(PlayerTrack.PLAY) == PlayerTrack.PLAY_MUSIC)
 					{
-						countDownTimer = new CountDownTimer(duration, 1000) {
-							public void onTick(long millisUntilFinished) {
-								long time_elapsed = duration - millisUntilFinished;
-								currentTimeTV.setText("" + time_elapsed / 1000);
-								sb_musicProgress.setProgress((int)time_elapsed);
-							}
-							
-							public void onFinish() {
-									currentTimeTV.setText("0");
-									sb_musicProgress.setProgress(0);
-							}
-						};
+						loadCountDownTimer();
 						countDownTimer.start();
 					}
     		}
@@ -355,6 +345,25 @@ public class PlayerActivity extends Activity {
     	savedInstanceState.putString(IMAGE, image);
     	savedInstanceState.putLong(PlayerTrack.DURATION, duration);
     	super.onSaveInstanceState(savedInstanceState);
+    }
+    
+    
+    public void loadCountDownTimer()
+    {
+    	duration = remaining_millis;
+    	countDownTimer = new CountDownTimer(duration, 10) {
+			public void onTick(long millisUntilFinished) {
+				long time_elapsed = duration - millisUntilFinished;
+				currentTimeTV.setText("" + time_elapsed / 1000);
+				sb_musicProgress.setProgress((int)time_elapsed);
+				remaining_millis = millisUntilFinished;
+			}
+			
+			public void onFinish() {
+					currentTimeTV.setText("0");
+					sb_musicProgress.setProgress(0);
+			}
+		};
     }
 
 }

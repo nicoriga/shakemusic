@@ -54,7 +54,7 @@
             android:id="@+id/UI3_TV_RecordedSamples"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/medium_text"
+            android:text="@string/zero"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="25sp" />
 
@@ -118,7 +118,7 @@
         android:id="@+id/UI3_TV_timerRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/medium_text"
+        android:text="@string/zero"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TableRow
@@ -156,28 +156,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center|center_horizontal"
-        android:layout_weight="0.29" >
+        android:layout_weight="0.08" >
         
         <RadioGroup
         android:id="@+id/UI3_orientation"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:orientation="horizontal" >
-
-        <RadioButton
-            android:id="@+id/UI3_RB_landscape"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal|fill_horizontal"
-            android:layout_marginLeft="180dp"
-            android:checked="true"
-            android:text="@string/landscape" />
-
-        <RadioButton
-            android:id="@+id/UI3_RB_portrait"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/portrait" />
 		</RadioGroup>
 
     </TableRow>

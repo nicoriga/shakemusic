@@ -33,12 +33,11 @@ public class RecordActivity extends Activity {
 	public static String SAMPLE = "recordActivity.sample";
 	public static String TIME_REMAINING = "recordActivity.time_remaining";
 	public static String PAUSE = "recordActivity.pause";
-	public static String STOP = "recordActivity.stop";
 	public static String DATA_X = "recordActivity.data_x";
 	public static String DATA_Y = "recordActivity.data_y";
 	public static String DATA_Z = "recordActivity.data_z";
 	
-	private static Button startSession, stopSession, pauseSession, saveSession;
+	private static Button startSession, stopSession, pauseSession;
 	private static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
@@ -49,7 +48,7 @@ public class RecordActivity extends Activity {
 	private DbAdapter dbAdapter;
 	public Intent intentRecord;
 	public static long sessionId, remaining_time;
-	public static boolean pause, stop;
+	public static boolean pause;
 	private int sample_rate, orientation;
 	private CountDownTimer countDownTimer;
 	private SharedPreferences pref;
@@ -76,7 +75,6 @@ public class RecordActivity extends Activity {
 			startSession = (Button) findViewById(R.id.UI3_BT_record);
 			stopSession = (Button) findViewById(R.id.UI3_BT_stop);
 			pauseSession = (Button) findViewById(R.id.UI3_BT_pause);
-			saveSession = (Button) findViewById(R.id.UI3_BT_save);
 			progressBarX = (ProgressBar) findViewById(R.id.UI3_PB_X);
 			progressBarY = (ProgressBar) findViewById(R.id.UI3_PB_Y);
 			progressBarZ = (ProgressBar) findViewById(R.id.UI3_PB_Z);
@@ -87,7 +85,6 @@ public class RecordActivity extends Activity {
 			
 			pauseSession.setEnabled(false);
 			stopSession.setEnabled(false);
-			saveSession.setEnabled(false);
 			
 //////////////////////////////////////////////////////////
 ///////////// prelevo le impostazioni predefinite ////////
@@ -100,32 +97,29 @@ public class RecordActivity extends Activity {
 				sample = savedInstanceState.getInt(SAMPLE);
 				remaining_time = savedInstanceState.getLong(TIME_REMAINING);
 				pause = savedInstanceState.getBoolean(PAUSE);
-				stop = savedInstanceState.getBoolean(STOP);
 				data_x = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_X));
 				data_y = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_Y));
 				data_z = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_Z));
 				startSession.setText(getString(R.string.resume));
 				
-				if(remaining_time == 0 || stop)
+				if(remaining_time == 0)
 				{
 					startSession.setEnabled(false);
 					pauseSession.setEnabled(false);
 					stopSession.setEnabled(false);
-					saveSession.setEnabled(true);
 				}
 				else
 				{
 					startSession.setEnabled(true);
 					pauseSession.setEnabled(false);
 					stopSession.setEnabled(true);
-					saveSession.setEnabled(false);
 				}
 			}
 			else
 			{	
 				// imposto preferenze
 				sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
-				remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
+				remaining_time = pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
 				
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
@@ -136,7 +130,6 @@ public class RecordActivity extends Activity {
 				y = 0;
 				z = 0;
 				pause = false;
-				stop = false;
 			}
 			
 			time_remaining.setText("" + remaining_time / 1000);
@@ -171,14 +164,12 @@ public class RecordActivity extends Activity {
 							{
 								startSession.setEnabled(false);
 								pauseSession.setEnabled(false);
-								stopSession.setEnabled(false);
-								saveSession.setEnabled(true);
 								remaining_time = 0;
+								stopSession.performClick();
 							}
 							try{
 								resetProgressBar();
 								stopService(intentRecord);
-								stop = true;
 							}
 							catch(NullPointerException ex)
 							{
@@ -204,41 +195,30 @@ public class RecordActivity extends Activity {
 				}
 			});
 			
-			/**** STOPPA LA REGISTRAZIONE ****/
+			/**** STOPPA E SALVA LA REGISTRAZIONE ****/
 			stopSession.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					lockOrientation();
 					pause = false;
-					stop = true;
 					startSession.setEnabled(false);
 					pauseSession.setEnabled(false);
 					stopSession.setEnabled(false);
-					saveSession.setEnabled(true);
 					
 					stopService(intentRecord);
 					if(countDownTimer != null) countDownTimer.cancel();
 					resetProgressBar();
-				}
-			});
-			
-			/**** SALVA LA REGISTRAZIONE ****/
-			saveSession.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
+					
 					// Verifica che siano stati presi dati dall'accelerometro
 					if(data_x.size() > 0 || data_y.size() > 0 || data_z.size() > 0)
-						if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
-						{
-							saveSession.setEnabled(false);
-							saveAccelerometerData();
-							// avvio la SessionInfoActivity
-							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
-							i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
-							v.getContext().startActivity(i);
-							finish();
-						}
-						else Toast.makeText(v.getContext(), getString(R.string.error_no_session_name), Toast.LENGTH_SHORT).show();
+					{
+						saveAccelerometerData();
+						// avvio la SessionInfoActivity
+						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
+						i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
+						v.getContext().startActivity(i);
+						finish();
+					}
 					else
 					{
 						Toast.makeText(v.getContext(), getString(R.string.error_no_recorded_data), Toast.LENGTH_SHORT).show();
@@ -246,7 +226,7 @@ public class RecordActivity extends Activity {
 					}
 				}
 			});
-		
+			
 		} catch (RuntimeException e) {
 			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
@@ -260,6 +240,10 @@ public class RecordActivity extends Activity {
     	super.onDestroy();
 		stopService(intentRecord);
     	if(countDownTimer != null)countDownTimer.cancel();
+    	// resetta i campi per risparmiare memoria
+    	data_x = new ArrayList<Float>();
+		data_y = new ArrayList<Float>();
+		data_z = new ArrayList<Float>();
     }
     
     @Override
@@ -269,7 +253,6 @@ public class RecordActivity extends Activity {
     	savedInstanceState.putInt(SAMPLE, sample);
     	savedInstanceState.putLong(TIME_REMAINING, remaining_time);
     	savedInstanceState.putBoolean(PAUSE, pause);
-    	savedInstanceState.putBoolean(STOP, stop);
     	savedInstanceState.putFloatArray(DATA_X, Util.toArrayFloat(data_x));
     	savedInstanceState.putFloatArray(DATA_Y, Util.toArrayFloat(data_y));
     	savedInstanceState.putFloatArray(DATA_Z, Util.toArrayFloat(data_z));
@@ -284,6 +267,7 @@ public class RecordActivity extends Activity {
     public void saveAccelerometerData(){
 		try {
 			
+			// inserisco i dati uno StringBuilder per trasformarli piu velocemente in una stringa da inserire nel database
 			Log.w("save Session", "inzio..");
 			final StringBuilder x_sb = new StringBuilder();
 			final StringBuilder y_sb = new StringBuilder();
@@ -296,8 +280,18 @@ public class RecordActivity extends Activity {
 			
 			// apro la connessione al db
 			dbAdapter.open();
+			
+			String name;
+			// Verifica che si abbia scritto il nome della sessione
+			if(nameSession.getText().toString().length() > 0)
+				name = nameSession.getText().toString();
+			else
+			{
+				name = "Registrazione_" + (dbAdapter.getMaxId()+1);
+			}
+			
 			// inserisco i dati della sessione nel database
-			sessionId = dbAdapter.createSession( nameSession.getText().toString(), "", (pref.getBoolean(PreferencesActivity.AXIS_X, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Y, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Z, true)? 1:0), pref.getInt(PreferencesActivity.UPSAMPLING, Util.getUpsamplingID(getString(R.string.note))), x_sb.toString(), y_sb.toString(), z_sb.toString(), data_x.size(), data_y.size(), data_z.size() );
+			sessionId = dbAdapter.createSession( name, "", (pref.getBoolean(PreferencesActivity.AXIS_X, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Y, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Z, true)? 1:0), pref.getInt(PreferencesActivity.UPSAMPLING, Util.getUpsamplingID(getString(R.string.note))), x_sb.toString(), y_sb.toString(), z_sb.toString(), data_x.size(), data_y.size(), data_z.size() );
 			
 			//costruzione immagine
 	        Log.w("save Session", "...creata");

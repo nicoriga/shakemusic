@@ -103,26 +103,27 @@
         android:layout_below="@+id/UI3_ET_SessionName"
         android:layout_marginRight="16dp"
         android:layout_marginTop="23dp"
-        android:text="@string/medium_text"
+        android:text="@string/zero"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI3_TV_timerRemaning"
+        android:layout_alignBottom="@+id/UI3_TV_timerRemaning"
+        android:layout_alignLeft="@+id/UI3_TV_label_RecordedSamples"
+        android:text="@string/remaining_time"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/UI3_TV_timerRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/UI3_BT_stop"
-        android:layout_marginBottom="23dp"
-        android:layout_toRightOf="@+id/UI3_BT_stop"
+        android:layout_alignLeft="@+id/UI3_TV_RecordedSamples"
+        android:layout_below="@+id/UI3_PB_X"
+        android:layout_marginTop="15dp"
         android:text="@string/zero"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Button
-        android:id="@+id/UI3_BT_save"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI3_PB_X"
-        android:layout_alignParentRight="true"
-        android:text="@string/save" />
 
 </RelativeLayout>

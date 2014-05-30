@@ -92,57 +92,33 @@
         android:layout_below="@+id/UI5_SP_frequency"
         android:text="@string/upsampling"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <Button
-        android:id="@+id/UI5_BT_minuteMinus"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/UI5_ET_minute"
-        android:layout_below="@+id/UI5_ET_minute"
-        android:text="@string/minus" />
 
     <Button
         android:id="@+id/UI5_BT_secondMinus"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_ET_second"
-        android:layout_below="@+id/UI5_ET_second"
+        android:layout_alignLeft="@+id/UI5_BT_secondPlus"
+        android:layout_alignParentBottom="true"
         android:text="@string/minus" />
-
-    <Button
-        android:id="@+id/UI5_BT_secondPlus"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI5_ET_minute"
-        android:layout_alignLeft="@+id/UI5_CB_Y"
-        android:text="@string/plus" />
-
-    <Button
-        android:id="@+id/UI5_BT_minutePlus"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_TV_duration"
-        android:layout_below="@+id/UI5_TV_duration"
-        android:text="@string/plus" />
-
-    <EditText
-        android:id="@+id/UI5_ET_minute"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_BT_minutePlus"
-        android:layout_alignRight="@+id/UI5_BT_minutePlus"
-        android:layout_below="@+id/UI5_BT_minutePlus"
-        android:ems="10"
-        android:inputType="number" />
 
     <EditText
         android:id="@+id/UI5_ET_second"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/UI5_BT_minuteMinus"
+        android:layout_above="@+id/UI5_BT_secondMinus"
         android:layout_alignLeft="@+id/UI5_BT_secondPlus"
         android:layout_alignRight="@+id/UI5_BT_secondPlus"
         android:ems="10"
-        android:inputType="number" />
+        android:inputType="number" >
+
+    </EditText>
+
+    <Button
+        android:id="@+id/UI5_BT_secondPlus"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI5_ET_second"
+        android:layout_alignLeft="@+id/UI5_TV_axes"
+        android:text="@string/plus" />
 
 </RelativeLayout>

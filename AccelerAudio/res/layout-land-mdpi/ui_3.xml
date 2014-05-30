@@ -59,7 +59,7 @@
             android:id="@+id/UI3_TV_RecordedSamples"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium Text"
+            android:text="@string/zero"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="25sp" />
 

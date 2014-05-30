@@ -157,10 +157,33 @@ public class DbAdapter {
 		return mCursor;
 	}
 	
-	// duplica sessioni per ID
+	/**
+	 * @return il massimo id presente nel database
+	 */
+	public long getMaxId() 
+	{
+//		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] { "MAX("+T_SESSION_SESSIONID+")" }, null, null, null, null, null, null);     
+		Cursor mCursor = database.rawQuery(" SELECT MAX("+T_SESSION_SESSIONID+") FROM "+DATABASE_TABLE_SESSION, null);
+		mCursor.moveToFirst();
+		long id = mCursor.getLong(0);
+		mCursor.close();
+		return id;
+	}
+	
+	/**
+	 * duplica sessioni per ID
+	 * 
+	 * @param sessionID id della sessione da duplicare
+	 * @return String[] di lunghezza 4: contenente i dati della nuova sessione
+	 * 	<ul>
+	 * 		<li>String[0] id sessione </li>
+	 * 		<li>String[1] nome  </li>
+	 * 		<li>String[2] data ultima modifica </li>
+	 * 		<li>String[3] immagine sottoforma di stringa codifica in base64 </li>
+	 * </ul>
+	 */
 	public String[] duplicateSessionById(int sessionID) 
 	{
-//		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
 		Cursor mCursor = fetchSessionById(sessionID);
 		mCursor.moveToFirst();
 		if(mCursor.getCount()>0)
@@ -179,8 +202,9 @@ public class DbAdapter {
 			int n_data_y = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Y));
 			int n_data_z = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Z));
 			mCursor.close();
-				
-			ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, creation_date, getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
+			
+			name = name + "_" + (getMaxId()+1);
+			ContentValues values = createContentValuesSession( name, image, axis_x, axis_y, axis_z, upsampling, creation_date, getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
 			long sessionId = database.insertOrThrow(DATABASE_TABLE_SESSION, null, values);
 			
 			Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);

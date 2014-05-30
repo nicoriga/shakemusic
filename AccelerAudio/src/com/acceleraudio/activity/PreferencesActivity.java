@@ -29,15 +29,14 @@ public class PreferencesActivity extends Activity {
 	public static String AXIS_Z = "axis.z";
 	public static String SAMPLE_RATE = "sample.rate";
 	public static String UPSAMPLING = "upsampling";
-	public static String TIMER_MINUTES = "timer.minutes";
 	public static String TIMER_SECONDS = "timer.seconds";
 	
 	private SharedPreferences pref;
 	private Spinner sp_sample_rate, sp_upsampling;
 	private CheckBox axis_x, axis_y, axis_z;
-	private Button minutesUp, minutesDown, secondsUp, secondsDown;
-	private EditText minutesET, secondsET;
-	private int minutes, seconds;
+	private Button secondsUp, secondsDown;
+	private EditText secondsET;
+	private int seconds;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,11 +55,8 @@ public class PreferencesActivity extends Activity {
 			axis_z = (CheckBox) findViewById(R.id.UI5_CB_Z);
 			sp_sample_rate = (Spinner) findViewById(R.id.UI5_SP_frequency);
 			sp_upsampling = (Spinner) findViewById(R.id.UI5_SP_upsampling);
-			minutesUp = (Button) findViewById(R.id.UI5_BT_minutePlus);
-			minutesDown = (Button) findViewById(R.id.UI5_BT_minuteMinus);
 			secondsUp = (Button) findViewById(R.id.UI5_BT_secondPlus);
 			secondsDown = (Button) findViewById(R.id.UI5_BT_secondMinus);
-			minutesET = (EditText) findViewById(R.id.UI5_ET_minute);
 			secondsET = (EditText) findViewById(R.id.UI5_ET_second);
     		
 			/*** Popolo lo spinner: velocita campionamentov***/
@@ -113,32 +109,6 @@ public class PreferencesActivity extends Activity {
 			sp_sample_rate.setOnItemSelectedListener(spinner_change);
 			sp_upsampling.setOnItemSelectedListener(spinner_change);
 			
-			/**** incrementa i minuti ****/
-			minutesUp.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View view) {
-					if (minutes < 2) {
-						minutes++;
-						minutesET.setText("" + minutes);
-						Editor prefEdit = pref.edit();
-			    		prefEdit.putInt(TIMER_MINUTES, Integer.parseInt(minutesET.getText().toString()));
-			    		prefEdit.commit();
-					}
-				}
-			});
-			
-			/**** decrementa i minuti ****/
-			minutesDown.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View view) {
-					if (minutes > 1 || (minutes >0 && seconds >0)) {
-						minutes--;
-						minutesET.setText("" + minutes);
-						Editor prefEdit = pref.edit();
-			    		prefEdit.putInt(TIMER_MINUTES, Integer.parseInt(minutesET.getText().toString()));
-			    		prefEdit.commit();
-					}
-				}
-			});
-			
 			/**** incrementa i secondi ****/
 			secondsUp.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
@@ -155,7 +125,7 @@ public class PreferencesActivity extends Activity {
 			/**** decrementa i secondi ****/
 			secondsDown.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
-					if (seconds > 1 || (seconds >0 && minutes >0)) {
+					if (seconds > 1) {
 						seconds--;
 						secondsET.setText("" + seconds);
 						Editor prefEdit = pref.edit();
@@ -199,7 +169,6 @@ public class PreferencesActivity extends Activity {
     		prefEdit.putBoolean(AXIS_Z, true);
     		prefEdit.putInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
     		prefEdit.putInt(UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)));
-    		prefEdit.putInt(TIMER_MINUTES, 1);
     		prefEdit.putInt(TIMER_SECONDS, 0);
     		prefEdit.putBoolean(FIRST_START, false);
     		
@@ -209,9 +178,7 @@ public class PreferencesActivity extends Activity {
     		axis_z.setChecked(true);
     		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
     		Util.SelectSpinnerItemByValue(sp_upsampling, getString(R.string.note));
-    		minutes = 1;
     		seconds = 0;
-    		minutesET.setText("" + minutes);
     		secondsET.setText("" + seconds);
     		
     		prefEdit.commit();
@@ -224,9 +191,7 @@ public class PreferencesActivity extends Activity {
     		axis_z.setChecked(pref.getBoolean(AXIS_Z, true));
     		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(pref.getInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL)));
     		Util.SelectSpinnerItemByValue(sp_upsampling, "" + Util.getUpsamplingName(pref.getInt(UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)))));
-    		minutes = pref.getInt(TIMER_MINUTES, 1);
     		seconds = pref.getInt(TIMER_SECONDS, 0);
-    		minutesET.setText("" + minutes);
     		secondsET.setText("" + seconds);
     	}
     }

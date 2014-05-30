@@ -57,8 +57,9 @@
 	<string name="creation_date">Data Creazione:</string>
 	<string name="modified_date">Data Modifica:</string>
 	<string name="record">Record</string>
+	<string name="remaining_time">Tempo Rimanente:</string>
 	<string name="recorded_samples">Campioni Registrati:</string>
-	<string name="medium_text">Medium Text</string>
+	<string name="sample">sample</string>
 	<string name="landscape">Landscape</string>
 	<string name="portrait">Portrait</string>
 	<string name="save">Salva</string>
