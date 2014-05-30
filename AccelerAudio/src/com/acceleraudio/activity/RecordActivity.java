@@ -24,9 +24,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +32,6 @@ public class RecordActivity extends Activity {
 	public static String SAMPLE_RATE = "recordActivity.sample_rate";
 	public static String SAMPLE = "recordActivity.sample";
 	public static String TIME_REMAINING = "recordActivity.time_remaining";
-	public static String ORIENTATION = "recordActivity.orientation";
 	public static String PAUSE = "recordActivity.pause";
 	public static String STOP = "recordActivity.stop";
 	public static String DATA_X = "recordActivity.data_x";
@@ -46,8 +42,6 @@ public class RecordActivity extends Activity {
 	private static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
-	private RadioGroup radioGroup;
-	private RadioButton radioOrientationButton;
 	// essendo pubblici e statici, i dati non vengono persi durante la rotazione del display
 	// TODO verificare che questo sia il metodo piu adatto di procedere
 	public static ArrayList<Float> data_x, data_y, data_z;
@@ -86,7 +80,6 @@ public class RecordActivity extends Activity {
 			progressBarX = (ProgressBar) findViewById(R.id.UI3_PB_X);
 			progressBarY = (ProgressBar) findViewById(R.id.UI3_PB_Y);
 			progressBarZ = (ProgressBar) findViewById(R.id.UI3_PB_Z);
-			radioGroup = (RadioGroup) findViewById(R.id.UI3_orientation);
 			//setProgressBarMax((int)accelerometro.getMaximumRange());
 			setProgressBarMax(20);
 			resetProgressBar();
@@ -106,13 +99,11 @@ public class RecordActivity extends Activity {
 				sample_rate = savedInstanceState.getInt(SAMPLE_RATE);
 				sample = savedInstanceState.getInt(SAMPLE);
 				remaining_time = savedInstanceState.getLong(TIME_REMAINING);
-				orientation = savedInstanceState.getInt(ORIENTATION);
 				pause = savedInstanceState.getBoolean(PAUSE);
 				stop = savedInstanceState.getBoolean(STOP);
 				data_x = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_X));
 				data_y = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_Y));
 				data_z = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_Z));
-				setRequestedOrientation(orientation);
 				startSession.setText(getString(R.string.resume));
 				
 				if(remaining_time == 0 || stop)
@@ -132,15 +123,9 @@ public class RecordActivity extends Activity {
 			}
 			else
 			{	
-				orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-				radioOrientationButton = (RadioButton) findViewById(R.id.UI3_RB_portrait);
-				radioOrientationButton.setChecked(true);
-				
 				// imposto preferenze
 				sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
 				remaining_time = pref.getInt(PreferencesActivity.TIMER_MINUTES, 1)*60000 + pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
-				
 				
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
@@ -157,35 +142,15 @@ public class RecordActivity extends Activity {
 			time_remaining.setText("" + remaining_time / 1000);
 			
 		
-		
 /////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
 		
-			/**** ROTAZIONE SCHERMO ****/
-			radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(RadioGroup group, int checkedId) {
-					int orientationID = radioGroup.getCheckedRadioButtonId();
-					radioOrientationButton = (RadioButton) findViewById(orientationID);
-					
-					if(radioOrientationButton.getText().toString().equalsIgnoreCase("portrait"))
-					{
-						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-						orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-					}
-					else
-					{
-						setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-						orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-					}
-				}
-			});
-	
 			/**** AVVIA LA REGISTRAZIONE ****/
 			startSession.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					lockOrientation();
 					pause = false;
 					startSession.setText(getString(R.string.resume));
 					startSession.setEnabled(false);
@@ -229,6 +194,7 @@ public class RecordActivity extends Activity {
 			pauseSession.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					unlockOrientation();
 					pause = true;
 					startSession.setEnabled(true);
 					pauseSession.setEnabled(false);
@@ -242,6 +208,7 @@ public class RecordActivity extends Activity {
 			stopSession.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					lockOrientation();
 					pause = false;
 					stop = true;
 					startSession.setEnabled(false);
@@ -263,7 +230,6 @@ public class RecordActivity extends Activity {
 					if(data_x.size() > 0 || data_y.size() > 0 || data_z.size() > 0)
 						if(nameSession.getText().toString().length() > 0) // Verifica che si abbia scritto il nome della sessione
 						{
-							radioGroup.setEnabled(false);
 							saveSession.setEnabled(false);
 							saveAccelerometerData();
 							// avvio la SessionInfoActivity
@@ -302,7 +268,6 @@ public class RecordActivity extends Activity {
     	savedInstanceState.putInt(SAMPLE_RATE, sample_rate);
     	savedInstanceState.putInt(SAMPLE, sample);
     	savedInstanceState.putLong(TIME_REMAINING, remaining_time);
-    	savedInstanceState.putInt(ORIENTATION, orientation);
     	savedInstanceState.putBoolean(PAUSE, pause);
     	savedInstanceState.putBoolean(STOP, stop);
     	savedInstanceState.putFloatArray(DATA_X, Util.toArrayFloat(data_x));
@@ -352,26 +317,58 @@ public class RecordActivity extends Activity {
     }
 
 //////////////////////////////
-///// METODI AUSILIARI
+///// METODI AUSILIARI //////
 /////////////////////////////
     
+    /*** aggiorna il numero di sample e le progressBar, nell'interfaccia ***/
     public static void updateSample(){
 		rec_sample.setText("" + sample);
 		progressBarX.setProgress(x);
 		progressBarY.setProgress(y);
 		progressBarZ.setProgress(z);
     }
+    
+    /*** imposta il valore massimo per tutte le progress bar ***/
     public static void setProgressBarMax(int max)
     {
     	progressBarX.setMax(max);
 		progressBarY.setMax(max);
 		progressBarZ.setMax(max);
     }
+    
+    /*** imposta tutte le progress bar a 0 ***/
     public static void resetProgressBar()
     {
     	progressBarX.setProgress(0);
 		progressBarY.setProgress(0);
 		progressBarZ.setProgress(0);
+    }
+    
+    /*** blocca la rotazione dello schermo ***/
+    public void lockOrientation()
+    {
+    	orientation = getResources().getConfiguration().orientation;
+		
+    	// se lo schermo si trova in una delle posizione conosciute allora si blocca in quella
+    	switch(orientation){
+    		case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+    		case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+    		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
+    		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
+    			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+    			return;
+    		default:
+    			// nel caso il dispositivo si trovi in reverse-landscape viene bloccato in landscape
+    			// qusto perchè il reverse non è disponibile nelle api 8
+    			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    			return;
+    	}
+    }
+    
+    /*** sblocca la rotazione dello schermo ***/
+    public void unlockOrientation()
+    {
+    	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
     
 }

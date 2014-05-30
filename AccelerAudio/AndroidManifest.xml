@@ -24,7 +24,7 @@
         <activity android:name="com.acceleraudio.activity.FileExplore"></activity>
         <activity android:name="com.acceleraudio.activity.PlayerActivity"></activity>
         <activity android:name="com.acceleraudio.activity.PreferencesActivity"></activity>
-        <activity android:name="com.acceleraudio.activity.RecordActivity" android:screenOrientation="portrait" ></activity>
+        <activity android:name="com.acceleraudio.activity.RecordActivity" ></activity>
         <service android:name="com.acceleraudio.service.PlayerTrack"></service>
         <service android:name="com.acceleraudio.service.RecordTrack"></service>
         <activity android:name="com.acceleraudio.activity.MergeSessionActivity"></activity>

@@ -125,6 +125,14 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		select_mode = false;
 	}
 	
+	@Override
+	public void onBackPressed(){
+		if(select_mode)
+			cancel.performClick();
+		else
+			super.onBackPressed();
+	}
+	
 	/**** creazione del menu contestuale ****/
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) 
@@ -282,15 +290,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			registerForContextMenu(list);
 		}
 		
-		// verifico presenza accelerometro
-		// TODO: con emulatore si blocca qua... scopriere perchè
-//		SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//		Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//		if (accelerometer == null)
-//		{
-//			newSession.setEnabled(false);
-//			Toast.makeText(this, getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
-//		}
 		
 /////////////////////////////////////////////////////////
 ///////////  aggiungo listener  /////////////////////////
@@ -298,9 +297,20 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 
 		/**** Avvia l'activity per registrare una nuova session ****/
 		newSession.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				Intent i = new Intent(view.getContext(), RecordActivity.class);
-				view.getContext().startActivity(i);
+			public void onClick(View v) {
+				// verifico presenza accelerometro
+				SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+				Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+				if (accelerometer == null)
+				{
+					newSession.setEnabled(false);
+					Toast.makeText(v.getContext(), getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
+				}
+				else
+				{
+					Intent i = new Intent(v.getContext(), RecordActivity.class);
+					v.getContext().startActivity(i);
+				}
 			}
 		});
 		

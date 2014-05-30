@@ -103,7 +103,7 @@ public class SessionInfoActivity extends Activity {
 				dbAdapter.open();
 				
 				// prelevo record by ID 
-				cursor = dbAdapter.fetchSessionById(sessionId);
+				cursor = dbAdapter.fetchSessionByIdMinimal(sessionId);
 				cursor.moveToFirst();
 				
 				// carico dati
@@ -201,7 +201,7 @@ public class SessionInfoActivity extends Activity {
 						toast.show();
 					}
 					else
-						finish();
+						onBackPressed();
 				}
 			});
 			

@@ -125,28 +125,4 @@
         android:layout_alignParentRight="true"
         android:text="@string/save" />
 
-    <RadioGroup
-        android:id="@+id/UI3_orientation"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:orientation="horizontal" >
-
-        <RadioButton
-            android:id="@+id/UI3_RB_landscape"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/landscape" />
-
-        <RadioButton
-            android:id="@+id/UI3_RB_portrait"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/portrait" />
-
-    </RadioGroup>
-
 </RelativeLayout>

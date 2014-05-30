@@ -150,22 +150,24 @@ public class DbAdapter {
 		return mCursor;
 	}
 	
-	// preleva sessione per ID solo alcuni dati
+	// preleva sessione per ID senza i dati dell'accelerometro
 	public Cursor fetchSessionByIdMinimal(int sessionID) 
 	{
-		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
+		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
 		return mCursor;
 	}
 	
 	// duplica sessioni per ID
 	public String[] duplicateSessionById(int sessionID) 
 	{
-		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
+//		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
+		Cursor mCursor = fetchSessionById(sessionID);
 		mCursor.moveToFirst();
 		if(mCursor.getCount()>0)
 		{
 			String name = mCursor.getString( mCursor.getColumnIndex(DbAdapter.T_SESSION_NAME));
 			String image = mCursor.getString( mCursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE));
+			String creation_date = mCursor.getString( mCursor.getColumnIndex(DbAdapter.T_SESSION_CREATION_DATE));
 			int axis_x = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X));
 			int axis_y = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y));
 			int axis_z = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z));
@@ -178,7 +180,7 @@ public class DbAdapter {
 			int n_data_z = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Z));
 			mCursor.close();
 				
-			ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, getDate(), getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
+			ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, creation_date, getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
 			long sessionId = database.insertOrThrow(DATABASE_TABLE_SESSION, null, values);
 			
 			Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);

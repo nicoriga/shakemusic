@@ -105,40 +105,6 @@
         android:text="@string/medium_text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <RadioGroup
-        android:id="@+id/UI3_orientation"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@+id/UI3_BT_stop"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/UI3_PB_Z"
-        android:orientation="vertical" >
-                
-	    <RadioButton
-	        android:id="@+id/UI3_RB_landscape"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/landscape" 
-	        android:checked="true" />
-	    
-	    <RadioButton
-	        android:id="@+id/UI3_RB_portrait"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/portrait" />
-
-	</RadioGroup>
-    
-    <TextView
-        android:id="@+id/UI3_TV_timerRemaning"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI3_BT_record"
-        android:layout_alignBottom="@+id/UI3_BT_record"
-        android:layout_alignLeft="@+id/UI3_orientation"
-        android:text="@string/zero"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
     <Button
         android:id="@+id/UI3_BT_save"
         style="?android:attr/buttonStyleSmall"
@@ -147,5 +113,14 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/UI3_ET_SessionName"
         android:text="@string/save" />
+
+    <TextView
+        android:id="@+id/UI3_TV_timerRemaning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3_PB_X"
+        android:layout_toLeftOf="@+id/UI3_BT_save"
+        android:text="@string/zero"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
