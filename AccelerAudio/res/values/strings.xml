@@ -34,8 +34,9 @@
     <string name="error_database_update_change">Database: Errore caricamento modifiche </string>
 	
 	<string-array name="upsampling_array">
-        <item>Note</item>
-        <item>Lineare</item>
+        <item>0</item>
+        <item>1500</item>
+        <item>3000</item>
     </string-array>
 	<string-array name="sample_rate">
 		<item >Lento</item>

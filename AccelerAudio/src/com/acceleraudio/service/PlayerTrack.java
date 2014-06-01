@@ -78,75 +78,54 @@ public class PlayerTrack extends IntentService{
         // avvia l'audio
         audioTrack.play();
   
-        switch(upsampling){
-        	case 1:
-        		// loop musicale con note
-        		
-        		int sizeBuff = buffsize;
-        		
-        		short samples1[] = new short[sizeBuff];
-        		
-		        int amp = 10000;
-		        double twophi = Math.PI*2; // 2pi grego
-		        double fr; // frequenza
-		        double phi = 0.0; // pi greco
-		        
-		        Intent intentPlay = new Intent(NOTIFICATION);
-		        intentPlay.putExtra(DURATION, duration);
-		        intentPlay.putExtra(PLAY, PLAY_MUSIC);
-		        sendBroadcast(intentPlay);
-		        
-		        while(isRunning){
-		        	if(audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PAUSED)
-						try {
-							synchronized (this) {
-								this.wait();
-							}
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-		        	// modifica la frequenza con i campioni prelevati dall'accelerometro
-		        	fr =  262 + (Math.abs(sample[x])*10);
-		        	for(int i=0; i < sizeBuff; i++){
-		        		samples1[i] = (short) (amp*Math.sin(phi));
-		        		phi += twophi*fr/sample_rate;
-		        	}
-		        	audioTrack.write(samples1, 0, sizeBuff);
-		        	x++;
-		        	if(x == sample.length) 
-		        		{
-		        		// stoppo e riavvio il coutdowntimer
-			        		Intent intentPause = new Intent(NOTIFICATION);
-			        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
-					        sendBroadcast(intentPause);
-		        			x = 0;
-		        			Log.w("PlayerTrack", "restart loop " +sample.length);
-		        			intentPlay.putExtra(DURATION, duration);
-		        			intentPlay.putExtra(PLAY, PLAY_MUSIC);
-					        sendBroadcast(intentPlay);
-		        		}
-		        	
-		        }	
-        		break;
-        		
-        	case 2: 
-        		// loop musicale con upscaling lineare
-        		short samples2[] = new short[buffsize+2000];
-        		
-		        while(isRunning){
-		        	
-					for (int i = 0; i < buffsize+2000; i++) {
-						samples2[i] = (short) (sample[x]*20000*Math.sin((Math.PI*2*600)/44100));
+		// loop musicale 
+		
+		int sizeBuff = buffsize + upsampling;
+		
+		short samples1[] = new short[sizeBuff];
+		
+        int amp = 10000;
+        double twophi = Math.PI*2; // 2pi grego
+        double fr; // frequenza
+        double phi = 0.0; // pi greco
+        
+        Intent intentPlay = new Intent(NOTIFICATION);
+        intentPlay.putExtra(DURATION, duration);
+        intentPlay.putExtra(PLAY, PLAY_MUSIC);
+        sendBroadcast(intentPlay);
+        
+        while(isRunning){
+        	if(audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PAUSED)
+				try {
+					synchronized (this) {
+						this.wait();
 					}
-					audioTrack.write(samples2, 0, buffsize+2000);
-					
-					x++;
-		        	if(x == sample.length) x = 0;
-		        }
-		        break;
-        	default:
-        		break;
-        }
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+        	// modifica la frequenza con i campioni prelevati dall'accelerometro
+        	fr =  262 + (Math.abs(sample[x])*10);
+        	for(int i=0; i < sizeBuff; i++){
+        		samples1[i] = (short) (amp*Math.sin(phi));
+        		phi += twophi*fr/sample_rate;
+        	}
+        	audioTrack.write(samples1, 0, sizeBuff);
+        	x++;
+        	if(x == sample.length) 
+        		{
+        		// stoppo e riavvio il coutdowntimer
+	        		Intent intentPause = new Intent(NOTIFICATION);
+	        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
+			        sendBroadcast(intentPause);
+        			x = 0;
+        			Log.w("PlayerTrack", "restart loop " +sample.length);
+        			intentPlay.putExtra(DURATION, duration);
+        			intentPlay.putExtra(PLAY, PLAY_MUSIC);
+			        sendBroadcast(intentPlay);
+        		}
+        	
+        }	
+        		
         
         audioTrack.stop();
         audioTrack.release();

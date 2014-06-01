@@ -58,16 +58,8 @@ public class MusicUpsampling
 	public static long duration(int upsampling, int num_sample, int sample_rate)
 	{
 		int buffsize = AudioTrack.getMinBufferSize(sample_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-		
-		switch(upsampling)
-		{
-			case NOTE: 
-				return ((num_sample* buffsize)/sample_rate)*1000;
-			case LINEAR: 
-				return (num_sample* buffsize)/sample_rate;
-			default:
-				return 0;
-		}
+		buffsize += upsampling;
+		return ((num_sample* buffsize)/sample_rate)*1000;
 		
 	}
 	

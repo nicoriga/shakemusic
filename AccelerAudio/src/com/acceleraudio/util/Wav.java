@@ -5,11 +5,11 @@ import java.io.OutputStream;
 
 public class Wav
 {	
-	private static final int bitsPerSample = 16; 
+	private static final int bitsForSample = 16; 
     
 	public static void WriteWaveFileHeader(long totalAudioLen, long totalDataLen, long longSampleRate, int channels, OutputStream out) throws IOException 
 	{
-		int byteRate = (int) (channels * longSampleRate * bitsPerSample / 8);
+		int byteRate = (int) (channels * longSampleRate * bitsForSample / 8);
 		
 		byte[] header = new byte[44];
         
@@ -45,9 +45,9 @@ public class Wav
         header[29] = (byte) ((byteRate >> 8) & 0xff);
         header[30] = (byte) ((byteRate >> 16) & 0xff);
         header[31] = (byte) ((byteRate >> 24) & 0xff);
-        header[32] = (byte) (channels * bitsPerSample / 8);  // block align
+        header[32] = (byte) (channels * bitsForSample / 8);  // block align
         header[33] = 0;
-        header[34] = bitsPerSample;  // bits per sample
+        header[34] = bitsForSample;  // bits per sample
         header[35] = 0;
         header[36] = 'd';
         header[37] = 'a';

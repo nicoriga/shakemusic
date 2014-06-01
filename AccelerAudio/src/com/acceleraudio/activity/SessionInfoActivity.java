@@ -114,7 +114,7 @@ public class SessionInfoActivity extends Activity {
 				axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1")); // asse x
 				axis_y.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1")); // asse y
 				axis_z.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1")); // asse z
-				Util.SelectSpinnerItemByValue(sp_upsampling, Util.getUpsamplingName(Integer.parseInt(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)))));
+				Util.SelectSpinnerItemByValue(sp_upsampling, (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING))));
 				
 				// chiudo connessioni
 				cursor.close();
@@ -272,7 +272,7 @@ public class SessionInfoActivity extends Activity {
 				dbAdapter.open();
 				
 				// aggiorno i dati delle preferenze
-				dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Util.getUpsamplingID(sp_upsampling.getSelectedItem().toString()));
+				dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString())));
 				
 				// chiudo la connessione al db
 				dbAdapter.close();

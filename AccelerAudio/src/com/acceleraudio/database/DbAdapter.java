@@ -42,31 +42,53 @@ public class DbAdapter {
 	public static final String T_SESSION_N_DATA_Y = "n_data_y";
 	public static final String T_SESSION_N_DATA_Z = "n_data_z";
 	
-	 
+	
+	/**
+	 * @param context il context corrente
+	 */
 	public DbAdapter(Context context) 
 	{
 		this.context = context;
 	}
- 
+	
+	/**
+	 * apre la connessione al database
+	 * 
+	 * @return DbAdapter per eseguire le query nel database
+	 * @throws SQLException
+	 */
 	public DbAdapter open() throws SQLException 
 	{
 		dbHelper = new DatabaseHelper(context);
 		database = dbHelper.getWritableDatabase();
 		return this;
 	}
- 
+	
+	/**
+	 * chiude la connessione al database
+	 */
 	public void close() 
 	{
 		database.close();
 		dbHelper.close();
 	}
 	
+	/**
+	 * verificare lo stato della connessione al database
+	 * 
+	 * @return true se la connessione al database è aperta
+	 */
 	public boolean isOpen() 
 	{
 		return database.isOpen();
 	}
- 
-	private String getDate() 
+	
+	/**
+	 * preleva la data corrente del sistema
+	 * 
+	 * @return la data nel formato dd-MM-yyyy
+	 */
+	public String getDate() 
 	{
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         Date date = new Date();
@@ -209,7 +231,7 @@ public class DbAdapter {
 			
 			Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 			//costruzione immagine
-			ImageBitmap.color(bmp, sensor_data_x.toString().split(" ", 200), sensor_data_y.toString().split(" ", 200), sensor_data_z.toString().split(" ", 200), (int)sessionId);	
+			ImageBitmap.color(bmp, sensor_data_x.split(" ", 200), sensor_data_y.split(" ", 200), sensor_data_z.split(" ", 200), (int)sessionId);	
 			image = ImageBitmap.encodeImage(bmp);
 			updateSessionImage(sessionId, image);
 			String[] s = new String[4];
@@ -222,7 +244,6 @@ public class DbAdapter {
 		}
 		else
 		{
-			
 			return null;
 		}	
 	}

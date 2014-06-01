@@ -98,7 +98,7 @@ public class PreferencesActivity extends Activity {
 				public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 					Editor prefEdit = pref.edit();
 					prefEdit.putInt(SAMPLE_RATE, Util.sensorRateByString(sp_sample_rate.getSelectedItem().toString()));
-					prefEdit.putInt(UPSAMPLING, Util.getUpsamplingID(sp_upsampling.getSelectedItem().toString()));
+					prefEdit.putInt(UPSAMPLING, Integer.parseInt(sp_upsampling.getSelectedItem().toString()));
 					prefEdit.commit();
 				}
 			
@@ -112,7 +112,7 @@ public class PreferencesActivity extends Activity {
 			/**** incrementa i secondi ****/
 			secondsUp.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
-					if (seconds < 60) {
+					if (seconds <= 60) {
 						seconds++;
 						secondsET.setText("" + seconds);
 						Editor prefEdit = pref.edit();
@@ -177,7 +177,7 @@ public class PreferencesActivity extends Activity {
     		axis_y.setChecked(true);
     		axis_z.setChecked(true);
     		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
-    		Util.SelectSpinnerItemByValue(sp_upsampling, getString(R.string.note));
+    		Util.SelectSpinnerItemByValue(sp_upsampling, ""+0);
     		seconds = 0;
     		secondsET.setText("" + seconds);
     		
@@ -190,7 +190,7 @@ public class PreferencesActivity extends Activity {
     		axis_y.setChecked(pref.getBoolean(AXIS_Y, true));
     		axis_z.setChecked(pref.getBoolean(AXIS_Z, true));
     		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(pref.getInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL)));
-    		Util.SelectSpinnerItemByValue(sp_upsampling, "" + Util.getUpsamplingName(pref.getInt(UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)))));
+    		Util.SelectSpinnerItemByValue(sp_upsampling, "" + (pref.getInt(UPSAMPLING, 0 )));
     		seconds = pref.getInt(TIMER_SECONDS, 0);
     		secondsET.setText("" + seconds);
     	}
