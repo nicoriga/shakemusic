@@ -37,7 +37,7 @@ private Button save;
 private DbAdapter dbAdapter;
 private Cursor cursor;
 public static String[] data_x, data_y, data_z;
-private int sessionId;
+private int sessionId, upsampling;
 private String sessionName;
 private int[] sample;
 private Thread t;
@@ -84,7 +84,7 @@ private Thread t;
 					boolean axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1");
 					boolean axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1");
 					boolean axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
-					int upsampling = cursor.getInt(( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
+					upsampling = cursor.getInt(( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
 					
 					// chiudo connessioni
 					cursor.close();
@@ -123,14 +123,6 @@ private Thread t;
 							}
 					
 					Log.w("Save Directory", myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-
- 			        
-// 			        short[] note = MusicUpsampling.note(44100, sample);
-// 			        ByteBuffer byteBuff = ByteBuffer.allocate(2*note.length);
-// 			        for (int i = 0; i < note.length; i++) 
-// 			        {
-//						byteBuff.putShort(Short.reverseBytes(note[i]));
-//					}
  			        
  			        t = new Thread("wav_creation") {
 						public void run() {
@@ -149,7 +141,7 @@ private Thread t;
 								int channels = 1;
 								Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, longSampleRate, channels,fOut);
 // 			        			fOut.write(byteBuff.array());
-								MusicUpsampling.note(fOut, 44100, sample);
+								MusicUpsampling.note(fOut, 44100, upsampling, sample);
 								fOut.close();
 							} catch (IOException e) {
 								e.printStackTrace();

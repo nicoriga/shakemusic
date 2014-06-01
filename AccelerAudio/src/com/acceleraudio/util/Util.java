@@ -1,7 +1,6 @@
 package com.acceleraudio.util;
 
 import java.util.ArrayList;
-import android.annotation.SuppressLint;
 import android.hardware.SensorManager;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -20,36 +19,6 @@ public class Util{
             	spinner.setSelection(position);
                 return;
             }
-        } 
-    }
-    
-	/**** restituisce id in base al nome dell'upsampling ****/
-    @SuppressLint("DefaultLocale")
-	public static int getUpsamplingID(String value)
-    {
-    	switch(value.toLowerCase())
-        {
-    		case "note":
-    			return MusicUpsampling.NOTE;
-    		case "lineare":
-    			return MusicUpsampling.LINEAR;
-    		default:
-    			return 0;
-        } 
-    }
-    
-    /**** restituisce nome dell'upsampling in base all'id****/
-    @SuppressLint("DefaultLocale")
-	public static String getUpsamplingName(int value)
-    {
-    	switch(value)
-        {
-    		case MusicUpsampling.NOTE:
-    			return "Note";
-    		case MusicUpsampling.LINEAR:
-    			return "Lineare";
-    		default:
-    			return "";
         } 
     }
     

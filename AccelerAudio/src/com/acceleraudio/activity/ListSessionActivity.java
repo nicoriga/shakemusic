@@ -250,7 +250,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			{
 				try {
 					dbAdapter.open();
-					if(dbAdapter.renameSession(sessionIdList.get(position), sessionName))
+					if(dbAdapter.updateSessionName(sessionIdList.get(position), sessionName))
 					{
 						sessionNameList.set(position, sessionName);
 					}

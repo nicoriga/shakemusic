@@ -168,7 +168,7 @@ public class PreferencesActivity extends Activity {
     		prefEdit.putBoolean(AXIS_Y, true);
     		prefEdit.putBoolean(AXIS_Z, true);
     		prefEdit.putInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
-    		prefEdit.putInt(UPSAMPLING, Util.getUpsamplingID(getString(R.string.note)));
+    		prefEdit.putInt(UPSAMPLING, 0);
     		prefEdit.putInt(TIMER_SECONDS, 0);
     		prefEdit.putBoolean(FIRST_START, false);
     		

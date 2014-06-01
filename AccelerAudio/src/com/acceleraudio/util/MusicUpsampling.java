@@ -9,19 +9,18 @@ import android.media.AudioTrack;
 
 public class MusicUpsampling
 {
-	public final static int NOTE = 1;
-	public final static int LINEAR = 2;
 	
 	/**
 	 * scrive audio PCM nel file di output usando Upsampling: note 
 	 * 
 	 * @param out file su cui viene scritto audio PCM
 	 * @param sample_rate sample rate espresso in Hz
+	 * @param upsampling la quantità di upsampling scelta
 	 * @param sample array di campioni
 	 * @return 
 	 * @throws IOException nel caso sussiste un problema nella scrittura sul file
 	 */
-	public static int note(OutputStream out, int sample_rate, int[] sample) throws IOException
+	public static int note(OutputStream out, int sample_rate, int upsampling, int[] sample) throws IOException
 	{
 		// setta dimensione buffer
 		int buffsize = AudioTrack.getMinBufferSize(sample_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);

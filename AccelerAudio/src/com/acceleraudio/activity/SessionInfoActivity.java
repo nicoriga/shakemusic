@@ -45,8 +45,9 @@ public class SessionInfoActivity extends Activity {
     private Spinner sp_upsampling;
     private int sessionId;
     private String image;
+    private boolean dataLoaded = false ,load = false;
     private Thread t;
-    static final Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+    private static final Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,7 +121,6 @@ public class SessionInfoActivity extends Activity {
 				cursor.close();
 				dbAdapter.close();
 				
-				
 			}
 			
 			// TODO se possibile decodificare solo la prima volta il thumbnail
@@ -175,7 +175,9 @@ public class SessionInfoActivity extends Activity {
 			final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> arg0, View v, int arg2, long arg3) {
-					updateChange(v);
+					// load serve per prevenire aggiornamento della data di modifica durante il caricamento dell'interfaccia
+					if(load) updateChange(v);
+					else load = true;
 				}
 				
 				@Override
@@ -189,7 +191,6 @@ public class SessionInfoActivity extends Activity {
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
 			
-			final Toast toast = Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT);
 			
 			/**** TORNA ALLA LISTA DELLE SESSIONI ****/
 			listSession.setOnClickListener(new View.OnClickListener() {
@@ -198,7 +199,7 @@ public class SessionInfoActivity extends Activity {
 					// impedisco di tornare indietro se non viene selezionato almeno un asse
 					if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
 					{
-						toast.show();
+						Toast.makeText(v.getContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
 					}
 					else
 						onBackPressed();
@@ -225,6 +226,8 @@ public class SessionInfoActivity extends Activity {
 					 view.getContext().startActivity(i);
 				 }
 			 });
+			 
+			 dataLoaded = true;
 		
 		} catch (SQLException e) {
 			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
@@ -264,7 +267,7 @@ public class SessionInfoActivity extends Activity {
 
     // aggiorna le impostazioni nel database
 	private void updateChange(View v){
-		if(v != null)
+		if(v != null && dataLoaded)
 		{
 			try {
 				// apro la connessione al db
@@ -272,8 +275,13 @@ public class SessionInfoActivity extends Activity {
 				dbAdapter.open();
 				
 				// aggiorno i dati delle preferenze
-				dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString())));
-				
+				if(v.getId() == et_sessionName.getId())
+					dbAdapter.updateSessionName(sessionId, et_sessionName.getText().toString());
+				else
+				{
+					dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString())));
+					date_change.setText(getString(R.string.creation_date) + " " + dbAdapter.getDate());
+				}
 				// chiudo la connessione al db
 				dbAdapter.close();
 				

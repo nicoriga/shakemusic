@@ -145,6 +145,14 @@ public class DbAdapter {
 		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
 	}
 	
+	// aggiorna nome sessione 
+	public boolean updateSessionName( long sessionID, String name) 
+	{
+		ContentValues updateValues = new ContentValues();
+		updateValues.put( T_SESSION_NAME, name );
+		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
+	}
+	
 	// aggiorna immagine sessione 
 	public boolean updateSessionImage( long sessionID, String image) 
 	{
@@ -246,13 +254,6 @@ public class DbAdapter {
 		{
 			return null;
 		}	
-	}
-
-	// rinomina sessione per ID
-	public boolean renameSession(int sessionId, String name) {
-		ContentValues updateValues = new ContentValues();
-		updateValues.put( T_SESSION_NAME, name );
-		return database.update(DATABASE_TABLE_SESSION, updateValues, T_SESSION_SESSIONID + "=" + sessionId, null) > 0;
 	}
   
 	// unisce sessioni per ID

@@ -291,7 +291,7 @@ public class RecordActivity extends Activity {
 			}
 			
 			// inserisco i dati della sessione nel database
-			sessionId = dbAdapter.createSession( name, "", (pref.getBoolean(PreferencesActivity.AXIS_X, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Y, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Z, true)? 1:0), pref.getInt(PreferencesActivity.UPSAMPLING, Util.getUpsamplingID(getString(R.string.note))), x_sb.toString(), y_sb.toString(), z_sb.toString(), data_x.size(), data_y.size(), data_z.size() );
+			sessionId = dbAdapter.createSession( name, "", (pref.getBoolean(PreferencesActivity.AXIS_X, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Y, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Z, true)? 1:0), pref.getInt(PreferencesActivity.UPSAMPLING, 0), x_sb.toString(), y_sb.toString(), z_sb.toString(), data_x.size(), data_y.size(), data_z.size() );
 			
 			//costruzione immagine
 	        Log.w("save Session", "...creata");

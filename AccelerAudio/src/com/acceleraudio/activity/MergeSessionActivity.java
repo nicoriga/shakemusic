@@ -157,8 +157,7 @@ public class MergeSessionActivity extends Activity{
 													(pref.getBoolean(PreferencesActivity.AXIS_X,true) ? 1 : 0),
 													(pref.getBoolean(PreferencesActivity.AXIS_Y,true) ? 1 : 0),
 													(pref.getBoolean(PreferencesActivity.AXIS_Z,true) ? 1 : 0),
-													pref.getInt(PreferencesActivity.UPSAMPLING,
-													Util.getUpsamplingID(getString(R.string.note))));
+													pref.getInt(PreferencesActivity.UPSAMPLING, 0));
 									// chiudo la connessione
 									dbAdapter.close();
 							
