@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.design.ListSessionAdapter;
-import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -15,6 +15,7 @@ import android.database.SQLException;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -35,15 +36,15 @@ public class MergeSessionActivity extends Activity{
 	private ArrayList<String> sessionNameList, sessionDataMod, image;
 	long rowId;
 	private SharedPreferences pref;
-	private GestureDetector gestureDetector;
-	private View.OnTouchListener gestureListener;
+	private ListView.OnTouchListener gestureListener;
 	private int start_position, stop_position, previus_position;
 	private long sessionId; 
+	private GestureDetector gestureDetector;
     
     // Distanza minima richiesta sull'asse Y
     private static final int SWIPE_MIN_DISTANCE = 5;
     // Distanza massima consentita sull'asse X
-    private static final int SWIPE_MAX_OFF_PATH = 400;
+    private static final int SWIPE_MAX_OFF_PATH = 250;
     // Velocità minima richiesta sull'asse Y
     private static final int SWIPE_THRESHOLD_VELOCITY = 0;
 	
@@ -72,63 +73,62 @@ public class MergeSessionActivity extends Activity{
     		loadSession();
     		adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessionIdList, sessionNameList, sessionDataMod, image);
     		list.setAdapter(adaperList);
-    		
 //    		gestureDetector = new GestureDetector(list.getContext(), new MyGestureDetector());
-    		gestureListener = new View.OnTouchListener() {
+    		gestureListener = new ListView.OnTouchListener() {
     		        public boolean onTouch(View v, MotionEvent event) {
 //    		            return gestureDetector.onTouchEvent(event); 
     		        	int action = event.getAction();
-    		        	switch(action)
-    		        	{
-    		        		// quando viene messo il dito nello schermo viene salvata la posizione della
-    		        		// riga dove avviene la pressione
-    		        		case MotionEvent.ACTION_DOWN:
-    		        			start_position = list.pointToPosition((int)event.getX(), (int)event.getY());
-    		        			if(start_position >= 0) list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
-    		        			break;
-    		        		// quando si rimuove il dito dallo schermo avviene lo spostamento della sessione
-    		        		// nella posizione di arrivo
-    		        		case MotionEvent.ACTION_CANCEL: 
-    		        		case MotionEvent.ACTION_UP:
-    		        			if(start_position >= 0)
-    		        			{
-	    	                        stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
-	    	                        moveListRowTo(start_position, stop_position);
-	    	                        list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
-	    	                        list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
-    		        			}
-    		        			break;
-    		        		case MotionEvent.ACTION_HOVER_ENTER:
-    		        		case MotionEvent.ACTION_MOVE:
-    		        			// TODO: coloro la riga dove si trova il dito
-    		        			int position = list.pointToPosition((int)event.getX(), (int)event.getY());
-    		        			if(position >= 0 && position != start_position && start_position >= 0)
-    		        				{
-    		        					list.getChildAt(position).setBackgroundColor(Color.GREEN);
-    		        					if(previus_position >= 0 && previus_position != position)list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
-    		        					previus_position = position;
-    		        				}
-    		        			break;
-    		        		default:
-    		        			break;
-    		        	}
+    		            if(Math.abs(event.getX()) < dpTopx(SWIPE_MAX_OFF_PATH))
+    		        		return false;
+    		        	try {
+							switch(action)
+							{
+								// quando viene messo il dito nello schermo viene salvata la posizione della
+								// riga dove avviene la pressione
+								case MotionEvent.ACTION_DOWN:
+//									start_position = list.pointToPosition((int)event.getX(), (int)event.getY());
+									start_position = getChildXy(event);
+									if(start_position != ListView.INVALID_POSITION) list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
+									break;
+								// quando si rimuove il dito dallo schermo avviene lo spostamento della sessione
+								// nella posizione di arrivo
+								case MotionEvent.ACTION_CANCEL: 
+								case MotionEvent.ACTION_UP:
+									if(start_position >= 0)
+									{
+//							            stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
+							            stop_position = getChildXy(event);
+							            moveListRowTo(start_position, stop_position);
+							            list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
+							            list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+									}
+									break;
+								case MotionEvent.ACTION_HOVER_ENTER:
+								case MotionEvent.ACTION_MOVE:
+									// TODO: coloro la riga dove si trova il dito
+//									int position = list.pointToPosition((int)event.getX(), (int)event.getY());
+									int position = getChildXy(event);
+									if(position >= 0 && position != start_position && start_position >= 0)
+										{
+											list.getChildAt(position).setBackgroundColor(Color.GREEN);
+											if(previus_position >= 0 && previus_position != position)list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+											previus_position = position;
+										}
+									break;
+								default:
+									break;
+							}
+						} catch (NullPointerException e) {
+							e.printStackTrace();
+						}
     		        	return true;
-    		}};
+    		       }
+    		};
     		list.setOnTouchListener(gestureListener);
     		
     /////////////////////////////////////////////////////////
     ///////////  aggiungo listener  /////////////////////////
     ////////////////////////////////////////////////////////
-
-//    		/**** avvia l'activity per vedere le info sulla sessione ****/
-//    		list.setOnItemClickListener(new OnItemClickListener() {
-//    			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-//    				Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
-//    				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(position));
-//    				view.getContext().startActivity(i);
-//    			}
-//    		});
-            
     		
     		/**** torna alla lista delle sessioni ****/
     		cancel.setOnClickListener(new View.OnClickListener() {
@@ -136,8 +136,6 @@ public class MergeSessionActivity extends Activity{
     				finish();
     			}
     		});
-    		
-    		final Toast toast = Toast.makeText(this, getString(R.string.error_no_session_name), Toast.LENGTH_SHORT);
     		
     		/**** unisce le sessioni nell'ordine impostato ****/
     		merge.setOnClickListener(new View.OnClickListener() {
@@ -172,7 +170,7 @@ public class MergeSessionActivity extends Activity{
 						}
 					}
     				else
-    					toast.show();
+    					Toast.makeText(v.getContext(), getString(R.string.error_no_session_name), Toast.LENGTH_SHORT).show();
     			}
     		});
     		
@@ -183,57 +181,35 @@ public class MergeSessionActivity extends Activity{
 		}
 	}
 	
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-//	        if (gestureDetector.onTouchEvent(event))
-//	        {
-	        	int action = event.getAction();
-	        	switch(action)
-	        	{
-	        		case MotionEvent.ACTION_DOWN:
-	        			start_position = list.pointToPosition((int)event.getX(), (int)event.getY());
-	        			break;
-	        		case MotionEvent.ACTION_CANCEL:
-	        		case MotionEvent.ACTION_UP:
-                        stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
-                        moveListRowTo(start_position, stop_position);
-	        			break;
-	        		default:
-	        			break;
-	        	}
-	        	return true;
-//	        }
-//	        else
-//	        	return false;
-	}
-	
-	/*** classe per la gestione dello swipe ***/
+	/*** classe per la gestione dello scroll***/
 	class MyGestureDetector extends SimpleOnGestureListener {
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 try {
-                        if (Math.abs(e1.getX() - e2.getX()) > dpTopx(SWIPE_MAX_OFF_PATH))
+                        if (Math.abs(e1.getX()) < dpTopx(SWIPE_MAX_OFF_PATH))
                                 return false;
                         
                         // Swipe in alto
-                        if (e1.getY() - e2.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
-                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
-                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
-                                moveListRowTo(start_position, stop_position);
-                        } else 
-                        // swipe in basso
-                        	if (e2.getY() - e1.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
-                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
-                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
-                                moveListRowTo(start_position, stop_position);
-                        }
+//                        if (e1.getY() - e2.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
+//                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
+//                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
+//                                moveListRowTo(start_position, stop_position);
+//                        } else 
+//                        // swipe in basso
+//                        	if (e2.getY() - e1.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
+//                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
+//                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
+//                                moveListRowTo(start_position, stop_position);
+//                        }
+                        
                 } catch (Exception e) {
                 	e.printStackTrace();
                 }
                 return true;
         }
 	}
-
+	
+	
 	
 ///////////////////////////////////////
 /////////// METODI UTILI /////////////
@@ -267,6 +243,15 @@ public class MergeSessionActivity extends Activity{
 		
 	}
 	
+	/*** ritorna posizione elemento della lista in base alla posizione del tocco ***/
+	public int getChildXy(MotionEvent event)
+	{
+		int adapterIndex = list.pointToPosition((int) event.getX(),(int) event.getY());
+		int firstViewItemIndex = list.getFirstVisiblePosition();
+		int viewIndex = adapterIndex - firstViewItemIndex;
+		return viewIndex;
+	}
+	
 	/*** metodo per convertire i pixel in dp***/
 	public float dpTopx(int dip) {
 		float scale = getResources().getDisplayMetrics().density;
@@ -274,7 +259,6 @@ public class MergeSessionActivity extends Activity{
 	}
 	
 	/*** scambia due righe nelle posizioni indicate ***/
-	/*** scambia l'ordine di due righe ***/
 	public void switchListRow(int start_position, int stop_position)
 	{
 		if (start_position >= 0 && stop_position >= 0) {

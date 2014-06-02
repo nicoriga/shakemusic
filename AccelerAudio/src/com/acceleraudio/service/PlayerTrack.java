@@ -122,6 +122,7 @@ public class PlayerTrack extends IntentService{
         			intentPlay.putExtra(DURATION, duration);
         			intentPlay.putExtra(PLAY, PLAY_MUSIC);
 			        sendBroadcast(intentPlay);
+			        
         		}
         	
         }	

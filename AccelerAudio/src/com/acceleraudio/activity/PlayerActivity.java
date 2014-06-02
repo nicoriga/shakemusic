@@ -50,6 +50,7 @@ public class PlayerActivity extends Activity {
 	public static String[] data_x, data_y, data_z;
 	private String image;
 	private Thread t;
+	private static Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 	public static boolean isPause;
 	// TODO sistemare timer durata musica
 	private CountDownTimer countDownTimer;
@@ -202,29 +203,30 @@ public class PlayerActivity extends Activity {
 				
 				play.setEnabled(false);
 				pause.setEnabled(true);
+				
+				t = new Thread("Thumbnail_Decoding"){
+					public void run() {
+						// setta la priorità massia del thread
+		                setPriority(Thread.MAX_PRIORITY);
+		                
+		                // converto la stringa in una immagine bitmap
+		        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
+		        		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
+						
+						runOnUiThread(new Runnable() {
+	                        @Override
+	                        public void run() {
+	                        	thumbnail.setImageBitmap(bmp);
+	                        }
+	                    });
+					}
+				};
+				t.start();
+			
 			}
 			
-			// TODO se possibile calcolare l'immagine solo la prima volta
-			t = new Thread("Thumbnail_Decoding"){
-				public void run() {
-					// setta la priorità massia del thread
-	                setPriority(Thread.MAX_PRIORITY);
-	                
-	                // converto la stringa in una immagine bitmap
-	        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
-	        		final Bitmap bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
-					
-					runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                        	thumbnail.setImageBitmap(bmp);
-                        }
-                    });
-				}
-			};
-			t.start();
+			thumbnail.setImageBitmap(bmp);
 			
-    	
 /////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
 ////////////////////////////////////////////////////////
@@ -233,21 +235,17 @@ public class PlayerActivity extends Activity {
 			play.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					// TODO: caricare i dati e le impostazioni della sessione da riprodurre solo la prima volta, boolean inizializzato per la prima volta
-//					if(!inizialized)
-//					{
-						if(isPause)
-						{
-							Intent intent = new Intent(NOTIFICATION);
-					        intent.putExtra(PlayerTrack.PLAY, PlayerTrack.PLAY_MUSIC);
-					        sendBroadcast(intent);
+					if(isPause)
+					{
+						Intent intent = new Intent(NOTIFICATION);
+				        intent.putExtra(PlayerTrack.PLAY, PlayerTrack.PLAY_MUSIC);
+				        sendBroadcast(intent);
+					
+						inizialized = true;
+						play.setEnabled(false);
+						pause.setEnabled(true);
 						
-							inizialized = true;
-							play.setEnabled(false);
-							pause.setEnabled(true);
-							
-						}
-//					}
+					}
 				}
 			});
 			
@@ -347,21 +345,23 @@ public class PlayerActivity extends Activity {
     	super.onSaveInstanceState(savedInstanceState);
     }
     
-    
     public void loadCountDownTimer()
     {
     	duration = remaining_millis;
+    	if(!isPause) {
+		}
     	countDownTimer = new CountDownTimer(duration, 10) {
 			public void onTick(long millisUntilFinished) {
 				long time_elapsed = duration - millisUntilFinished;
 				currentTimeTV.setText("" + time_elapsed / 1000);
-				sb_musicProgress.setProgress((int)time_elapsed);
+				sb_musicProgress.setProgress((int)(time_elapsed));
 				remaining_millis = millisUntilFinished;
 			}
 			
 			public void onFinish() {
-					currentTimeTV.setText("0");
-					sb_musicProgress.setProgress(0);
+				currentTimeTV.setText("" + (duration/1000));
+				sb_musicProgress.setProgress((int)duration);
+				countDownTimer.start();
 			}
 		};
     }
