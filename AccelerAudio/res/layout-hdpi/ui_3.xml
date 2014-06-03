@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <Button
-        android:id="@+id/UI3_BT_stop"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI3_BT_record"
-        android:layout_alignRight="@+id/UI3_TV_SessionName"
-        android:text="@string/stop" />
+    android:orientation="vertical"
+    tools:context="com.acceleraudio.activity.RecordActivity" >
 
     <ProgressBar
         android:id="@+id/UI3_PB_Y"
@@ -42,6 +36,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="14dp"
         android:layout_toRightOf="@+id/UI3_TV_SessionName"
+        android:ellipsize="end"
         android:ems="10"
         android:inputType="text" />
 
@@ -67,24 +62,6 @@
         android:minWidth="200dip"
         android:progress="40" />
 
-    <Button
-        android:id="@+id/UI3_BT_record"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="52dp"
-        android:text="@string/record" />
-
-    <Button
-        android:id="@+id/UI3_BT_pause"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI3_BT_stop"
-        android:layout_alignBottom="@+id/UI3_BT_stop"
-        android:layout_alignRight="@+id/UI3_PB_X"
-        android:text="@string/pause" />
-
     <TextView
         android:id="@+id/UI3_TV_label_RecordedSamples"
         android:layout_width="wrap_content"
@@ -95,24 +72,34 @@
         android:text="@string/recorded_samples"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/UI3_TV_RecordedSamples"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/UI3_ET_SessionName"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="23dp"
-        android:text="@string/zero"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <Button
+        android:id="@+id/UI3_BT_stop"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_alignBaseline="@+id/UI3_BT_record"
+        android:layout_alignBottom="@+id/UI3_BT_record"
+        android:layout_toLeftOf="@+id/UI3_BT_record"
+        android:text="@string/stop"
+        android:drawableRight="@drawable/stop_icon"
+        android:drawablePadding="4dp" />
+
+    <Button
+        android:id="@+id/UI3_BT_pause"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_alignBaseline="@+id/UI3_BT_record"
+        android:layout_alignBottom="@+id/UI3_BT_record"
+        android:layout_toRightOf="@+id/UI3_BT_record"
+        android:text="@string/pause"
+        android:drawableRight="@drawable/pause_icon" />
 
     <TextView
-        android:id="@+id/TextView01"
+        android:id="@+id/UI3_TV_timeRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/UI3_TV_timerRemaning"
         android:layout_alignBottom="@+id/UI3_TV_timerRemaning"
-        android:layout_alignLeft="@+id/UI3_TV_label_RecordedSamples"
+        android:layout_alignLeft="@+id/UI3_PB_X"
         android:text="@string/remaining_time"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -120,9 +107,30 @@
         android:id="@+id/UI3_TV_timerRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI3_TV_RecordedSamples"
-        android:layout_below="@+id/UI3_PB_X"
-        android:layout_marginTop="15dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/UI3_TV_timeRemaning"
+        android:text="@string/zero"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginLeft="20dp" />
+
+    <Button
+        android:id="@+id/UI3_BT_record"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/UI3_TV_timeRemaning"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="88dp"
+        android:drawableRight="@drawable/record_icon"
+        android:text="@string/record" />
+
+    <TextView
+        android:id="@+id/UI3_TV_RecordedSamples"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/UI3_ET_SessionName"
+        android:layout_marginLeft="27dp"
+        android:layout_marginTop="21dp"
+        android:layout_toRightOf="@+id/UI3_PB_Z"
         android:text="@string/zero"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 

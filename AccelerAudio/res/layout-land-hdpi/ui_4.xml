@@ -1,87 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TableRow
-        android:id="@+id/UI4_tableRow1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+    <ImageButton
+        android:id="@+id/UI4_BT_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI4_BT_export"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/play_player" />
 
-        <TextView
-            android:id="@+id/UI4_TV_sessionName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:text="@string/session_name"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI4_tableRow2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/UI4_BT_pause"
-            android:layout_width="80dp"
-            android:layout_height="50dp"
-            android:text="@string/pause" />
-
-        <Button
-            android:id="@+id/UI4_BT_play"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:text="@string/play" />
-
-        <Button
-            android:id="@+id/UI4_BT_stop"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:text="@string/stop" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI4_tableRow3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/UI4_TV_initialTimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/timer_start"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/UI4_TV_finalTimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="200dp"
-            android:text="@string/timer_end"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </TableRow>
+    <ImageButton
+        android:id="@+id/UI4_BT_stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI4_BT_play"
+        android:layout_marginBottom="25dp"
+        android:layout_marginRight="23dp"
+        android:layout_toLeftOf="@+id/UI4_BT_play"
+        android:src="@drawable/stop_player" />
 
     <SeekBar
         android:id="@+id/UI4_SB_musicProgress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_width="500dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/UI4_TV_sessionName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="75dp" />
 
-    <Button
-        android:id="@+id/UI4_BT_export"
-        android:layout_width="104dp"
-        android:layout_height="50dp"
-        android:text="@string/export" />
+    <ImageButton
+        android:id="@+id/UI4_BT_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/UI4_BT_stop"
+        android:layout_marginLeft="25dp"
+        android:layout_toRightOf="@+id/UI4_BT_play"
+        android:src="@drawable/pause_player" />
+
+    <TextView
+        android:id="@+id/UI4_TV_finalTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/UI4_SB_musicProgress"
+        android:layout_alignTop="@+id/UI4_IV_thumbnail"
+        android:text="@string/timer_end"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/UI4_TV_initialTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI4_TV_finalTimer"
+        android:layout_alignBottom="@+id/UI4_TV_finalTimer"
+        android:layout_alignLeft="@+id/UI4_SB_musicProgress"
+        android:text="@string/timer_start"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/UI4_TV_sessionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/UI4_BT_play"
+        android:layout_marginRight="74dp"
+        android:layout_marginTop="26dp"
+        android:text="@string/session_name"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#228B22"
+        android:textSize="40sp" />
 
     <ImageView
         android:id="@+id/UI4_IV_thumbnail"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:src="@drawable/ic_launcher"
-        android:contentDescription="@string/thumbnail" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI4_SB_musicProgress"
+        android:layout_marginLeft="51dp"
+        android:layout_toRightOf="@+id/UI4_SB_musicProgress"
+        android:contentDescription="@string/thumbnail"
+        android:src="@drawable/ic_launcher" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/UI4_BT_export"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI4_IV_thumbnail"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="29dp"
+        android:drawableBottom="@drawable/export"
+        android:drawablePadding="5dp"
+        android:text="@string/export" />
+
+</RelativeLayout>

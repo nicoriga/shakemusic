@@ -1,88 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TableRow
-        android:id="@+id/UI4_tableRow1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/UI4_TV_sessionName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:text="@string/session_name"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI4_tableRow2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/UI4_BT_pause"
-            android:layout_width="80dp"
-            android:layout_height="50dp"
-            android:text="@string/pause" />
-
-        <Button
-            android:id="@+id/UI4_BT_play"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:text="@string/play" />
-
-        <Button
-            android:id="@+id/UI4_BT_stop"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:text="@string/stop" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI4_tableRow3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/UI4_TV_initialTimer"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="@string/time_00_00"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/UI4_TV_finalTimer"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="110dp"
-            android:gravity="right"
-            android:text="@string/time_00_00"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </TableRow>
+    <TextView
+        android:id="@+id/UI4_TV_sessionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="74dp"
+        android:layout_toLeftOf="@+id/UI4_BT_export"
+        android:text="@string/session_name"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <SeekBar
         android:id="@+id/UI4_SB_musicProgress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/UI4_BT_export"
-        android:layout_width="106dp"
-        android:layout_height="50dp"
-        android:text="@string/export" />
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/UI4_IV_thumbnail"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+         />
 
     <ImageView
         android:id="@+id/UI4_IV_thumbnail"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:contentDescription="@string/thumbnail"
-        android:src="@drawable/ic_launcher" />
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/UI4_TV_sessionName"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@+id/UI4_TV_initialTimer"
+        android:src="@drawable/ic_launcher"
+        android:contentDescription="@string/thumbnail" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/UI4_TV_initialTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI4_SB_musicProgress"
+        android:layout_below="@+id/UI4_IV_thumbnail"
+        android:text="@string/time_00_00"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/UI4_TV_finalTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/UI4_SB_musicProgress"
+        android:layout_below="@+id/UI4_IV_thumbnail"
+        android:text="@string/timer_end"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageButton
+        android:id="@+id/UI4_BT_play"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_below="@+id/UI4_SB_musicProgress"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="31dp"
+        android:src="@drawable/play_player" />
+
+    <Button
+        android:id="@+id/UI4_BT_export"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/UI4_BT_play"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="31dp"
+        android:drawableBottom="@drawable/export"
+        android:text="@string/export"
+        android:drawablePadding="5dp" />
+
+    <ImageButton
+        android:id="@+id/UI4_BT_stop"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_alignBottom="@+id/UI4_BT_play"
+        android:layout_marginBottom="21dp"
+        android:layout_toLeftOf="@+id/UI4_BT_play"
+        android:src="@drawable/stop_player" />
+
+    <ImageButton
+        android:id="@+id/UI4_BT_pause"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_alignTop="@+id/UI4_BT_stop"
+        android:layout_toRightOf="@+id/UI4_BT_play"
+        android:src="@drawable/pause_player" />
+
+</RelativeLayout>

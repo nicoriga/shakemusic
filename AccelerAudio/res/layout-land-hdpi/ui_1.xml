@@ -4,28 +4,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-	<LinearLayout 
-	    android:layout_width="match_parent"
+	<LinearLayout
+	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:background="#929395"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentRight="true"
+	    android:background="#E4E5E0"
 	    android:orientation="horizontal" >
 	
 	    <Button
 	        android:id="@+id/UI1_BT_newSession"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
+	        android:layout_width="137dp"
+	        android:layout_height="60dp"
 	        android:text="@string/new_session" />
 	
 	    <Button
 	        android:id="@+id/UI1_BT_mergeSession"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/merge_session" />
-	
+	        android:layout_width="132dp"
+	        android:layout_height="60dp"
+	        android:text="@string/merge_session"/>
+
 	    <Button
 	        android:id="@+id/UI1_BT_preferences"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
+	        android:layout_width="110dp"
+	        android:layout_height="60dp"
 	        android:text="@string/preferences" />
 	
 	</LinearLayout>

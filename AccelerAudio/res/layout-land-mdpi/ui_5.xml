@@ -1,154 +1,162 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.acceleraudio.activity.PreferencesActivity" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <TextView
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp">
+        
+        <TextView
         android:id="@+id/UI5_TV_recordDefaultOption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="30dp"
-        android:text="Opzioni di Registrazione Predefinite"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="@string/standard_record_option"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginLeft="5dp"
+        android:textSize="25sp"
+        android:textColor="#404040" />
+        
+    </TableRow>
 
-    <CheckBox
-        android:id="@+id/UI5_CB_Y"
-        android:layout_width="wrap_content"
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI5_CB_X"
-        android:layout_alignBottom="@+id/UI5_CB_X"
-        android:layout_toRightOf="@+id/UI5_CB_X"
-        android:text="Y" />
-
-    <Spinner
-        android:id="@+id/UI5_SP_frequency"
-        android:layout_width="450dp"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_TV_frequency"
-        android:layout_below="@+id/UI5_TV_frequency" />
-
-    <TextView
-        android:id="@+id/UI5_TV_upsampling"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_SP_upsampling"
-        android:layout_centerVertical="true"
-        android:text="Upsampling"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Spinner
-        android:id="@+id/UI5_SP_upsampling"
-        android:layout_width="450dp"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_SP_frequency"
-        android:layout_below="@+id/UI5_TV_upsampling" />
-
-    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp" >
+        
+        <TextView
         android:id="@+id/UI5_TV_axes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_TV_recordDefaultOption"
-        android:layout_below="@+id/UI5_TV_recordDefaultOption"
-        android:layout_marginTop="35dp"
-        android:text="Assi:"
+        android:layout_marginLeft="5dp"
+        android:text="@string/axes"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <CheckBox
+        
+        <CheckBox
         android:id="@+id/UI5_CB_X"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_TV_axes"
-        android:layout_below="@+id/UI5_TV_axes"
-        android:text="X" />
-
-    <TextView
-        android:id="@+id/UI5_TV_frequency"
+        android:text="@string/x"
+        android:layout_marginLeft="20dp" />
+        
+        <CheckBox
+        android:id="@+id/UI5_CB_Y"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/UI5_CB_Z"
-        android:layout_marginLeft="89dp"
-        android:layout_toRightOf="@+id/UI5_CB_Z"
-        android:text="Freuenza di Campionamento"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/UI5_ET_minute"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/UI5_SP_upsampling"
-        android:layout_alignLeft="@+id/UI5_BT_minutePlus"
-        android:layout_alignRight="@+id/UI5_BT_minutePlus"
-        android:ems="10"
-        android:inputType="number" >
-
-        <requestFocus />
-    </EditText>
-
-    <TextView
-        android:id="@+id/UI5_TV_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/UI5_SP_frequency"
-        android:layout_alignLeft="@+id/UI5_CB_X"
-        android:text="Durata Massima"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <CheckBox
+        android:text="@string/y"
+        android:layout_marginLeft="20dp" />
+        
+        <CheckBox
         android:id="@+id/UI5_CB_Z"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/UI5_TV_axes"
-        android:layout_toRightOf="@+id/UI5_CB_Y"
-        android:text="Z" />
+        android:text="@string/z"
+        android:layout_marginLeft="20dp" />
+     </TableRow>
 
-    <EditText
-        android:id="@+id/UI5_ET_second"
+    <TableRow
+        android:id="@+id/tableRow4"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp" >
+        
+	        <TextView
+	        android:id="@+id/UI5_TV_duration"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/duration"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+	        android:layout_gravity="center" />
+	        
+	        <LinearLayout android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:orientation="horizontal"
+			android:layout_gravity="center"
+			android:layout_marginLeft="10dp" >
+	        
+		        <Button
+		        android:id="@+id/UI5_BT_secondMinus"
+		        android:layout_width="60dp"
+		        android:layout_height="40dp"
+		        android:text="@string/minus" />
+		        
+		        <EditText
+		        android:id="@+id/UI5_ET_second"
+		        android:layout_width="60dp"
+		        android:layout_height="40dp"
+		        android:ems="10"
+		        android:inputType="number"
+		        android:layout_marginTop="5dp" />
+		        
+		        <Button
+		        android:id="@+id/UI5_BT_secondPlus"
+		        android:layout_width="60dp"
+		        android:layout_height="40dp"
+		        android:text="@string/plus" />
+	        </LinearLayout>
+    	</TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp" >
+        
+        <TextView
+        android:id="@+id/UI5_TV_frequency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI5_ET_minute"
-        android:layout_alignBottom="@+id/UI5_ET_minute"
-        android:layout_alignLeft="@+id/UI5_BT_secondPlus"
-        android:layout_alignRight="@+id/UI5_BT_secondPlus"
-        android:ems="10"
-        android:inputType="number" />
+        android:text="@string/frequency"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+    </TableRow>
 
-    <Button
-        android:id="@+id/UI5_BT_minutePlus"
+    <TableRow
+        android:id="@+id/tableRow6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp" >
+        
+        <Spinner
+        android:id="@+id/UI5_SP_frequency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp" >
+        
+        <TextView
+        android:id="@+id/UI5_TV_upsampling"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_TV_duration"
-        android:layout_alignRight="@+id/UI5_BT_minuteMinus"
-        android:layout_alignTop="@+id/UI5_TV_upsampling"
-        android:text="+" />
+        android:text="@string/upsampling"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    </TableRow>
 
-    <Button
-        android:id="@+id/UI5_BT_secondPlus"
-        android:layout_width="60dp"
+    <TableRow
+        android:id="@+id/tableRow8"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI5_BT_minutePlus"
-        android:layout_alignBottom="@+id/UI5_BT_minutePlus"
-        android:layout_alignRight="@+id/UI5_TV_duration"
-        android:text="+" />
-
-    <Button
-        android:id="@+id/UI5_BT_minuteMinus"
-        android:layout_width="60dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="12dp" >
+        
+        <Spinner
+        android:id="@+id/UI5_SP_upsampling"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI5_TV_duration"
-        android:layout_below="@+id/UI5_ET_minute"
-        android:text="-" />
+        android:layout_marginLeft="5dp" />
+    </TableRow>
 
-    <Button
-        android:id="@+id/UI5_BT_secondMinus"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/UI5_ET_second"
-        android:layout_below="@+id/UI5_ET_second"
-        android:text="-" />
-
-</RelativeLayout>
+</LinearLayout>

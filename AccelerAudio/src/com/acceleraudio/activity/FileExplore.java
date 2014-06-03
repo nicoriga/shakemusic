@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acceleraudio.database.DbAdapter;
+import com.acceleraudio.util.AvailableSpaceHandler;
 import com.acceleraudio.util.MusicUpsampling;
 import com.acceleraudio.util.Wav;
 import com.malunix.acceleraudio.R;
@@ -63,6 +64,8 @@ private Thread t;
 				{
 					Bundle b = getIntent().getExtras();
 					sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
+					
+					Toast.makeText(getApplicationContext(), (String) Float.toString(AvailableSpaceHandler.getExternalAvailableSpaceInMB())+ " MB disponibili", Toast.LENGTH_LONG).show();
 	    	
 ////////////////////////////////////////////////////////
 /// prelevo dati dal database e li carico nella vista///

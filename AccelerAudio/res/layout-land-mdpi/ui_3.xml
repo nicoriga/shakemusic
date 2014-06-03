@@ -1,178 +1,187 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:gravity="center|center_horizontal"
     android:orientation="vertical" >
 
     <TableRow
-        android:id="@+id/UI3_TR1"
+        android:id="@+id/tableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.20" >
-
+        android:layout_marginLeft="10dp" >
+        
         <TextView
-            android:id="@+id/UI3_TV_SessionName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginLeft="20dp"
-            android:text="Nome Sessione"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="25sp" />
+        android:id="@+id/UI3_TV_SessionName"
+        android:layout_width="wrap_content"
+        android:text="@string/session_name"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+    </TableRow>
 
+    <TableRow
+        android:id="@+id/tableRow8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp" >
+        
         <EditText
             android:id="@+id/UI3_ET_SessionName"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:ems="10" >
-
+            android:ellipsize="end"
+            android:ems="10"
+            android:inputType="text" >
             <requestFocus />
         </EditText>
-
-        <TextView
-            android:id="@+id/UI3_TV_timerRemaning"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI3_TR2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.20" >
-
-        <TextView
-            android:id="@+id/UI3_TV_label_RecordedSamples"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="20dp"
-            android:text="Campioni Registrati:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="25sp" />
-
-        <TextView
-            android:id="@+id/UI3_TV_RecordedSamples"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/zero"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="25sp" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI3_TR3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.20" >
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="15dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:showDividers="none" >
-
-            <ProgressBar
-                android:id="@+id/UI3_PB_Z"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:minHeight="40dip"
-                android:minWidth="200dip"
-                android:progress="40" />
-
-            <ProgressBar
-                android:id="@+id/UI3_PB_Y"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:minHeight="40dip"
-                android:minWidth="200dip"
-                android:progress="80" />
-
-            <ProgressBar
-                android:id="@+id/UI3_PB_X"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:minHeight="40dip"
-                android:minWidth="200dip"
-                android:progress="20" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/UI3_BT_save"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="100dp"
-            android:layout_height="75dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="50dp"
-            android:text="Salva" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow4"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_weight="0.20"
-        android:gravity="center_horizontal" >
-
-        <Button
-            android:id="@+id/UI3_BT_stop"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:text="Stop" />
-
-        <Button
-            android:id="@+id/UI3_BT_record"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="52dp"
-            android:text="Record" />
-
-        <Button
-            android:id="@+id/UI3_BT_pause"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:text="Pause" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI3_TR5"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        android:layout_weight="0.20" >
         
-        <RadioGroup
-            android:id="@+id/UI3_orientation"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:orientation="horizontal" >
+    </TableRow>
 
-        <RadioButton
-            android:id="@+id/UI3_RB_landscape"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal|fill_horizontal"
-            android:checked="true"
-            android:text="Landscape" />
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="10dp">
+        
+        <LinearLayout
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent"
+    		android:orientation="horizontal" >
+		    		
+            
+	        <TableRow
+	        android:id="@+id/tableRow3"
+	        android:layout_width="400dp"
+	        android:layout_height="wrap_content">
+	        
+		        <LinearLayout
+		    		android:layout_width="fill_parent"
+		    		android:layout_height="fill_parent"
+		    		android:orientation="vertical" >
+		        
+			        <ProgressBar
+			            android:id="@+id/UI3_PB_Z"
+			            style="?android:attr/progressBarStyleHorizontal"
+			            android:layout_width="400dp"
+			            android:layout_height="wrap_content"
+			            android:minHeight="40dip"
+			            android:minWidth="400dip"
+			            android:progress="40" />
 
-        <RadioButton
-            android:id="@+id/UI3_RB_portrait"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Portrait" />
-		</RadioGroup>
+			        <ProgressBar
+			            android:id="@+id/UI3_PB_Y"
+			            style="?android:attr/progressBarStyleHorizontal"
+			            android:layout_width="400dp"
+			            android:layout_height="wrap_content"
+			            android:minHeight="40dip"
+			            android:minWidth="400dip"
+			            android:progress="80" />
+			        
+			        <ProgressBar
+			            android:id="@+id/UI3_PB_X"
+			            style="?android:attr/progressBarStyleHorizontal"
+			            android:layout_width="400dp"
+			            android:layout_height="wrap_content"
+			            android:minHeight="40dip"
+			            android:minWidth="400dip"
+			            android:progress="20" />
+
+		        </LinearLayout>
+	        </TableRow>
+	        
+	       <TableRow
+	        android:id="@+id/tableRow4"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="50dp">
+		        
+		        <LinearLayout
+		    		android:layout_width="wrap_content"
+		    		android:layout_height="wrap_content"
+		    		android:orientation="vertical" >
+			        
+			        	<TableRow
+				        android:id="@+id/tableRow5"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content">
+				        
+				        	<TextView
+				        	    android:id="@+id/UI3_TV_label_RecordedSamples"
+				        	    android:layout_width="200dp"
+				        	    android:layout_height="wrap_content"
+				        	    android:text="@string/recorded_samples"
+				        	    android:textAppearance="?android:attr/textAppearanceMedium" />
+				        	
+				        	<TextView
+					        android:id="@+id/UI3_TV_RecordedSamples"
+					        android:layout_width="wrap_content"
+					        android:text="@string/zero"
+					        android:layout_marginLeft="40dp"
+					        android:textAppearance="?android:attr/textAppearanceMedium" />
+				        </TableRow>
+				        
+				        <TableRow
+				        android:id="@+id/tableRow6"
+				        android:layout_width="wrap_content"
+				        android:layout_height="wrap_content"
+				        android:layout_marginTop="50dp">
+				        	
+				        	<TextView
+				        	    android:id="@+id/UI3_TV_timeRemaning"
+				        	    android:layout_width="200dp"
+				        	    android:layout_height="wrap_content"
+				        	    android:text="@string/remaining_time"
+				        	    android:textAppearance="?android:attr/textAppearanceMedium" />
+				        	
+				        	<TextView
+					        android:id="@+id/UI3_TV_timerRemaning"
+					        android:layout_width="wrap_content"
+					        android:layout_height="wrap_content"
+					        android:text="@string/zero"
+					        android:layout_marginLeft="40dp"
+					        android:textAppearance="?android:attr/textAppearanceMedium" />
+				        	
+				        </TableRow>
+				        
+		       	</LinearLayout>
+		       	
+	        </TableRow>
+	        
+        </LinearLayout>
+        
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="200dp" >
+        
+     <Button
+        android:id="@+id/UI3_BT_stop"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="@string/stop"
+        android:drawableRight="@drawable/stop_icon"
+        android:drawablePadding="4dp" />
+    
+    <Button
+        android:id="@+id/UI3_BT_record"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="52dp"
+        android:text="@string/record"
+        android:drawableRight="@drawable/record_icon"
+        android:drawablePadding="4dp" />
+
+    <Button
+        android:id="@+id/UI3_BT_pause"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="@string/pause"
+        android:drawableRight="@drawable/pause_icon"
+        android:drawablePadding="4dp" />
+            
     </TableRow>
 
 </LinearLayout>
