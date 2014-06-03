@@ -100,7 +100,7 @@ public class RecordActivity extends Activity {
 				data_x = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_X));
 				data_y = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_Y));
 				data_z = Util.toArrayListFloat(savedInstanceState.getFloatArray(DATA_Z));
-				startSession.setText(getString(R.string.resume));
+				if(sample > 0 )startSession.setText(getString(R.string.resume));
 				
 				if(remaining_time == 0)
 				{
@@ -119,7 +119,7 @@ public class RecordActivity extends Activity {
 			{	
 				// imposto preferenze
 				sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
-				remaining_time = pref.getInt(PreferencesActivity.TIMER_SECONDS, 0)*1000;
+				remaining_time = pref.getInt(PreferencesActivity.TIMER_SECONDS, 5)*1000;
 				
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
@@ -349,7 +349,7 @@ public class RecordActivity extends Activity {
     		case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
     		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
     		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
-    			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+    			setRequestedOrientation(orientation);
     			return;
     		default:
     			// nel caso il dispositivo si trovi in reverse-landscape viene bloccato in landscape

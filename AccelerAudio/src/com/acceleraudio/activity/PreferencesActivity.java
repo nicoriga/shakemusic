@@ -112,7 +112,7 @@ public class PreferencesActivity extends Activity {
 			/**** incrementa i secondi ****/
 			secondsUp.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
-					if (seconds <= 60) {
+					if (seconds < 60) {
 						seconds++;
 						secondsET.setText("" + seconds);
 						Editor prefEdit = pref.edit();
@@ -169,7 +169,7 @@ public class PreferencesActivity extends Activity {
     		prefEdit.putBoolean(AXIS_Z, true);
     		prefEdit.putInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
     		prefEdit.putInt(UPSAMPLING, 0);
-    		prefEdit.putInt(TIMER_SECONDS, 0);
+    		prefEdit.putInt(TIMER_SECONDS, 5);
     		prefEdit.putBoolean(FIRST_START, false);
     		
     		// carico i dati nella vista
@@ -177,8 +177,8 @@ public class PreferencesActivity extends Activity {
     		axis_y.setChecked(true);
     		axis_z.setChecked(true);
     		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
-    		Util.SelectSpinnerItemByValue(sp_upsampling, ""+0);
-    		seconds = 0;
+    		Util.SelectSpinnerItemByValue(sp_upsampling, ""+5);
+    		seconds = 5;
     		secondsET.setText("" + seconds);
     		
     		prefEdit.commit();
