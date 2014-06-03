@@ -363,7 +363,6 @@ public class PlayerActivity extends Activity {
 			public void onFinish() {
 				currentTimeTV.setText("" + (duration/1000));
 				sb_musicProgress.setProgress((int)duration);
-				countDownTimer.start();
 			}
 		};
     }
