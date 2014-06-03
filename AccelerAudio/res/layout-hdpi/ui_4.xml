@@ -24,23 +24,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <Button
+        <ImageButton
             android:id="@+id/UI4_BT_pause"
             android:layout_width="80dp"
-            android:layout_height="50dp"
-            android:text="@string/pause" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/pause_player"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/UI4_BT_play"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="@string/play" />
+            android:src="@drawable/play_player"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/UI4_BT_stop"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:text="@string/stop" />
+            android:src="@drawable/stop_player" />
 
     </TableRow>
 
@@ -74,14 +74,15 @@
 
     <Button
         android:id="@+id/UI4_BT_export"
-        android:layout_width="106dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/export"
         android:text="@string/export" />
 
     <ImageView
         android:id="@+id/UI4_IV_thumbnail"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="match_parent"
+        android:layout_height="218dp"
         android:contentDescription="@string/thumbnail"
         android:src="@drawable/ic_launcher" />
 

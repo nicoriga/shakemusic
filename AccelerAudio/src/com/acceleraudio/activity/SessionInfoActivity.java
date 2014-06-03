@@ -283,7 +283,7 @@ public class SessionInfoActivity extends Activity {
 				else
 				{
 					dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString())));
-					date_change.setText(getString(R.string.creation_date) + " " + dbAdapter.getDate());
+					date_change.setText(getString(R.string.modified_date) + " " + dbAdapter.getDate());
 				}
 				// chiudo la connessione al db
 				dbAdapter.close();

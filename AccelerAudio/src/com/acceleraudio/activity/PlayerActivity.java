@@ -19,6 +19,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -38,7 +39,8 @@ public class PlayerActivity extends Activity {
 	private Boolean inizialized = false, axis_x, axis_y, axis_z;
 	private TextView sessionName, durationTV;
 	public static TextView currentTimeTV;
-	private Button play, pause, stop, export;
+	private ImageButton play, pause, stop;
+	private Button export;
 	private ImageView thumbnail;
 	public static SeekBar sb_musicProgress;
 	private int[] sample;
@@ -95,9 +97,9 @@ public class PlayerActivity extends Activity {
 
 		try {
 			sessionName = (TextView) findViewById(R.id.UI4_TV_sessionName);
-			play = (Button) findViewById(R.id.UI4_BT_play);
-			pause = (Button) findViewById(R.id.UI4_BT_pause);
-			stop = (Button) findViewById(R.id.UI4_BT_stop);
+			play = (ImageButton) findViewById(R.id.UI4_BT_play);
+			pause = (ImageButton) findViewById(R.id.UI4_BT_pause);
+			stop = (ImageButton) findViewById(R.id.UI4_BT_stop);
 			export = (Button) findViewById(R.id.UI4_BT_export);
 			thumbnail = (ImageView) findViewById(R.id.UI4_IV_thumbnail);
 			currentTimeTV = (TextView) findViewById(R.id.UI4_TV_initialTimer);
