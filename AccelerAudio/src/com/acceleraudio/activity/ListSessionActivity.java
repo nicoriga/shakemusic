@@ -69,6 +69,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 ///////////// Popolo la listview ///////////////////////
 ///////////////////////////////////////////////////////
 
+		Cursor cursor = null;
+		
 		try {
 			loadInterface();
 			
@@ -82,7 +84,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			dbAdapter.open();
 			
 			// prelevo tutti i record 
-			Cursor cursor = dbAdapter.fetchAllSession();
+			cursor = dbAdapter.fetchAllSession();
 			
 			// istanzio array
 			sessions = new ArrayList<RecordedSession>();
@@ -104,7 +106,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			dbAdapter.close();
 			
 			adaperListCheck = new ListSessionAdapter(this, R.layout.list_session_select_layout, sessions);
-			adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessions);
+			adaperList = new ListSessionAdapter(this, (R.layout.list_session_layout), sessions);
 			list.setAdapter(adaperList);
 			
 			registerForContextMenu(list);	
@@ -112,6 +114,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		} catch (SQLException e) {
 			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
+			if(cursor != null & !cursor.isClosed())cursor.close();
+			if(!dbAdapter.isOpen())dbAdapter.close();
 			finish();
 		} catch (RuntimeException e) {
 			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
@@ -203,6 +207,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				// esporta la sessione
 				// Avvio il File Manager
 				 Intent i1 = new Intent(context, FileExplore.class);
+				 i1.putExtra(DbAdapter.T_SESSION_SESSIONID, sessions.get(info.position).getId());
 				 context.startActivity(i1);
 				return true;
 			
@@ -329,7 +334,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		merge.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				select_mode = true;
-				setContentView(R.layout.ui_1_select);
+//				setContentView(R.layout.ui_1_select);
 				loadInterface();
 //				merge.setEnabled(false);
 //				list.setAdapter(adaperListCheck);

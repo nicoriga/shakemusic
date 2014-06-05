@@ -88,11 +88,17 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 	}
 	
 	// restituisce un arraylist degli id delle sessioni selezionate
-	public ArrayList<Long>  getSelectedSession()
+	public long[] getSelectedSession()
 	{
 		ArrayList<Long> selectedSessionId = new  ArrayList<Long>();
 		for (int i=0; i<sessions.size(); i++) if(sessions.get(i).isSelected()) selectedSessionId.add(sessions.get(i).getId());
-		return selectedSessionId;
+		long[] selectedId = new long[selectedSessionId.size()];
+		int x = 0;
+		for(long id: selectedSessionId){
+			selectedId[x] = id;
+			x++;
+		}
+		return selectedId;
 	}
 	
 	public int getSelectedSize()

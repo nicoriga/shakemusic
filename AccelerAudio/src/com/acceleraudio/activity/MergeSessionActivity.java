@@ -8,7 +8,6 @@ import com.acceleraudio.util.RecordedSession;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -16,7 +15,6 @@ import android.database.SQLException;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -33,7 +31,7 @@ public class MergeSessionActivity extends Activity{
 	private EditText sessionName;
 	private ListView list;
 	private ListSessionAdapter adaperList;
-	private ArrayList<Integer> sessionIdList;
+	private long[] sessionIdList;
 	private ArrayList<RecordedSession> sessions;
 	long rowId;
 	private SharedPreferences pref;
@@ -43,11 +41,11 @@ public class MergeSessionActivity extends Activity{
 	private GestureDetector gestureDetector;
     
     // Distanza minima richiesta sull'asse Y
-    private static final int SWIPE_MIN_DISTANCE = 5;
+    //private static final int SWIPE_MIN_DISTANCE = 5;
     // Distanza massima consentita sull'asse X
     private static final int SWIPE_MAX_OFF_PATH = 250;
     // Velocità minima richiesta sull'asse Y
-    private static final int SWIPE_THRESHOLD_VELOCITY = 0;
+    //private static final int SWIPE_THRESHOLD_VELOCITY = 0;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +55,7 @@ public class MergeSessionActivity extends Activity{
     	pref = PreferenceManager.getDefaultSharedPreferences(this);
     	
     	Bundle b = getIntent().getExtras();
-    	sessionIdList = b.getIntegerArrayList(DbAdapter.T_SESSION_SESSIONID);
+    	sessionIdList = b.getLongArray(DbAdapter.T_SESSION_SESSIONID);
     	
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
@@ -149,8 +147,7 @@ public class MergeSessionActivity extends Activity{
 							// unisco le sessioni
 									// apro la connessione al db
 									dbAdapter.open();
-									sessionId = dbAdapter
-											.mergeSession(
+									sessionId = dbAdapter.mergeSession(
 													sessionIdList,
 													sessionName.getText().toString(),
 													(pref.getBoolean(PreferencesActivity.AXIS_X,true) ? 1 : 0),
@@ -162,7 +159,7 @@ public class MergeSessionActivity extends Activity{
 							
 							// avvia activity con le info della sessione
 							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
-							i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
+							i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 							v.getContext().startActivity(i);
 							finish();
 							
@@ -225,7 +222,7 @@ public class MergeSessionActivity extends Activity{
 		// istanzio array
 		sessions = new ArrayList<RecordedSession>();
 		
-		for(int sessionID: sessionIdList)
+		for(long sessionID: sessionIdList)
 		{
 			// prelevo i campi per ogni sessione
 			Cursor cursor = dbAdapter.fetchSessionByIdMinimal(sessionID);
@@ -267,9 +264,9 @@ public class MergeSessionActivity extends Activity{
 		if (start_position >= 0 && stop_position >= 0) {
 			
 			// scambia id
-			int tempId = sessionIdList.get(start_position);
-			sessionIdList.set(start_position, sessionIdList.get(stop_position));
-			sessionIdList.set(stop_position, tempId);
+			long tempId = sessionIdList[start_position];
+			sessionIdList[start_position] = sessionIdList[stop_position];
+			sessionIdList[stop_position] = tempId;
 			
 			// scambia due sessioni
 			RecordedSession sTemp = sessions.get(stop_position);
@@ -286,7 +283,7 @@ public class MergeSessionActivity extends Activity{
 		if (start_position >= 0 && stop_position >= 0) {
 			
 			// sposta id
-			sessionIdList.add(stop_position, sessionIdList.remove(start_position));
+			sessionIdList[stop_position] = sessionIdList[start_position];
 			
 			// sposta il nome
 			sessions.add(stop_position,sessions.remove(start_position));

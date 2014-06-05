@@ -1,7 +1,6 @@
 package com.acceleraudio.database;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -171,7 +170,7 @@ public class DbAdapter {
 	// preleva tutte le sessioni
 	public Cursor fetchAllSession() 
 	{
-		return database.query(DATABASE_TABLE_SESSION, new String[] { T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE}, null, null, null, null, T_SESSION_NAME);
+		return database.query(DATABASE_TABLE_SESSION, new String[] { T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z}, null, null, null, null, T_SESSION_NAME);
 	}
    
 	// preleva sessione per ID
@@ -182,9 +181,9 @@ public class DbAdapter {
 	}
 	
 	// preleva sessione per ID senza i dati dell'accelerometro
-	public Cursor fetchSessionByIdMinimal(int sessionID) 
+	public Cursor fetchSessionByIdMinimal(long sessionId) 
 	{
-		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
+		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionId, null, null, null, null, null);     
 		return mCursor;
 	}
 	
@@ -193,7 +192,6 @@ public class DbAdapter {
 	 */
 	public long getMaxId() 
 	{
-//		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] { "MAX("+T_SESSION_SESSIONID+")" }, null, null, null, null, null, null);     
 		Cursor mCursor = database.rawQuery(" SELECT MAX("+T_SESSION_SESSIONID+") FROM "+DATABASE_TABLE_SESSION, null);
 		mCursor.moveToFirst();
 		long id = mCursor.getLong(0);
@@ -249,14 +247,14 @@ public class DbAdapter {
 	}
   
 	// unisce sessioni per ID
-	public long mergeSession(ArrayList<Integer> sessionIdList, String name, int axis_x, int axis_y, int axis_z, int upsampling) 
+	public long mergeSession(long[] sessionIdList, String name, int axis_x, int axis_y, int axis_z, int upsampling) 
 	{
 		StringBuilder sensor_data_x = new StringBuilder();
 		StringBuilder sensor_data_y = new StringBuilder();
 		StringBuilder sensor_data_z = new StringBuilder();
 		int n_data_x = 0, n_data_y = 0, n_data_z = 0;
 		
-		for(int sessionID: sessionIdList)
+		for(long sessionID: sessionIdList)
 		{
 			// prelevo i campi per ogni sessione
 			Cursor cursor = fetchSessionById(sessionID);

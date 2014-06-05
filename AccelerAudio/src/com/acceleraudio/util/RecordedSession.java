@@ -13,13 +13,14 @@ public class RecordedSession{
 	 * @param id identificativo sessione
 	 * @param name nome sessione
 	 * @param modified_date data ultima modifica
-	 * @param image immagine codificata in stringa
+	 * @param image immagine codificata in base64
 	 * @param n_sample numero campioni totali
 	 */
 	public RecordedSession(long id, String name, String modified_date, String image, int n_sample){
 		this.id = id;
 		this.name = name;
 		this.modified_date = modified_date;
+		this.image = image;
 		this.n_sample = n_sample;
 		selected = false;
 	}

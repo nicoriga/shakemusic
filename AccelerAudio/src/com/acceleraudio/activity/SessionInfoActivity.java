@@ -43,7 +43,7 @@ public class SessionInfoActivity extends Activity {
     private TextView creation_date, date_change;
     private CheckBox axis_x, axis_y, axis_z;
     private Spinner sp_upsampling;
-    private int sessionId;
+    private long sessionId;
     private String image;
     private boolean dataLoaded = false ,load = false;
     private Thread t;
@@ -80,7 +80,7 @@ public class SessionInfoActivity extends Activity {
 			
 			if (savedInstanceState != null)
 			{
-				sessionId = savedInstanceState.getInt(SESSION_ID);
+				sessionId = savedInstanceState.getLong(SESSION_ID);
 				creation_date.setText(savedInstanceState.getString(CREATION_DATE));
 				date_change.setText(savedInstanceState.getString(DATE_CHANGE));
 				image = savedInstanceState.getString(IMAGE);
@@ -93,7 +93,7 @@ public class SessionInfoActivity extends Activity {
 ///////////////////////////////////////////////////////  
 
 				Bundle b = getIntent().getExtras();
-				sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
+				sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
 
 ////////////////////////////////////////////////////////
 /// prelevo dati dal database e li carico nella vista///
@@ -235,6 +235,8 @@ public class SessionInfoActivity extends Activity {
 		} catch (SQLException e) {
 			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
+			if(cursor != null & !cursor.isClosed())cursor.close();
+			if(!dbAdapter.isOpen())dbAdapter.close();
 			finish();
 		} catch (RuntimeException e) {
 			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
@@ -257,7 +259,7 @@ public class SessionInfoActivity extends Activity {
 	@Override
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
-		savedInstanceState.putInt(SESSION_ID, sessionId);
+		savedInstanceState.putLong(SESSION_ID, sessionId);
     	savedInstanceState.putString(CREATION_DATE, creation_date.getText().toString());
     	savedInstanceState.putString(DATE_CHANGE, date_change.getText().toString());
       	savedInstanceState.putString(IMAGE, image);

@@ -44,7 +44,8 @@ public class PlayerActivity extends Activity {
 	private ImageView thumbnail;
 	public static SeekBar sb_musicProgress;
 	private int[] sample;
-	private int sessionId, upsampling;
+	private long sessionId;
+	private int upsampling;
 	private static long duration, remaining_millis;
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
@@ -134,7 +135,7 @@ public class PlayerActivity extends Activity {
 ///////////////////////////////////////////////////////  
 
 				Bundle b = getIntent().getExtras();
-				sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
+				sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
     	
 ////////////////////////////////////////////////////////
 /// prelevo dati dal database e li carico nella vista///

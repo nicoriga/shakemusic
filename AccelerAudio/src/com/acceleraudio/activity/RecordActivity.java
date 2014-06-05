@@ -215,7 +215,7 @@ public class RecordActivity extends Activity {
 						saveAccelerometerData();
 						// avvio la SessionInfoActivity
 						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
-						i.putExtra(DbAdapter.T_SESSION_SESSIONID, (int)sessionId);
+						i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 						v.getContext().startActivity(i);
 						finish();
 					}

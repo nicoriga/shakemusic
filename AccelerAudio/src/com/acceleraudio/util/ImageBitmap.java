@@ -19,9 +19,9 @@ public class ImageBitmap
 	 * data_y: valori dall'asse y
 	 * data_z: valori dall'asse z
 	 */
-	public static void color(Bitmap bmp, String[] data_x, String[] data_y, String[] data_z, int id)
+	public static void color(Bitmap bmp, String[] data_x, String[] data_y, String[] data_z, int sessionId)
 	{
-		id++;
+		sessionId++;
 		int _x = 1, _y = 1, _z = 1;
 		double val;
 		
@@ -42,9 +42,9 @@ public class ImageBitmap
 						try {
 							//Log.w("valore x:", "-"+data_x[_x]+"-");
 							if(data_x[_x].length()>0) val = (double)Float.parseFloat(data_x[_x]);
-							else val = id;
+							else val = sessionId;
 						} catch (NumberFormatException e) {
-							val = id;
+							val = sessionId;
 							e.printStackTrace();
 						}	
 						break;
@@ -55,9 +55,9 @@ public class ImageBitmap
 							_y++;
 						try {
 							if(data_y[_y].length()>0) val = (double)Float.parseFloat(data_y[_y]);
-							else val = id;
+							else val = sessionId;
 						} catch (NumberFormatException e) {
-							val = id;
+							val = sessionId;
 							e.printStackTrace();
 						}										
 						break;
@@ -69,15 +69,15 @@ public class ImageBitmap
 							_z++;
 						try {
 							if(data_z[_z].length()>0) val = (double)Float.parseFloat(data_z[_z]);
-							else val = id;
+							else val = sessionId;
 						} catch (NumberFormatException e) {
-							val = id;
+							val = sessionId;
 							e.printStackTrace();
 						}	
 					break;
 					
 					case 3:
-						val = id;
+						val = sessionId;
 					break;
 
 					default:
@@ -85,7 +85,7 @@ public class ImageBitmap
 				}
 				
 				
-				int v = (int)(val*id);
+				int v = (int)(val*sessionId);
 				bmp.setPixel(x, y, Color.argb(250, (int)v*100%255, (int)v*50%255, (int)v*150%255));
 				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
 				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
