@@ -21,10 +21,11 @@ public class PlayerTrack extends IntentService{
 	public static final String DURATION = "com.acceleraudio.service.playertrack.duration";
 	public static final String PAUSE = "com.acceleraudio.service.playertrack.pause";
 	public static final String PLAY = "com.acceleraudio.service.playertrack.play";
+	public static final String PLAYBACK_POSITION = "com.acceleraudio.service.playertrack.playbackPosition";
 	public static final int PLAY_MUSIC = 1;
 	public static final int PAUSE_MUSIC = 1;
 //	private Thread t;
-	private int sample_rate;
+	private int sample_rate, playbackHeadPosition;
 	private boolean isRunning ;
 	private int[] sample;
 	int x, upsampling;
@@ -39,10 +40,12 @@ public class PlayerTrack extends IntentService{
     			if(intent.hasExtra(PAUSE))
     					if(bundle.getInt(PlayerTrack.PAUSE) == PAUSE_MUSIC)
     					{
+    						audioTrack.pause();
+    						playbackHeadPosition = audioTrack.getPlaybackHeadPosition();
     						Intent intentPause = new Intent(NOTIFICATION);
 			        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
+			        		intentPause.putExtra(PLAYBACK_POSITION, playbackHeadPosition);
 					        sendBroadcast(intentPause);
-    						audioTrack.pause();
     					}
     			if(intent.hasExtra(PLAY))
 					if(bundle.getInt(PlayerTrack.PLAY) == PLAY_MUSIC)
@@ -153,6 +156,7 @@ public class PlayerTrack extends IntentService{
     {
     	synchronized (this) {
 			this.notify();
+//			audioTrack.setPlaybackHeadPosition(playbackHeadPosition);
 			audioTrack.play();
 			
 			Intent intentPlay = new Intent(NOTIFICATION);

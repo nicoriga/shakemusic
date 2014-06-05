@@ -44,8 +44,8 @@ public class PlayerActivity extends Activity {
 	private ImageView thumbnail;
 	public static SeekBar sb_musicProgress;
 	private int[] sample;
-	private long sessionId;
-	private int upsampling;
+	private long sessionId, elapsed;
+	private int upsampling, playbackHeadPosition;
 	private static long duration, remaining_millis;
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
@@ -73,7 +73,11 @@ public class PlayerActivity extends Activity {
     			if(intent.hasExtra(PlayerTrack.PAUSE))
     				if(bundle.getInt(PlayerTrack.PAUSE) == PlayerTrack.PAUSE_MUSIC)
     					if(countDownTimer != null)
+    					{
     						countDownTimer.cancel();
+    						playbackHeadPosition = bundle.getInt(PlayerTrack.PLAYBACK_POSITION);
+//    						remaining_millis = duration - (playbackHeadPosition);
+    					}
     			if(intent.hasExtra(PlayerTrack.PLAY))
 					if(bundle.getInt(PlayerTrack.PLAY) == PlayerTrack.PLAY_MUSIC)
 					{
@@ -350,20 +354,21 @@ public class PlayerActivity extends Activity {
     
     public void loadCountDownTimer()
     {
-    	duration = remaining_millis;
-    	if(!isPause) {
-		}
-    	countDownTimer = new CountDownTimer(duration, 10) {
+    	elapsed = remaining_millis;
+    	countDownTimer = new CountDownTimer(remaining_millis, 10) {
 			public void onTick(long millisUntilFinished) {
-				long time_elapsed = duration - millisUntilFinished;
-				currentTimeTV.setText("" + time_elapsed / 1000);
-				sb_musicProgress.setProgress((int)(time_elapsed));
+				long time_elapsed = duration - (millisUntilFinished + elapsed);
+				currentTimeTV.setText("" + ((elapsed + time_elapsed) / 1000));
+				sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
 				remaining_millis = millisUntilFinished;
 			}
 			
 			public void onFinish() {
-				currentTimeTV.setText("" + (duration/1000));
-				sb_musicProgress.setProgress((int)duration);
+				currentTimeTV.setText("" + (remaining_millis/1000));
+				sb_musicProgress.setProgress((int)remaining_millis);
+				
+				loadCountDownTimer();
+				countDownTimer.start();
 			}
 		};
     }
