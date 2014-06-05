@@ -6,6 +6,7 @@ import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.design.ListSessionAdapter;
 import com.acceleraudio.design.RenameDialog;
 import com.acceleraudio.design.RenameDialog.RenameDialogListener;
+import com.acceleraudio.util.RecordedSession;
 import com.malunix.acceleraudio.R;
 
 import android.content.Context;
@@ -32,8 +33,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 
 	private Button newSession, preferences, merge, next, cancel;
 	private ListView list;
-	private ArrayList<Integer> sessionIdList;
-	private ArrayList<String> sessionNameList, sessionDataMod, image;
+	private ArrayList<RecordedSession> sessions;
 	private DbAdapter dbAdapter; 
     private Context context;
     private ListSessionAdapter adaperList, adaperListCheck;  
@@ -85,25 +85,26 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			Cursor cursor = dbAdapter.fetchAllSession();
 			
 			// istanzio array
-			sessionIdList = new ArrayList<Integer>();
-			sessionNameList = new ArrayList<String>();
-			sessionDataMod = new ArrayList<String>();
-			image = new ArrayList<String>();
+			sessions = new ArrayList<RecordedSession>();
 			
 			cursor.moveToFirst();
 			while ( !cursor.isAfterLast() ) {
-				sessionIdList.add(cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_SESSIONID)));
-				sessionNameList.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
-				sessionDataMod.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE)));
-				image.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)));
+				RecordedSession s = new RecordedSession(cursor.getLong( cursor.getColumnIndex(DbAdapter.T_SESSION_SESSIONID)),
+														cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)),
+														cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE)),
+														cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)),
+														cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_X)) +
+														cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Y)) +
+														cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Z)));
+				sessions.add(s);
 				cursor.moveToNext();
 			}
 			
 			cursor.close();
 			dbAdapter.close();
 			
-			adaperListCheck = new ListSessionAdapter(this, R.layout.list_session_select_layout, sessionIdList, sessionNameList, sessionDataMod, image);
-			adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessionIdList, sessionNameList, sessionDataMod, image);
+			adaperListCheck = new ListSessionAdapter(this, R.layout.list_session_select_layout, sessions);
+			adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessions);
 			list.setAdapter(adaperList);
 			
 			registerForContextMenu(list);	
@@ -160,7 +161,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			case 0:
 				// Avvio la PlayerActivity
 				Intent i = new Intent(context, PlayerActivity.class);
-				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(info.position));
+				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessions.get(info.position).getId());
 				context.startActivity(i);
 				return true;
 			
@@ -175,13 +176,9 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 								// utilizzo un adapter locale per non aver problemi con l'apertura e chiusura della connessione
 								DbAdapter dbAdapter = new DbAdapter(context);
 								dbAdapter.open();
-								String[] s = dbAdapter.duplicateSessionById(sessionIdList.get(x));
+								RecordedSession s = dbAdapter.duplicateSessionById(sessions.get(x).getId());
 								dbAdapter.close();
-								//sessionIdList.add(x, Integer.parseInt(s[0]));
-								//sessionNameList.add(x, s[1]);
-								//sessionDataMod.add(x, s[2]);
-								//image.add(x, s[3]);
-								adaperListCheck.addRowAtPosition(x, Integer.parseInt(s[0]), s[1], s[2], s[3]);
+								sessions.add(x, s);
 							} catch (NumberFormatException e) {
 								e.printStackTrace();
 							} catch (SQLException e) {
@@ -211,19 +208,16 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			
 			case 3:
 				// rinomina la sessione
-				showRenameDialog(info.position, sessionNameList.get(info.position));
+				showRenameDialog(info.position, sessions.get(info.position).getName());
 				return true;
 			
 			case 4:
 				// Elimina la sessione
 			try {
 				dbAdapter.open();
-				dbAdapter.deleteSession(sessionIdList.get(info.position));
+				dbAdapter.deleteSession(sessions.get(info.position).getId());
 				dbAdapter.close();
-				sessionIdList.remove(info.position);
-				sessionNameList.remove(info.position);
-				sessionDataMod.remove(info.position);
-				image.remove(info.position);
+				sessions.remove(info.position);
 				adaperList.notifyDataSetChanged();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -250,9 +244,9 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			{
 				try {
 					dbAdapter.open();
-					if(dbAdapter.updateSessionName(sessionIdList.get(position), sessionName))
+					if(dbAdapter.updateSessionName(sessions.get(position).getId(), sessionName))
 					{
-						sessionNameList.set(position, sessionName);
+						sessions.get(position).setName(sessionName);
 					}
 					dbAdapter.close();
 					adaperList.notifyDataSetChanged();
@@ -326,7 +320,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 				Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
-				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionIdList.get(position));
+				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessions.get(position).getId());
 				view.getContext().startActivity(i);
 			}
 		});

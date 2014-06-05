@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.design.ListSessionAdapter;
+import com.acceleraudio.util.RecordedSession;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
@@ -33,7 +34,7 @@ public class MergeSessionActivity extends Activity{
 	private ListView list;
 	private ListSessionAdapter adaperList;
 	private ArrayList<Integer> sessionIdList;
-	private ArrayList<String> sessionNameList, sessionDataMod, image;
+	private ArrayList<RecordedSession> sessions;
 	long rowId;
 	private SharedPreferences pref;
 	private ListView.OnTouchListener gestureListener;
@@ -71,7 +72,7 @@ public class MergeSessionActivity extends Activity{
     		list = (ListView)findViewById(R.id.merge_LV_listSession);
     		
     		loadSession();
-    		adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessionIdList, sessionNameList, sessionDataMod, image);
+    		adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessions);
     		list.setAdapter(adaperList);
 //    		gestureDetector = new GestureDetector(list.getContext(), new MyGestureDetector());
     		gestureListener = new ListView.OnTouchListener() {
@@ -222,9 +223,7 @@ public class MergeSessionActivity extends Activity{
 		dbAdapter.open();
 				
 		// istanzio array
-		sessionNameList = new ArrayList<String>();
-		sessionDataMod = new ArrayList<String>();
-		image = new ArrayList<String>();
+		sessions = new ArrayList<RecordedSession>();
 		
 		for(int sessionID: sessionIdList)
 		{
@@ -232,10 +231,14 @@ public class MergeSessionActivity extends Activity{
 			Cursor cursor = dbAdapter.fetchSessionByIdMinimal(sessionID);
 			cursor.moveToFirst();
 			
-			sessionNameList.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
-			sessionDataMod.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE)));
-			image.add(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)));
-			
+			RecordedSession s = new RecordedSession(sessionID,
+													cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)), 
+													cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE)), 
+													cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_IMAGE)), 
+													cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_X)) +
+													cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Y)) +
+													cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Z)));
+			sessions.add(s);
 			cursor.close();
 		}
 		
@@ -268,20 +271,11 @@ public class MergeSessionActivity extends Activity{
 			sessionIdList.set(start_position, sessionIdList.get(stop_position));
 			sessionIdList.set(stop_position, tempId);
 			
-			// scambia il nome
-			String tempName = sessionNameList.get(start_position);
-			sessionNameList.set(start_position,sessionNameList.get(stop_position));
-			sessionNameList.set(stop_position, tempName);
+			// scambia due sessioni
+			RecordedSession sTemp = sessions.get(stop_position);
+			sessions.set(start_position,sessions.get(stop_position));
+			sessions.set(stop_position, sTemp);
 			
-			// scambia la data di modifica
-			String tempDate = sessionDataMod.get(start_position);
-			sessionDataMod.set(start_position,sessionDataMod.get(stop_position));
-			sessionDataMod.set(stop_position, tempDate);
-			
-			// scambia l'immagine
-			String tempImage = image.get(start_position);
-			image.set(start_position, image.get(stop_position));
-			image.set(stop_position, tempImage);
 			adaperList.notifyDataSetChanged();
 		}
 	}
@@ -295,13 +289,7 @@ public class MergeSessionActivity extends Activity{
 			sessionIdList.add(stop_position, sessionIdList.remove(start_position));
 			
 			// sposta il nome
-			sessionNameList.add(stop_position,sessionNameList.remove(start_position));
-			
-			// sposta la data di modifica
-			sessionDataMod.add(stop_position,sessionDataMod.remove(start_position));
-			
-			// sposta l'immagine
-			image.add(stop_position, image.remove(start_position));
+			sessions.add(stop_position,sessions.remove(start_position));
 			
 			adaperList.notifyDataSetChanged();
 		}

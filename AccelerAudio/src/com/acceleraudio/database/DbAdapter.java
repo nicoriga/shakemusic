@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import com.acceleraudio.util.ImageBitmap;
+import com.acceleraudio.util.RecordedSession;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -162,9 +163,9 @@ public class DbAdapter {
 	}
 	
 	// elimina sessione 
-	public boolean deleteSession(int sessionID) 
+	public boolean deleteSession(long Id) 
 	{
-		return database.delete(DATABASE_TABLE_SESSION, T_SESSION_SESSIONID + "=" + sessionID, null) > 0;
+		return database.delete(DATABASE_TABLE_SESSION, T_SESSION_SESSIONID + "=" + Id, null) > 0;
 	}
 		
 	// preleva tutte le sessioni
@@ -174,9 +175,9 @@ public class DbAdapter {
 	}
    
 	// preleva sessione per ID
-	public Cursor fetchSessionById(int sessionID) 
+	public Cursor fetchSessionById(long id) 
 	{
-		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + sessionID, null, null, null, null, null);     
+		Cursor mCursor = database.query(true, DATABASE_TABLE_SESSION, new String[] {T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_AXIS_X, T_SESSION_AXIS_Y, T_SESSION_AXIS_Z, T_SESSION_UPSAMPLING, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_SENSOR_DATA_X, T_SESSION_SENSOR_DATA_Y, T_SESSION_SENSOR_DATA_Z, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z }, T_SESSION_SESSIONID + "=" + id, null, null, null, null, null);     
 		return mCursor;
 	}
 	
@@ -203,18 +204,12 @@ public class DbAdapter {
 	/**
 	 * duplica sessioni per ID
 	 * 
-	 * @param sessionID id della sessione da duplicare
-	 * @return String[] di lunghezza 4: contenente i dati della nuova sessione
-	 * 	<ul>
-	 * 		<li>String[0] id sessione </li>
-	 * 		<li>String[1] nome  </li>
-	 * 		<li>String[2] data ultima modifica </li>
-	 * 		<li>String[3] immagine sottoforma di stringa codifica in base64 </li>
-	 * </ul>
+	 * @param id id della sessione
+	 * @return un oggetto di tipo RecordedSession
 	 */
-	public String[] duplicateSessionById(int sessionID) 
+	public RecordedSession duplicateSessionById(long id) 
 	{
-		Cursor mCursor = fetchSessionById(sessionID);
+		Cursor mCursor = fetchSessionById(id);
 		mCursor.moveToFirst();
 		if(mCursor.getCount()>0)
 		{
@@ -231,6 +226,7 @@ public class DbAdapter {
 			int n_data_x = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_X));
 			int n_data_y = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Y));
 			int n_data_z = mCursor.getInt( mCursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Z));
+			int totSample = n_data_x + n_data_y + n_data_z;
 			mCursor.close();
 			
 			name = name + "_" + (getMaxId()+1);
@@ -242,11 +238,7 @@ public class DbAdapter {
 			ImageBitmap.color(bmp, sensor_data_x.split(" ", 200), sensor_data_y.split(" ", 200), sensor_data_z.split(" ", 200), (int)sessionId);	
 			image = ImageBitmap.encodeImage(bmp);
 			updateSessionImage(sessionId, image);
-			String[] s = new String[4];
-			s[0] = "" + sessionId;
-			s[1] = name;
-			s[2] = getDate();
-			s[3] = image;
+			RecordedSession s=new RecordedSession(sessionId, name, getDate(), image, totSample);
 			
 			return s;
 		}
