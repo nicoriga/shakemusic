@@ -170,7 +170,7 @@ public class DbAdapter {
 	// preleva tutte le sessioni
 	public Cursor fetchAllSession() 
 	{
-		return database.query(DATABASE_TABLE_SESSION, new String[] { T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z}, null, null, null, null, T_SESSION_NAME);
+		return database.query(DATABASE_TABLE_SESSION, new String[] { T_SESSION_SESSIONID, T_SESSION_NAME, T_SESSION_IMAGE, T_SESSION_CREATION_DATE, T_SESSION_DATE_CHANGE, T_SESSION_N_DATA_X, T_SESSION_N_DATA_Y, T_SESSION_N_DATA_Z}, null, null, null, null, T_SESSION_SESSIONID + " DESC");
 	}
    
 	// preleva sessione per ID
