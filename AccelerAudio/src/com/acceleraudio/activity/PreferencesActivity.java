@@ -125,7 +125,7 @@ public class PreferencesActivity extends Activity {
 			/**** decrementa i secondi ****/
 			secondsDown.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
-					if (seconds > 1) {
+					if (seconds > 5) {
 						seconds--;
 						secondsET.setText("" + seconds);
 						Editor prefEdit = pref.edit();

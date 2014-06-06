@@ -355,10 +355,10 @@ public class PlayerActivity extends Activity {
     public void loadCountDownTimer()
     {
     	elapsed = remaining_millis;
-    	countDownTimer = new CountDownTimer(remaining_millis, 10) {
+    	countDownTimer = new CountDownTimer(remaining_millis, 5) {
 			public void onTick(long millisUntilFinished) {
 				long time_elapsed = duration - (millisUntilFinished + elapsed);
-				currentTimeTV.setText("" + ((elapsed + time_elapsed) / 1000));
+				currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
 				sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
 				remaining_millis = millisUntilFinished;
 			}
