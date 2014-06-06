@@ -178,122 +178,129 @@ public class PlayerActivity extends Activity {
 				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
 				sample = new int[(nSample > 0 ? nSample : 1)];
 				
-				int z=0;
-				if(axis_x)
-					for(int i = 0; i<data_x.length; i++)
-						if(data_x[i].length()>0)
+				if(nSample < 15) 
+				{
+						Toast.makeText(this, "Pochi campioni, selezionare un'altro asse", Toast.LENGTH_SHORT).show();
+						finish();
+				}
+				else
+				{
+					int z=0;
+					if(axis_x)
+						for(int i = 0; i<data_x.length; i++)
+							if(data_x[i].length()>0)
+							{
+								sample[z] = ((int)(Float.parseFloat(data_x[i])*10)); 
+								z++;
+							}
+					if(axis_y)
+						for(int i = 0; i<data_y.length; i++)
+							if(data_y[i].length()>0)
+							{ 
+								sample[z] = ((int)(Float.parseFloat(data_y[i])*10)); 
+								z++;
+							}
+					if(axis_z)
+						for(int i = 0; i<data_z.length; i++)
+							if(data_z[i].length()>0)
+							{ 
+								sample[z] = ((int)(Float.parseFloat(data_z[i])*10)); 
+								z++;
+							}
+					
+					Log.w("sample tot:", ""+z);
+					
+					// avvio subito la riproduzione della musica
+					intentPlayer.putExtra(ACC_DATA, sample);
+					intentPlayer.putExtra(UPSAMPLING, upsampling);
+					startService(intentPlayer);
+					
+					play.setEnabled(false);
+					pause.setEnabled(true);
+					
+					t = new Thread("Thumbnail_Decoding"){
+						public void run() {
+							// setta la priorità massia del thread
+			                setPriority(Thread.MAX_PRIORITY);
+			                
+			                // converto la stringa in una immagine bitmap
+			        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
+			        		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
+							
+							runOnUiThread(new Runnable() {
+		                        @Override
+		                        public void run() {
+		                        	thumbnail.setImageBitmap(bmp);
+		                        }
+		                    });
+						}
+					};
+					t.start();
+				
+				}
+				
+				thumbnail.setImageBitmap(bmp);
+				
+	/////////////////////////////////////////////////////////
+	////////////aggiungo listener ai bottoni ///////////////
+	////////////////////////////////////////////////////////
+	
+				/**** play music ****/
+				play.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if(isPause)
 						{
-							sample[z] = ((int)(Float.parseFloat(data_x[i])*10)); 
-							z++;
-						}
-				if(axis_y)
-					for(int i = 0; i<data_y.length; i++)
-						if(data_y[i].length()>0)
-						{ 
-							sample[z] = ((int)(Float.parseFloat(data_y[i])*10)); 
-							z++;
-						}
-				if(axis_z)
-					for(int i = 0; i<data_z.length; i++)
-						if(data_z[i].length()>0)
-						{ 
-							sample[z] = ((int)(Float.parseFloat(data_z[i])*10)); 
-							z++;
-						}
-				
-				Log.w("sample tot:", ""+z);
-				
-				// avvio subito la riproduzione della musica
-				intentPlayer.putExtra(ACC_DATA, sample);
-				intentPlayer.putExtra(UPSAMPLING, upsampling);
-				startService(intentPlayer);
-				
-				play.setEnabled(false);
-				pause.setEnabled(true);
-				
-				t = new Thread("Thumbnail_Decoding"){
-					public void run() {
-						// setta la priorità massia del thread
-		                setPriority(Thread.MAX_PRIORITY);
-		                
-		                // converto la stringa in una immagine bitmap
-		        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
-		        		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
+							Intent intent = new Intent(NOTIFICATION);
+					        intent.putExtra(PlayerTrack.PLAY, PlayerTrack.PLAY_MUSIC);
+					        sendBroadcast(intent);
 						
-						runOnUiThread(new Runnable() {
-	                        @Override
-	                        public void run() {
-	                        	thumbnail.setImageBitmap(bmp);
-	                        }
-	                    });
+							inizialized = true;
+							play.setEnabled(false);
+							pause.setEnabled(true);
+							
+						}
 					}
-				};
-				t.start();
-			
-			}
-			
-			thumbnail.setImageBitmap(bmp);
-			
-/////////////////////////////////////////////////////////
-////////////aggiungo listener ai bottoni ///////////////
-////////////////////////////////////////////////////////
-
-			/**** play music ****/
-			play.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if(isPause)
-					{
+				});
+				
+				/**** pause music ****/
+				pause.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+	
+						isPause = true;
 						Intent intent = new Intent(NOTIFICATION);
-				        intent.putExtra(PlayerTrack.PLAY, PlayerTrack.PLAY_MUSIC);
+				        intent.putExtra(PlayerTrack.PAUSE, PlayerTrack.PAUSE_MUSIC);
 				        sendBroadcast(intent);
-					
-						inizialized = true;
-						play.setEnabled(false);
-						pause.setEnabled(true);
+						
+						inizialized = false;
+						play.setEnabled(true);
+						pause.setEnabled(false);
 						
 					}
-				}
-			});
-			
-			/**** pause music ****/
-			pause.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-
-					isPause = true;
-					Intent intent = new Intent(NOTIFICATION);
-			        intent.putExtra(PlayerTrack.PAUSE, PlayerTrack.PAUSE_MUSIC);
-			        sendBroadcast(intent);
-					
-					inizialized = false;
-					play.setEnabled(true);
-					pause.setEnabled(false);
-					
-				}
-			});
-			
-			/**** stop music ****/
-			stop.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					stopService(intentPlayer);
-					finish();
-				}
-			});
-			
-			/**** Avvia l'activity per esportare session ****/
-			 export.setOnClickListener(new View.OnClickListener() {
-				 @Override
-				 public void onClick(View view) {
-//					 stopService(intentPlayer);
-					 pause.performClick();
-					 Intent i = new Intent(view.getContext(), FileExplore.class);
-					 view.getContext().startActivity(i);
-				 }
-			 });
-	    	
-	    	
+				});
+				
+				/**** stop music ****/
+				stop.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						stopService(intentPlayer);
+						finish();
+					}
+				});
+				
+				/**** Avvia l'activity per esportare session ****/
+				 export.setOnClickListener(new View.OnClickListener() {
+					 @Override
+					 public void onClick(View view) {
+	//					 stopService(intentPlayer);
+						 pause.performClick();
+						 Intent i = new Intent(view.getContext(), FileExplore.class);
+						 view.getContext().startActivity(i);
+					 }
+				 });
+		    	
+			}
 		} catch (NumberFormatException e) {
 			Toast.makeText(this, getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();

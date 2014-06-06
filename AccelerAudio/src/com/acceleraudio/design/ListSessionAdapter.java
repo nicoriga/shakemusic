@@ -24,6 +24,7 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 	private final Activity context;
 	private ArrayList<RecordedSession> sessions;
 	private int layout;
+	private int totSample;
 	
 	// TODO eliminare sessionIdList
 	public ListSessionAdapter(Activity context, int layout, ArrayList<RecordedSession> sessions) 
@@ -72,14 +73,22 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 			holder.select.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if(isChecked) sessions.get(position).select(true);
-					else sessions.get(position).select(false);
+					if(isChecked){
+						sessions.get(position).select(true);
+						totSample += sessions.get(position).getNumSample();
+					}
+					else{
+						sessions.get(position).select(false);
+						totSample -= sessions.get(position).getNumSample();
+					}
 					
 				}
 			});
 			if(sessions.get(position).isSelected()) holder.select.setChecked(true);
 			else holder.select.setChecked(false);
 		}
+		else totSample = 0;
+		
 		return rowView;
 	}
 	
@@ -101,6 +110,16 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 		return selectedId;
 	}
 	
+	private void resetTotSample()
+	{
+		totSample = 0;
+	}
+	
+	public int getTotSample()
+	{
+		return totSample;
+	}
+	
 	public int getSelectedSize()
 	{
 		int x = 0;
@@ -111,6 +130,7 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 	// deseleziona tutte le sessioni
 	public void resetSelectedSession(){
 		for (int i=0; i<sessions.size(); i++) sessions.get(i).select(false);
+		resetTotSample();
 	}
 	
 	public void addRowAtPosition(int position, int id, String name, String dataMod, String image, int nSample){

@@ -394,7 +394,13 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					
 					if(adaperListCheck.getSelectedSize() > 1)
 					{
-						view.getContext().startActivity(i);
+						int nSample = adaperListCheck.getTotSample();
+						if(nSample < MergeSessionActivity.MAX_SAMPLE){
+							view.getContext().startActivity(i);
+							adaperListCheck.resetSelectedSession();
+						}
+						else
+							Toast.makeText(view.getContext(), "troppi campioni", Toast.LENGTH_SHORT).show();
 					}
 					else
 						Toast.makeText(view.getContext(), getString(R.string.error_no_selected_session), Toast.LENGTH_SHORT).show();

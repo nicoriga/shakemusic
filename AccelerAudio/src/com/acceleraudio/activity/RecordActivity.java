@@ -210,7 +210,7 @@ public class RecordActivity extends Activity {
 					resetProgressBar();
 					
 					// Verifica che siano stati presi dati dall'accelerometro
-					if(data_x.size() > 0 || data_y.size() > 0 || data_z.size() > 0)
+					if(data_x.size() > 15 || data_y.size() > 15 || data_z.size() > 15)
 					{
 						saveAccelerometerData();
 						// avvio la SessionInfoActivity
@@ -221,8 +221,11 @@ public class RecordActivity extends Activity {
 					}
 					else
 					{
-						Toast.makeText(v.getContext(), getString(R.string.error_no_recorded_data), Toast.LENGTH_SHORT).show();
-						finish(); // se non ci sono dati da salvare quindi chiude l'activity
+						Toast.makeText(v.getContext(), getString(R.string.error_low_recorded_data), Toast.LENGTH_SHORT).show();
+						if(remaining_time == 0) finish(); // se non ci sono dati da salvare quindi chiude l'activity
+						// se si hanno registrato pochi campioni mettere in pausa
+						// in modo da permettere all'utente di registrarne ancora
+						pauseSession.performClick();
 					}
 				}
 			});
