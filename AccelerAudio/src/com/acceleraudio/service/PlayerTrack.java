@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioFormat;
 import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,7 +29,7 @@ public class PlayerTrack extends IntentService{
 	private int[] sample;
 	int x, upsampling;
 	private long duration;
-	private AudioTrack audioTrack;
+	private AudioTrackTimer audioTrackTimer;
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
     	
     	@Override
@@ -40,8 +39,8 @@ public class PlayerTrack extends IntentService{
     			if(intent.hasExtra(PAUSE))
     					if(bundle.getInt(PlayerTrack.PAUSE) == PAUSE_MUSIC)
     					{
-    						audioTrack.pause();
-    						playbackHeadPosition = audioTrack.getPlaybackHeadPosition();
+    						audioTrackTimer.pause();
+    						playbackHeadPosition = audioTrackTimer.getPlaybackHeadPosition();
     						Intent intentPause = new Intent(NOTIFICATION);
 			        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
 			        		intentPause.putExtra(PLAYBACK_POSITION, playbackHeadPosition);
@@ -73,14 +72,14 @@ public class PlayerTrack extends IntentService{
 		isRunning = true;
 		
 		 // setta dimensione buffer
-        final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        final int buffsize = AudioTrackTimer.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         
     	// crea oggetto audiotrack
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrack.MODE_STREAM);
+        audioTrackTimer = new AudioTrackTimer(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrackTimer.MODE_STREAM, upsampling, sample.length);
         
         // avvia l'audio
-        audioTrack.play();
-  
+        audioTrackTimer.play();
+        audioTrackTimer.pause();
 		// loop musicale 
 		
 		int sizeBuff = buffsize + upsampling;
@@ -98,7 +97,7 @@ public class PlayerTrack extends IntentService{
         sendBroadcast(intentPlay);
         
         while(isRunning){
-        	if(audioTrack.getPlayState() == AudioTrack.PLAYSTATE_PAUSED)
+        	if(audioTrackTimer.getPlayState() == AudioTrackTimer.PLAYSTATE_PAUSED)
 				try {
 					synchronized (this) {
 						this.wait();
@@ -112,7 +111,7 @@ public class PlayerTrack extends IntentService{
         		samples1[i] = (short) (amp*Math.sin(phi));
         		phi += twophi*fr/sample_rate;
         	}
-        	audioTrack.write(samples1, 0, sizeBuff);
+        	audioTrackTimer.write(samples1, 0, sizeBuff);
         	x++;
         	if(x == sample.length) 
         		{
@@ -131,8 +130,8 @@ public class PlayerTrack extends IntentService{
         }	
         		
         
-        audioTrack.stop();
-        audioTrack.release();
+        audioTrackTimer.stop();
+        audioTrackTimer.release();
     }
     
     @Override
@@ -157,7 +156,7 @@ public class PlayerTrack extends IntentService{
     	synchronized (this) {
 			this.notify();
 //			audioTrack.setPlaybackHeadPosition(playbackHeadPosition);
-			audioTrack.play();
+			audioTrackTimer.play();
 			
 			Intent intentPlay = new Intent(NOTIFICATION);
 			intentPlay.putExtra(PLAY, PLAY_MUSIC);

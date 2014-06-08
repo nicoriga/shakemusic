@@ -1,7 +1,10 @@
 package com.acceleraudio.activity;
 
+import java.util.TimerTask;
+
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.PlayerTrack;
+import com.acceleraudio.util.MusicUpsampling;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
@@ -15,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -37,8 +41,8 @@ public class PlayerActivity extends Activity {
 	public static String IMAGE = "playerActivity.image";
 	
 	private Boolean inizialized = false, axis_x, axis_y, axis_z;
-	private TextView sessionName, durationTV;
-	public static TextView currentTimeTV;
+	private TextView sessionName;
+	public static TextView currentTimeTV, durationTV;
 	private ImageButton play, pause, stop;
 	private Button export;
 	private ImageView thumbnail;
@@ -81,8 +85,8 @@ public class PlayerActivity extends Activity {
     			if(intent.hasExtra(PlayerTrack.PLAY))
 					if(bundle.getInt(PlayerTrack.PLAY) == PlayerTrack.PLAY_MUSIC)
 					{
-						loadCountDownTimer();
-						countDownTimer.start();
+//						loadCountDownTimer();
+						if(countDownTimer != null) countDownTimer.start();
 					}
     		}
         }
@@ -123,6 +127,9 @@ public class PlayerActivity extends Activity {
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
 				image = savedInstanceState.getString(IMAGE);
 				duration = savedInstanceState.getLong(PlayerTrack.DURATION);
+				
+				durationTV.setText("" + duration/1000);
+				sb_musicProgress.setMax((int)duration);
 				
 				if(inizialized)
 				{
@@ -210,11 +217,6 @@ public class PlayerActivity extends Activity {
 					
 					Log.w("sample tot:", ""+z);
 					
-					// avvio subito la riproduzione della musica
-					intentPlayer.putExtra(ACC_DATA, sample);
-					intentPlayer.putExtra(UPSAMPLING, upsampling);
-					startService(intentPlayer);
-					
 					play.setEnabled(false);
 					pause.setEnabled(true);
 					
@@ -241,66 +243,70 @@ public class PlayerActivity extends Activity {
 				
 				thumbnail.setImageBitmap(bmp);
 				
-	/////////////////////////////////////////////////////////
-	////////////aggiungo listener ai bottoni ///////////////
-	////////////////////////////////////////////////////////
+				duration = MusicUpsampling.duration(upsampling, sample.length, 44100);
+				
+				// avvio subito la riproduzione della musica
+				intentPlayer.putExtra(ACC_DATA, sample);
+				intentPlayer.putExtra(UPSAMPLING, upsampling);
+				startService(intentPlayer);
 	
-				/**** play music ****/
-				play.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						if(isPause)
-						{
-							Intent intent = new Intent(NOTIFICATION);
-					        intent.putExtra(PlayerTrack.PLAY, PlayerTrack.PLAY_MUSIC);
-					        sendBroadcast(intent);
-						
-							inizialized = true;
-							play.setEnabled(false);
-							pause.setEnabled(true);
-							
-						}
-					}
-				});
-				
-				/**** pause music ****/
-				pause.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-	
-						isPause = true;
-						Intent intent = new Intent(NOTIFICATION);
-				        intent.putExtra(PlayerTrack.PAUSE, PlayerTrack.PAUSE_MUSIC);
-				        sendBroadcast(intent);
-						
-						inizialized = false;
-						play.setEnabled(true);
-						pause.setEnabled(false);
-						
-					}
-				});
-				
-				/**** stop music ****/
-				stop.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						stopService(intentPlayer);
-						finish();
-					}
-				});
-				
-				/**** Avvia l'activity per esportare session ****/
-				 export.setOnClickListener(new View.OnClickListener() {
-					 @Override
-					 public void onClick(View view) {
-	//					 stopService(intentPlayer);
-						 pause.performClick();
-						 Intent i = new Intent(view.getContext(), FileExplore.class);
-						 view.getContext().startActivity(i);
-					 }
-				 });
-		    	
 			}
+			
+/////////////////////////////////////////////////////////
+////////////aggiungo listener ai bottoni ///////////////
+////////////////////////////////////////////////////////
+
+			/**** play music ****/
+			play.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if(isPause)
+					{
+						Intent intent = new Intent(NOTIFICATION);
+						intent.putExtra(PlayerTrack.PLAY, PlayerTrack.PLAY_MUSIC);
+						sendBroadcast(intent);
+						
+						inizialized = true;
+						play.setEnabled(false);
+						pause.setEnabled(true);
+					}
+				}
+			});
+			
+			/**** pause music ****/
+			pause.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					isPause = true;
+					Intent intent = new Intent(NOTIFICATION);
+					intent.putExtra(PlayerTrack.PAUSE, PlayerTrack.PAUSE_MUSIC);
+					sendBroadcast(intent);
+					
+					inizialized = false;
+					play.setEnabled(true);
+					pause.setEnabled(false);
+				}
+			});
+			
+			/**** stop music ****/
+			stop.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					stopService(intentPlayer);
+					finish();
+				}
+			});
+			
+			/**** Avvia l'activity per esportare session ****/
+			export.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					pause.performClick();
+					Intent i = new Intent(view.getContext(), FileExplore.class);
+					view.getContext().startActivity(i);
+				}
+			});
+			
 		} catch (NumberFormatException e) {
 			Toast.makeText(this, getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
@@ -320,13 +326,13 @@ public class PlayerActivity extends Activity {
     @Override
     protected void onResume() {
     	super.onResume();
-    	registerReceiver(receiver, new IntentFilter(PlayerTrack.NOTIFICATION));
+//    	registerReceiver(receiver, new IntentFilter(PlayerTrack.NOTIFICATION));
     }
 	    
     @Override
     protected void onPause() {
     	super.onPause();
-    	unregisterReceiver(receiver);
+//    	unregisterReceiver(receiver);
     }
     
     @Override
@@ -359,25 +365,25 @@ public class PlayerActivity extends Activity {
     	super.onSaveInstanceState(savedInstanceState);
     }
     
-    public void loadCountDownTimer()
-    {
-    	elapsed = remaining_millis;
-    	countDownTimer = new CountDownTimer(remaining_millis, 5) {
-			public void onTick(long millisUntilFinished) {
-				long time_elapsed = duration - (millisUntilFinished + elapsed);
-				currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
-				sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
-				remaining_millis = millisUntilFinished;
-			}
-			
-			public void onFinish() {
-				currentTimeTV.setText("" + (remaining_millis/1000));
-				sb_musicProgress.setProgress((int)remaining_millis);
-				
-				loadCountDownTimer();
-				countDownTimer.start();
-			}
-		};
-    }
+//    public void loadCountDownTimer()
+//    {
+//    	elapsed = remaining_millis;
+//    	countDownTimer = new CountDownTimer(remaining_millis, 5) {
+//			public void onTick(long millisUntilFinished) {
+//				long time_elapsed = duration - (millisUntilFinished + elapsed);
+//				currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
+//				sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
+//				remaining_millis = millisUntilFinished;
+//			}
+//			
+//			public void onFinish() {
+//				currentTimeTV.setText("" + (remaining_millis/1000));
+//				sb_musicProgress.setProgress((int)remaining_millis);
+//				
+//				loadCountDownTimer();
+//				countDownTimer.start();
+//			}
+//		};
+//    }
 
 }
