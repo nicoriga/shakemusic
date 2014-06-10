@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+import android.app.ProgressDialog;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 
@@ -20,7 +21,7 @@ public class MusicUpsampling
 	 * @return 
 	 * @throws IOException nel caso sussiste un problema nella scrittura sul file
 	 */
-	public static int note(OutputStream out, int sample_rate, int upsampling, int[] sample) throws IOException
+	public static int note(OutputStream out, int sample_rate, int upsampling, int[] sample, ProgressDialog pd) throws IOException
 	{
 		// setta dimensione buffer
 		int buffsize = AudioTrack.getMinBufferSize(sample_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
@@ -42,6 +43,7 @@ public class MusicUpsampling
         	}
         	out.write(byteBuff.array());
         	byteBuff.clear();
+        	pd.setProgress(x);
         }
         return musicSize;
 	}

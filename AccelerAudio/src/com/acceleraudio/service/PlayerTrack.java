@@ -18,11 +18,13 @@ public class PlayerTrack extends IntentService{
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.playertrack";
 	public static final String DURATION = "com.acceleraudio.service.playertrack.duration";
-	public static final String PAUSE = "com.acceleraudio.service.playertrack.pause";
 	public static final String PLAY = "com.acceleraudio.service.playertrack.play";
+	public static final String PAUSE = "com.acceleraudio.service.playertrack.pause";
+	public static final String STOP = "com.acceleraudio.service.playertrack.stop";
 	public static final String PLAYBACK_POSITION = "com.acceleraudio.service.playertrack.playbackPosition";
 	public static final int PLAY_MUSIC = 1;
 	public static final int PAUSE_MUSIC = 1;
+	public static final int STOP_MUSIC = 1;
 //	private Thread t;
 	private int sample_rate, playbackHeadPosition;
 	private boolean isRunning ;
@@ -39,7 +41,7 @@ public class PlayerTrack extends IntentService{
     			if(intent.hasExtra(PAUSE))
     					if(bundle.getInt(PlayerTrack.PAUSE) == PAUSE_MUSIC)
     					{
-    						audioTrackTimer.pause();
+    						audioTrackTimer.pause(x);
     						playbackHeadPosition = audioTrackTimer.getPlaybackHeadPosition();
     						Intent intentPause = new Intent(NOTIFICATION);
 			        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
@@ -49,6 +51,9 @@ public class PlayerTrack extends IntentService{
     			if(intent.hasExtra(PLAY))
 					if(bundle.getInt(PlayerTrack.PLAY) == PLAY_MUSIC)
 						resume();
+    			if(intent.hasExtra(STOP))
+					if(bundle.getInt(PlayerTrack.STOP) == STOP_MUSIC)
+						isRunning = false;
     		}
         }
     };
@@ -126,12 +131,11 @@ public class PlayerTrack extends IntentService{
 			        sendBroadcast(intentPlay);
 			        
         		}
-        	
         }	
-        		
         
         audioTrackTimer.stop();
         audioTrackTimer.release();
+        		
     }
     
     @Override
@@ -143,10 +147,8 @@ public class PlayerTrack extends IntentService{
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	
     	unregisterReceiver(receiver);
-    	
-    	isRunning = false;
+
     	Toast.makeText(this, "Play stop", Toast.LENGTH_SHORT).show();
     	
     }

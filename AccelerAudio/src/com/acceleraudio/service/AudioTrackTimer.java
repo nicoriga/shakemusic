@@ -6,13 +6,14 @@ package com.acceleraudio.service;
 import com.acceleraudio.activity.PlayerActivity;
 import com.acceleraudio.util.MusicUpsampling;
 
+import android.app.Activity;
 import android.media.AudioTrack;
 import android.os.CountDownTimer;
 
 public class AudioTrackTimer extends AudioTrack {
 
 	private long elapsed, duration, remaining_millis;
-	private int playbackHeadPosition, sampleLength, upsampling;
+	private int playbackHeadPosition, sampleLength, upsampling, sampleIndex;
 	private CountDownTimer countDownTimer;
 	
 	/**
@@ -31,8 +32,10 @@ public class AudioTrackTimer extends AudioTrack {
 		this.upsampling = upsampling;
 		duration = MusicUpsampling.duration(upsampling, sampleLength, sampleRateInHz);
 		remaining_millis = duration;
-		PlayerActivity.durationTV.setText("" + duration/1000);
-		PlayerActivity.sb_musicProgress.setMax((int)duration);
+		// TODO: non posso richiamare i metodi da un thread diverso
+//		PlayerActivity.setMaxDuration(duration);
+//    	PlayerActivity.durationTV.setText("" + duration/1000);
+//		PlayerActivity.sb_musicProgress.setMax((int)duration);
 	}
 	
 	@Override
@@ -43,12 +46,13 @@ public class AudioTrackTimer extends AudioTrack {
 			countDownTimer.start();
 	}
 	
-	@Override
-	public void pause(){
+	public void pause(int sampleIndex){
 		super.pause();
+		this.sampleIndex = sampleIndex;
 		if(countDownTimer != null)
 			countDownTimer.cancel();
 		playbackHeadPosition = getPlaybackHeadPosition();
+//		remaining_millis = (duration - (MusicUpsampling.duration(upsampling, sampleIndex, getSampleRate()) + (long)(playbackHeadPosition/22.5)));
 	}
 	
 	@Override

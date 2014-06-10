@@ -241,8 +241,6 @@ public class PlayerActivity extends Activity {
 				
 				}
 				
-				thumbnail.setImageBitmap(bmp);
-				
 				duration = MusicUpsampling.duration(upsampling, sample.length, 44100);
 				
 				// avvio subito la riproduzione della musica
@@ -251,6 +249,8 @@ public class PlayerActivity extends Activity {
 				startService(intentPlayer);
 	
 			}
+			
+			thumbnail.setImageBitmap(bmp);
 			
 /////////////////////////////////////////////////////////
 ////////////aggiungo listener ai bottoni ///////////////
@@ -292,7 +292,16 @@ public class PlayerActivity extends Activity {
 			stop.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					stopService(intentPlayer);
+					Intent intent = new Intent(NOTIFICATION);
+					intent.putExtra(PlayerTrack.STOP, PlayerTrack.PAUSE_MUSIC);
+					sendBroadcast(intent);
+//					stopService(intentPlayer);
+//					try {
+//						Thread.sleep(400);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 					finish();
 				}
 			});
@@ -326,6 +335,7 @@ public class PlayerActivity extends Activity {
     @Override
     protected void onResume() {
     	super.onResume();
+    	setMaxDuration();
 //    	registerReceiver(receiver, new IntentFilter(PlayerTrack.NOTIFICATION));
     }
 	    
@@ -363,6 +373,11 @@ public class PlayerActivity extends Activity {
     	savedInstanceState.putString(IMAGE, image);
     	savedInstanceState.putLong(PlayerTrack.DURATION, duration);
     	super.onSaveInstanceState(savedInstanceState);
+    }
+    
+    public static void setMaxDuration(){
+    	durationTV.setText("" + duration/1000);
+    	sb_musicProgress.setMax((int)duration);
     }
     
 //    public void loadCountDownTimer()

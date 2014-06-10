@@ -121,28 +121,28 @@ public class SessionInfoActivity extends Activity {
 				cursor.close();
 				dbAdapter.close();
 				
-				t = new Thread("Thumbnail_Decoding"){
-					public void run() {
-						// setta la priorità massia del thread
-			            setPriority(Thread.MAX_PRIORITY);
-			            
-			            // converto la stringa in una immagine bitmap
-			    		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
-	//		    		final Bitmap bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
-			    		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
-						
-			    		
-						runOnUiThread(new Runnable() {
-			                @Override
-			                public void run() {
-			                	thumbnail.setImageBitmap(bmp);
-			                }
-			            });
-					}
-				};
-				t.start();
-			
 			}
+			
+			t = new Thread("Thumbnail_Decoding"){
+				public void run() {
+					// setta la priorità massia del thread
+		            setPriority(Thread.MAX_PRIORITY);
+		            
+		            // converto la stringa in una immagine bitmap
+		    		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
+//		    		final Bitmap bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
+		    		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
+					
+		    		
+					runOnUiThread(new Runnable() {
+		                @Override
+		                public void run() {
+		                	thumbnail.setImageBitmap(bmp);
+		                }
+		            });
+				}
+			};
+			t.start();
 			
 			thumbnail.setImageBitmap(bmp);
 			

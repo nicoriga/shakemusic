@@ -9,6 +9,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acceleraudio.database.DbAdapter;
+import com.acceleraudio.service.AvailableSpaceHandler;
 import com.acceleraudio.util.MusicUpsampling;
 import com.acceleraudio.util.Wav;
 import com.malunix.acceleraudio.R;
@@ -43,6 +45,7 @@ private int upsampling;
 private String sessionName;
 private int[] sample;
 private Thread t;
+private ProgressDialog pd;
 
 	@SuppressLint("ShowToast")
 	@Override
@@ -55,6 +58,8 @@ private Thread t;
 		myPath = (TextView)findViewById(R.id.path);
 		save = (Button) findViewById(R.id.UI_fileManager_BT_save);
 		getDir(root);
+		
+		Toast.makeText(getApplicationContext(), (String) Float.toString(AvailableSpaceHandler.getExternalAvailableSpaceInMB())+ " MB disponibili", Toast.LENGTH_LONG).show();
 		
 		final Toast toast = Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT);
 		
@@ -128,6 +133,24 @@ private Thread t;
 						
 						Log.w("Save Directory", myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 	 			        
+						pd = new ProgressDialog(FileExplore.this);
+						pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+						pd.setMax(sample.length);
+					    pd.setMessage("Attendere Prego");
+					    pd.setTitle("Salvataggio");
+					    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {@Override
+					        public void onClick(DialogInterface dialog, int which) {
+					            dialog.dismiss();
+					               	synchronized (t) {
+										t.interrupt();
+										File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
+										myFile.delete();
+									}
+								
+					        }
+					    });
+						pd.show();
+						
 	 			        t = new Thread("wav_creation") {
 							public void run() {
 								setPriority(Thread.MAX_PRIORITY);
@@ -145,8 +168,9 @@ private Thread t;
 									int channels = 1;
 									Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, longSampleRate, channels,fOut);
 	// 			        			fOut.write(byteBuff.array());
-									MusicUpsampling.note(fOut, 44100, upsampling, sample);
+									MusicUpsampling.note(fOut, 44100, upsampling, sample, pd);
 									fOut.close();
+									pd.dismiss();
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
