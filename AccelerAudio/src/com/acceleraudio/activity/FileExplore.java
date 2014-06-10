@@ -132,6 +132,17 @@ private ProgressDialog pd;
 					pd.setMax(sample.length);
 				    pd.setMessage("Attendere Prego");
 				    pd.setTitle("Salvataggio");
+				    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {@Override
+				        public void onClick(DialogInterface dialog, int which) {
+				            dialog.dismiss();
+				               	synchronized (t) {
+									t.interrupt();
+									File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
+									myFile.delete();
+								}
+							
+				        }
+				    });
 					pd.show();
 					
  			        t = new Thread("wav_creation") {
