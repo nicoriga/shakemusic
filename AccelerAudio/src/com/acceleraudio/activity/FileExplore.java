@@ -9,6 +9,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.media.AudioFormat;
@@ -22,9 +23,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.ProgressDialog;
 
 import com.acceleraudio.database.DbAdapter;
-import com.acceleraudio.util.AvailableSpaceHandler;
 import com.acceleraudio.util.MusicUpsampling;
 import com.acceleraudio.util.Wav;
 import com.malunix.acceleraudio.R;
@@ -42,6 +43,7 @@ private int sessionId, upsampling;
 private String sessionName;
 private int[] sample;
 private Thread t;
+private ProgressDialog pd;
 
 	@SuppressLint("ShowToast")
 	@Override
@@ -64,8 +66,6 @@ private Thread t;
 				{
 					Bundle b = getIntent().getExtras();
 					sessionId = b.getInt(DbAdapter.T_SESSION_SESSIONID);
-					
-					Toast.makeText(getApplicationContext(), (String) Float.toString(AvailableSpaceHandler.getExternalAvailableSpaceInMB())+ " MB disponibili", Toast.LENGTH_LONG).show();
 	    	
 ////////////////////////////////////////////////////////
 /// prelevo dati dal database e li carico nella vista///
@@ -127,15 +127,20 @@ private Thread t;
 					
 					Log.w("Save Directory", myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
  			        
+					pd = new ProgressDialog(FileExplore.this);
+					pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+					pd.setMax(sample.length);
+				    pd.setMessage("Attendere Prego");
+				    pd.setTitle("Salvataggio");
+					pd.show();
+					
  			        t = new Thread("wav_creation") {
 						public void run() {
 							setPriority(Thread.MAX_PRIORITY);
-							
 							File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 //							File myFile = new File("/sdcard/" + sessionName	+ ".wav");
 							try {
 								myFile.createNewFile();
-							
 								FileOutputStream fOut = new FileOutputStream(myFile);
 								int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO,	AudioFormat.ENCODING_PCM_16BIT);
 								long totalAudioLen = buffsize * sample.length * 2;
@@ -144,8 +149,9 @@ private Thread t;
 								int channels = 1;
 								Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, longSampleRate, channels,fOut);
 // 			        			fOut.write(byteBuff.array());
-								MusicUpsampling.note(fOut, 44100, upsampling, sample);
+								MusicUpsampling.note(fOut, 44100, upsampling, sample, pd);
 								fOut.close();
+								pd.dismiss();
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
