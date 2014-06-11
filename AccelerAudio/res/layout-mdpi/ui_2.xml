@@ -32,7 +32,8 @@
             android:layout_marginLeft="20dp"
             android:ems="10"
             android:inputType="text"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:ellipsize="end" />
 
         <TableRow
             android:id="@+id/UI2_tableRow1"
