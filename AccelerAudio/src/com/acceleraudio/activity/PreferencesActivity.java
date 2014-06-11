@@ -176,8 +176,8 @@ public class PreferencesActivity extends Activity {
     		axis_x.setChecked(true);
     		axis_y.setChecked(true);
     		axis_z.setChecked(true);
-    		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
-    		Util.SelectSpinnerItemByValue(sp_upsampling, ""+5);
+    		Util.selectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(SensorManager.SENSOR_DELAY_NORMAL));
+    		Util.selectSpinnerItemByValue(sp_upsampling, ""+5);
     		seconds = 5;
     		secondsET.setText("" + seconds);
     		
@@ -189,8 +189,8 @@ public class PreferencesActivity extends Activity {
     		axis_x.setChecked(pref.getBoolean(AXIS_X, true));
     		axis_y.setChecked(pref.getBoolean(AXIS_Y, true));
     		axis_z.setChecked(pref.getBoolean(AXIS_Z, true));
-    		Util.SelectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(pref.getInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL)));
-    		Util.SelectSpinnerItemByValue(sp_upsampling, "" + (pref.getInt(UPSAMPLING, 0 )));
+    		Util.selectSpinnerItemByValue(sp_sample_rate, Util.sensorRateName(pref.getInt(SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL)));
+    		Util.selectSpinnerItemByValue(sp_upsampling, "" + (pref.getInt(UPSAMPLING, 0 )));
     		seconds = pref.getInt(TIMER_SECONDS, 0);
     		secondsET.setText("" + seconds);
     	}

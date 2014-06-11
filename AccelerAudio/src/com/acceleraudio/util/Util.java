@@ -1,14 +1,18 @@
 package com.acceleraudio.util;
 
 import java.util.ArrayList;
+
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.hardware.SensorManager;
+import android.view.View;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 public class Util{
 	
 	/**** Seleziona elemento dello spinner in base al valore passato ****/
-    public static void SelectSpinnerItemByValue(Spinner spinner, String value)
+    public static void selectSpinnerItemByValue(Spinner spinner, String value)
     {
     	SpinnerAdapter adapter = spinner.getAdapter();
         for (int position = 0; position < adapter.getCount(); position++)
@@ -56,6 +60,33 @@ public class Util{
     	if(r == SensorManager.SENSOR_DELAY_UI) return "Normale";
     	if(r == SensorManager.SENSOR_DELAY_GAME) return "Veloce";
     	return "Normale";
+    }
+    
+    /*** blocca la rotazione dello schermo ***/
+    public static int lockOrientation(Activity a, View v)
+    {
+    	int orientation = v.getResources().getConfiguration().orientation;
+		
+    	// se lo schermo si trova in una delle posizione conosciute allora si blocca in quella
+    	switch(orientation){
+    		case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+    		case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+    		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
+    		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
+    			a.setRequestedOrientation(orientation);
+    			return orientation;
+    		default:
+    			// nel caso il dispositivo si trovi in reverse-landscape viene bloccato in landscape
+    			// qusto perchè il reverse non è disponibile nelle api 8
+    			a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    			return orientation;
+    	}
+    }
+    
+    /*** sblocca la rotazione dello schermo ***/
+    public static void unlockOrientation(Activity a)
+    {
+    	a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 }
 

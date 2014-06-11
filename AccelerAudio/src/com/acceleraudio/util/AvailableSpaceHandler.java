@@ -1,4 +1,4 @@
-package com.acceleraudio.service;
+package com.acceleraudio.util;
 
 import android.os.Environment;
 import android.os.StatFs;

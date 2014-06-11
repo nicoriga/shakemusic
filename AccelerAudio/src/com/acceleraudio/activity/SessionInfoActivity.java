@@ -115,7 +115,7 @@ public class SessionInfoActivity extends Activity {
 				axis_x.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1")); // asse x
 				axis_y.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1")); // asse y
 				axis_z.setChecked(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1")); // asse z
-				Util.SelectSpinnerItemByValue(sp_upsampling, (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING))));
+				Util.selectSpinnerItemByValue(sp_upsampling, (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING))));
 				
 				// chiudo connessioni
 				cursor.close();

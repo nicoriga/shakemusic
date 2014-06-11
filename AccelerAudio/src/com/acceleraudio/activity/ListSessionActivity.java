@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
  
 public class ListSessionActivity extends FragmentActivity  implements RenameDialogListener{
@@ -41,6 +42,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
     private boolean select_mode = false;
     private long lastId = -1;
     private int focusPosition;
+    public static ProgressBar totSample;
     
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -321,6 +323,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		{
 			next = (Button)findViewById(R.id.UI1_BT_next);
 			cancel = (Button)findViewById(R.id.UI1_BT_cancel);
+			totSample = (ProgressBar)findViewById(R.id.UI1S_PB_totSample);
+			totSample.setMax(MergeSessionActivity.MAX_SAMPLE);
 			merge.setEnabled(false);
 			list.setAdapter(adaperListCheck);
 		}

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -26,15 +27,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acceleraudio.database.DbAdapter;
-import com.acceleraudio.service.AvailableSpaceHandler;
+import com.acceleraudio.util.AvailableSpaceHandler;
 import com.acceleraudio.util.MusicUpsampling;
+import com.acceleraudio.util.Util;
 import com.acceleraudio.util.Wav;
 import com.malunix.acceleraudio.R;
 
 public class FileExplore extends ListActivity {
-private List<String> item = null;
-private List<String> path = null;
-private String root="/";
+private List<String> item = null, path = null;
+private String root="/", sessionName;
 private TextView myPath;
 private Button save;
 private DbAdapter dbAdapter;
@@ -42,17 +43,17 @@ private Cursor cursor;
 public static String[] data_x, data_y, data_z;
 private long sessionId;
 private int upsampling;
-private String sessionName;
 private int[] sample;
 private Thread t;
 private ProgressDialog pd;
+private Activity a;
+private boolean isExporting = false;
 
-	@SuppressLint("ShowToast")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbAdapter = new DbAdapter(this);
-		
+		a = this;
 		// TODO da sistemare le viste
 		setContentView(R.layout.file_manager_layout);
 		myPath = (TextView)findViewById(R.id.path);
@@ -61,13 +62,13 @@ private ProgressDialog pd;
 		
 		Toast.makeText(getApplicationContext(), (String) Float.toString(AvailableSpaceHandler.getExternalAvailableSpaceInMB())+ " MB disponibili", Toast.LENGTH_LONG).show();
 		
-		final Toast toast = Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT);
-		
 		save.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				try 
 				{
+					isExporting = true;
+					
 					Bundle b = getIntent().getExtras();
 					sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
 	    	
@@ -101,7 +102,7 @@ private ProgressDialog pd;
 						
 						if(!(axis_x || axis_y || axis_z)) 
 						{
-							toast.show();
+							Toast.makeText(getApplicationContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
 							finish();
 						}
 						
@@ -133,6 +134,8 @@ private ProgressDialog pd;
 						
 						Log.w("Save Directory", myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 	 			        
+						Util.lockOrientation(a, v.getRootView());
+						
 						pd = new ProgressDialog(FileExplore.this);
 						pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 						pd.setMax(sample.length);
@@ -141,12 +144,13 @@ private ProgressDialog pd;
 					    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {@Override
 					        public void onClick(DialogInterface dialog, int which) {
 					            dialog.dismiss();
-					               	synchronized (t) {
-										t.interrupt();
-										File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-										myFile.delete();
-									}
-								
+				               	synchronized (t) {
+									t.interrupt();
+									File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
+									myFile.delete();
+									Util.unlockOrientation(a);
+									isExporting = false;
+								}
 					        }
 					    });
 						pd.show();
@@ -171,6 +175,8 @@ private ProgressDialog pd;
 									MusicUpsampling.note(fOut, 44100, upsampling, sample, pd);
 									fOut.close();
 									pd.dismiss();
+									Util.unlockOrientation(a);
+									isExporting = false;
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -192,7 +198,12 @@ private ProgressDialog pd;
 		});
 	}
 
-    
+    @Override
+    public void onBackPressed(){
+    	if(!isExporting)
+    		super.onBackPressed();
+    }
+	
 	private void getDir(String dirPath)
 	{
 		 myPath.setText("Location: " + dirPath);

@@ -26,7 +26,7 @@ import android.widget.Toast;
 
 public class MergeSessionActivity extends Activity{
 	
-	public static final int MAX_SAMPLE = 22000;
+	public static final int MAX_SAMPLE = 11000;
 	
 	private DbAdapter dbAdapter; 
 	private Button merge, cancel;

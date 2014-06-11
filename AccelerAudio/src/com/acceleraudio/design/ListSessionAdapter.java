@@ -2,6 +2,7 @@ package com.acceleraudio.design;
 
 import java.util.ArrayList;
 
+import com.acceleraudio.activity.ListSessionActivity;
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.util.ImageBitmap;
 import com.acceleraudio.util.RecordedSession;
@@ -76,10 +77,12 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 					if(isChecked){
 						sessions.get(position).select(true);
 						totSample += sessions.get(position).getNumSample();
+						ListSessionActivity.totSample.setProgress(totSample);
 					}
 					else{
 						sessions.get(position).select(false);
 						totSample -= sessions.get(position).getNumSample();
+						ListSessionActivity.totSample.setProgress(totSample);
 					}
 					
 				}
