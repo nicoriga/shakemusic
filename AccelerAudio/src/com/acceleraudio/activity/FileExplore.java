@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -138,6 +137,7 @@ private boolean isExporting = false;
 						
 						pd = new ProgressDialog(FileExplore.this);
 						pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+						pd.setCancelable(false);
 						pd.setMax(sample.length);
 					    pd.setMessage("Attendere Prego");
 					    pd.setTitle("Salvataggio");
@@ -157,7 +157,7 @@ private boolean isExporting = false;
 						
 	 			        t = new Thread("wav_creation") {
 							public void run() {
-								setPriority(Thread.MAX_PRIORITY);
+								setPriority(Thread.MIN_PRIORITY);
 								
 								File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 	//							File myFile = new File("/sdcard/" + sessionName	+ ".wav");

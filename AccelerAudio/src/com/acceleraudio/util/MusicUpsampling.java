@@ -18,8 +18,9 @@ public class MusicUpsampling
 	 * @param sample_rate sample rate espresso in Hz
 	 * @param upsampling la quantità di upsampling scelta
 	 * @param sample array di campioni
+	 * @param pd progressDialog su cui mostrare il progresso di salvataggio
 	 * @return 
-	 * @throws IOException nel caso sussiste un problema nella scrittura sul file
+	 * @throws IOException nel caso sussistesse un problema nella scrittura sul file
 	 */
 	public static int note(OutputStream out, int sample_rate, int upsampling, int[] sample, ProgressDialog pd) throws IOException
 	{
@@ -43,7 +44,7 @@ public class MusicUpsampling
         	}
         	out.write(byteBuff.array());
         	byteBuff.clear();
-        	pd.setProgress(x);
+        	if(pd!=null)pd.setProgress(x);
         }
         return musicSize;
 	}

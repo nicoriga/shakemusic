@@ -75,14 +75,18 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
-						sessions.get(position).select(true);
-						totSample += sessions.get(position).getNumSample();
-						ListSessionActivity.totSample.setProgress(totSample);
+						if (!sessions.get(position).isSelected()) {
+							sessions.get(position).select(true);
+							totSample += sessions.get(position).getNumSample();
+							ListSessionActivity.totSample.setProgress(totSample);
+						}
 					}
-					else{
-						sessions.get(position).select(false);
-						totSample -= sessions.get(position).getNumSample();
-						ListSessionActivity.totSample.setProgress(totSample);
+					else {
+						if (sessions.get(position).isSelected()) {
+							sessions.get(position).select(false);
+							totSample -= sessions.get(position).getNumSample();
+							ListSessionActivity.totSample.setProgress(totSample);
+						}
 					}
 					
 				}

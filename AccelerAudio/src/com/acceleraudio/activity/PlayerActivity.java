@@ -32,6 +32,7 @@ import android.widget.Toast;
 public class PlayerActivity extends Activity {
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.playerActivity";
+	public static String SESSION_ID = "playerActivity.session_id";
 	public static String SESSION_NAME = "playerActivity.session_Name";
 	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
 	public static String SOUND_RATE = "playerActivity.soundRate";
@@ -120,6 +121,7 @@ public class PlayerActivity extends Activity {
 			
 			if (savedInstanceState != null)
 			{
+				sessionId = savedInstanceState.getLong(SESSION_ID);
 				sessionName.setText(savedInstanceState.getString(SESSION_NAME));
 				inizialized = savedInstanceState.getBoolean(INIZIALIZED);
 				isPause = savedInstanceState.getBoolean(PlayerTrack.PAUSE);
@@ -312,6 +314,7 @@ public class PlayerActivity extends Activity {
 				public void onClick(View view) {
 					pause.performClick();
 					Intent i = new Intent(view.getContext(), FileExplore.class);
+					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 					view.getContext().startActivity(i);
 				}
 			});
@@ -365,6 +368,7 @@ public class PlayerActivity extends Activity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
+    	savedInstanceState.putLong(SESSION_ID, sessionId);
     	savedInstanceState.putString(SESSION_NAME, sessionName.getText().toString());
     	savedInstanceState.putBoolean(INIZIALIZED, inizialized);
     	savedInstanceState.putBoolean(PlayerTrack.PAUSE, isPause);
