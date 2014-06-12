@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acceleraudio.database.DbAdapter;
-import com.acceleraudio.util.AvailableSpaceHandler;
+import com.acceleraudio.util.AvailableSpace;
 import com.acceleraudio.util.MusicUpsampling;
 import com.acceleraudio.util.Util;
 import com.acceleraudio.util.Wav;
@@ -47,6 +47,8 @@ private Thread t;
 private ProgressDialog pd;
 private Activity a;
 private boolean isExporting = false;
+private final long longSampleRate = 44100;
+private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,7 @@ private boolean isExporting = false;
 		save = (Button) findViewById(R.id.UI_fileManager_BT_save);
 		getDir(root);
 		
-		Toast.makeText(getApplicationContext(), (String) Float.toString(AvailableSpaceHandler.getExternalAvailableSpaceInMB())+ " MB disponibili", Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ " MB disponibili", Toast.LENGTH_LONG).show();
 		
 		save.setOnClickListener(new OnClickListener() {
 			@Override
@@ -131,58 +133,61 @@ private boolean isExporting = false;
 									z++;
 								}
 						
-						Log.w("Save Directory", myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-	 			        
-						Util.lockOrientation(a, v.getRootView());
-						
-						pd = new ProgressDialog(FileExplore.this);
-						pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-						pd.setCancelable(false);
-						pd.setMax(sample.length);
-					    pd.setMessage("Attendere Prego");
-					    pd.setTitle("Salvataggio");
-					    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {@Override
-					        public void onClick(DialogInterface dialog, int which) {
-					            dialog.dismiss();
-				               	synchronized (t) {
-									t.interrupt();
+						// verifica che ci sia lo spazio disponibile nella memory card
+						if(AvailableSpace.getExternalAvailableSpaceInBytes()> totalDataLenght()){
+							Log.w("Save Directory", myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
+		 			        
+							Util.lockOrientation(a, v.getRootView());
+							
+							pd = new ProgressDialog(FileExplore.this);
+							pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+							pd.setCancelable(false);
+							pd.setMax(sample.length);
+						    pd.setMessage("Attendere Prego");
+						    pd.setTitle("Salvataggio");
+						    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {@Override
+						        public void onClick(DialogInterface dialog, int which) {
+						            dialog.dismiss();
+					               	synchronized (t) {
+										t.interrupt();
+										File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
+										myFile.delete();
+										Util.unlockOrientation(a);
+										isExporting = false;
+									}
+						        }
+						    });
+							pd.show();
+							
+		 			        t = new Thread("wav_creation") {
+								public void run() {
+									setPriority(Thread.MIN_PRIORITY);
+									
 									File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-									myFile.delete();
-									Util.unlockOrientation(a);
-									isExporting = false;
+		//							File myFile = new File("/sdcard/" + sessionName	+ ".wav");
+									try {
+										myFile.createNewFile();
+									
+										FileOutputStream fOut = new FileOutputStream(myFile);
+										long totalAudioLen = totalAudioLenght();
+										long totalDataLen = totalDataLenght();
+										int channels = 1;
+										Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, longSampleRate, channels,fOut);
+		// 			        			fOut.write(byteBuff.array());
+										MusicUpsampling.note(fOut, 44100, upsampling, sample, pd);
+										fOut.close();
+										pd.dismiss();
+										Util.unlockOrientation(a);
+										isExporting = false;
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
 								}
-					        }
-					    });
-						pd.show();
-						
-	 			        t = new Thread("wav_creation") {
-							public void run() {
-								setPriority(Thread.MIN_PRIORITY);
-								
-								File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-	//							File myFile = new File("/sdcard/" + sessionName	+ ".wav");
-								try {
-									myFile.createNewFile();
-								
-									FileOutputStream fOut = new FileOutputStream(myFile);
-									int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO,	AudioFormat.ENCODING_PCM_16BIT);
-									long totalAudioLen = buffsize * sample.length * 2;
-									long totalDataLen = totalAudioLen + 36;
-									long longSampleRate = 44100;
-									int channels = 1;
-									Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, longSampleRate, channels,fOut);
-	// 			        			fOut.write(byteBuff.array());
-									MusicUpsampling.note(fOut, 44100, upsampling, sample, pd);
-									fOut.close();
-									pd.dismiss();
-									Util.unlockOrientation(a);
-									isExporting = false;
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						};
-						t.start();
+							};
+							t.start();
+						}
+						else
+							Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
 					}
 				}
 				catch(SQLException e){
@@ -261,5 +266,13 @@ private boolean isExporting = false;
 				}
 			}).show();
 		}
+	}
+	
+	private long totalAudioLenght(){
+		return buffsize * sample.length * 2;
+	}
+	
+	private long totalDataLenght(){
+		return totalAudioLenght()+36;
 	}
 }

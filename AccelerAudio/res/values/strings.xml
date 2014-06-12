@@ -33,7 +33,9 @@
     <string name="error_database_insert_new_session">Errore Database: inserimento sessione</string>
     <string name="error_database_rename_session">Errore database: rinomina sessione</string>
     <string name="error_database_update_change">Database: Errore caricamento modifiche </string>
+	<string name="error_memory_low">Memoria diponibile insufficente </string>
 	
+    
 	<string-array name="upsampling_array">
         <item>0</item>
         <item>1500</item>

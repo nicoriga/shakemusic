@@ -6,6 +6,7 @@ import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.design.ListSessionAdapter;
 import com.acceleraudio.design.RenameDialog;
 import com.acceleraudio.design.RenameDialog.RenameDialogListener;
+import com.acceleraudio.util.AvailableSpace;
 import com.acceleraudio.util.RecordedSession;
 import com.malunix.acceleraudio.R;
 
@@ -105,8 +106,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		
 		try {
 			loadInterface();
-			
-			// TODO: quando viene registrata una nuova sessione aggiungere solo quella
 			
 			// apro la connessione al db
 			dbAdapter.open();
@@ -208,37 +207,43 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			
 			case 1:
 				// Duplica la sessione
-				final int x = info.position;
-				t = new Thread("duplicate_session"){
-					public void run() {
-						setPriority(Thread.MAX_PRIORITY);
-						synchronized (t) {
-							try {
-								// utilizzo un adapter locale per non aver problemi con l'apertura e chiusura della connessione
-								// nel caso si duplichino velocemente più sessioni
-								DbAdapter dbAdapter = new DbAdapter(context);
-								dbAdapter.open();
-								RecordedSession s = dbAdapter.duplicateSessionById(sessions.get(x).getId());
-								dbAdapter.close();
-								sessions.add(x, s);
-								lastId = s.getId();
-							} catch (SQLException e) {
-								e.printStackTrace();
-								if(!dbAdapter.isOpen())
+				
+				// verifica che ci sia almeno 1 MB di spazio disponibile
+				if(AvailableSpace.getinternalAvailableSpace(AvailableSpace.SIZE_MB)>1){
+					final int x = info.position;
+					t = new Thread("duplicate_session"){
+						public void run() {
+							setPriority(Thread.MAX_PRIORITY);
+							synchronized (t) {
+								try {
+									// utilizzo un adapter locale per non aver problemi con l'apertura e chiusura della connessione
+									// nel caso si duplichino velocemente più sessioni
+									DbAdapter dbAdapter = new DbAdapter(context);
+									dbAdapter.open();
+									RecordedSession s = dbAdapter.duplicateSessionById(sessions.get(x).getId());
 									dbAdapter.close();
-							} catch (NullPointerException e) {
-								e.printStackTrace();
-							}
-							runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									adaperList.notifyDataSetChanged();
+									sessions.add(x, s);
+									lastId = s.getId();
+								} catch (SQLException e) {
+									e.printStackTrace();
+									if(!dbAdapter.isOpen())
+										dbAdapter.close();
+								} catch (NullPointerException e) {
+									e.printStackTrace();
 								}
-							});
+								runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										adaperList.notifyDataSetChanged();
+									}
+								});
+							}
 						}
-					}
-				};
-				t.start();
+					};
+					t.start();
+				}
+				else
+					Toast.makeText(this, getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
 				return true;
 			
 			case 2:
@@ -351,12 +356,15 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					newSession.setEnabled(false);
 					Toast.makeText(v.getContext(), getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
 				}
-				else
+				// verifico spazio libero nella memoriia internas
+				else if(AvailableSpace.getinternalAvailableSpace(AvailableSpace.SIZE_MB)>1)
 				{
 					focusPosition = 0;
 					Intent i = new Intent(v.getContext(), RecordActivity.class);
 					v.getContext().startActivity(i);
 				}
+				else
+					Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
 			}
 		});
 		
