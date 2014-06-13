@@ -79,6 +79,7 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 							sessions.get(position).select(true);
 							totSample += sessions.get(position).getNumSample();
 							ListSessionActivity.totSample.setProgress(totSample);
+//							if(getTotSample() > MergeSessionActivity.MAX_SAMPLE)ListSessionActivity.totSample.setBackground();
 						}
 					}
 					else {
@@ -103,7 +104,7 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 		this.layout = layout;
 	}
 	
-	// restituisce un arraylist degli id delle sessioni selezionate
+	// restituisce un array degli id delle sessioni selezionate
 	public long[] getSelectedSession()
 	{
 		ArrayList<Long> selectedSessionId = new  ArrayList<Long>();
@@ -115,6 +116,15 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 			x++;
 		}
 		return selectedId;
+	}
+	
+	// restituisce un array degli id di tutte le sessioni
+	public long[] getSessionId()
+	{
+		long[] id = new long[sessions.size()];
+		for(int i=0; i<sessions.size(); i++)
+			id[i] = sessions.get(i).getId();
+		return id;
 	}
 	
 	private void resetTotSample()

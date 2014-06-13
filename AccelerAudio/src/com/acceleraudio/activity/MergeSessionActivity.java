@@ -10,13 +10,12 @@ import com.malunix.acceleraudio.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +26,7 @@ import android.widget.Toast;
 public class MergeSessionActivity extends Activity{
 	
 	public static final int MAX_SAMPLE = 11000;
+	public static String SESSION_ID_LIST = "mergeSessionActivity.sessionIdList";
 	
 	private DbAdapter dbAdapter; 
 	private Button merge, cancel;
@@ -38,16 +38,12 @@ public class MergeSessionActivity extends Activity{
 	long rowId;
 	private SharedPreferences pref;
 	private ListView.OnTouchListener gestureListener;
-	private int start_position, stop_position, previus_position;
+	private int start_position, previus_position, start_pointToPosition, stop_pointToPosition;
 	private long sessionId; 
-	private GestureDetector gestureDetector;
     
-    // Distanza minima richiesta sull'asse Y
-    //private static final int SWIPE_MIN_DISTANCE = 5;
-    // Distanza massima consentita sull'asse X
-    private static final int SWIPE_MAX_OFF_PATH = 250;
-    // Velocità minima richiesta sull'asse Y
-    //private static final int SWIPE_THRESHOLD_VELOCITY = 0;
+    // Distanza azione riordinamento touch
+    private static final int SWIPE_OFFSET_PORTRAIT = 250;
+    private static final int SWIPE_OFFSET_LANDSCAPE = 440;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,15 +67,17 @@ public class MergeSessionActivity extends Activity{
     		sessionName = (EditText) findViewById(R.id.mergeSession_ET_sessionName);
     		list = (ListView)findViewById(R.id.merge_LV_listSession);
     		
-    		loadSession();
-    		adaperList = new ListSessionAdapter(this, R.layout.list_session_layout, sessions);
+    		if(savedInstanceState != null)
+    			sessionIdList = savedInstanceState.getLongArray(SESSION_ID_LIST);
+    		
+    		loadSessionList();
+    			
+    		adaperList = new ListSessionAdapter(this, R.layout.list_session_merge_layout, sessions);
     		list.setAdapter(adaperList);
-//    		gestureDetector = new GestureDetector(list.getContext(), new MyGestureDetector());
     		gestureListener = new ListView.OnTouchListener() {
     		        public boolean onTouch(View v, MotionEvent event) {
-//    		            return gestureDetector.onTouchEvent(event); 
     		        	int action = event.getAction();
-    		            if(Math.abs(event.getX()) < dpTopx(SWIPE_MAX_OFF_PATH))
+    		            if(Math.abs(event.getX()) < dpTopx(getOffsetSwipe()))
     		        		return false;
     		        	try {
 							switch(action)
@@ -87,9 +85,11 @@ public class MergeSessionActivity extends Activity{
 								// quando viene messo il dito nello schermo viene salvata la posizione della
 								// riga dove avviene la pressione
 								case MotionEvent.ACTION_DOWN:
-//									start_position = list.pointToPosition((int)event.getX(), (int)event.getY());
+									start_pointToPosition = list.pointToPosition((int)event.getX(), (int)event.getY());
 									start_position = getChildXy(event);
-									if(start_position != ListView.INVALID_POSITION) list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
+									if(start_position != ListView.INVALID_POSITION){
+										list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
+									}
 									break;
 								// quando si rimuove il dito dallo schermo avviene lo spostamento della sessione
 								// nella posizione di arrivo
@@ -97,17 +97,16 @@ public class MergeSessionActivity extends Activity{
 								case MotionEvent.ACTION_UP:
 									if(start_position >= 0)
 									{
-//							            stop_position = list.pointToPosition((int)event.getX(), (int)event.getY());
-							            stop_position = getChildXy(event);
-							            moveListRowTo(start_position, stop_position);
+							            stop_pointToPosition = list.pointToPosition((int)event.getX(), (int)event.getY());
+//							            stop_position = getChildXy(event);
+							            moveListRowTo(start_pointToPosition, stop_pointToPosition);
 							            list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
 							            list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
 									}
 									break;
 								case MotionEvent.ACTION_HOVER_ENTER:
 								case MotionEvent.ACTION_MOVE:
-									// TODO: coloro la riga dove si trova il dito
-//									int position = list.pointToPosition((int)event.getX(), (int)event.getY());
+									// coloro la riga dove si trova il dito
 									int position = getChildXy(event);
 									if(position >= 0 && position != start_position && start_position >= 0)
 										{
@@ -147,17 +146,17 @@ public class MergeSessionActivity extends Activity{
 							cancel.setEnabled(false);
 							
 							// unisco le sessioni
-									// apro la connessione al db
-									dbAdapter.open();
-									sessionId = dbAdapter.mergeSession(
-													sessionIdList,
-													sessionName.getText().toString(),
-													(pref.getBoolean(PreferencesActivity.AXIS_X,true) ? 1 : 0),
-													(pref.getBoolean(PreferencesActivity.AXIS_Y,true) ? 1 : 0),
-													(pref.getBoolean(PreferencesActivity.AXIS_Z,true) ? 1 : 0),
-													pref.getInt(PreferencesActivity.UPSAMPLING, 0));
-									// chiudo la connessione
-									dbAdapter.close();
+							// apro la connessione al db
+							dbAdapter.open();
+							sessionId = dbAdapter.mergeSession(
+											adaperList.getSessionId(),
+											sessionName.getText().toString(),
+											(pref.getBoolean(PreferencesActivity.AXIS_X,true) ? 1 : 0),
+											(pref.getBoolean(PreferencesActivity.AXIS_Y,true) ? 1 : 0),
+											(pref.getBoolean(PreferencesActivity.AXIS_Z,true) ? 1 : 0),
+											pref.getInt(PreferencesActivity.UPSAMPLING, 0));
+							// chiudo la connessione
+							dbAdapter.close();
 							
 							// avvia activity con le info della sessione
 							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
@@ -181,42 +180,19 @@ public class MergeSessionActivity extends Activity{
 		}
 	}
 	
-	/*** classe per la gestione dello scroll***/
-	class MyGestureDetector extends SimpleOnGestureListener {
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                try {
-                        if (Math.abs(e1.getX()) < dpTopx(SWIPE_MAX_OFF_PATH))
-                                return false;
-                        
-                        // Swipe in alto
-//                        if (e1.getY() - e2.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
-//                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
-//                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
-//                                moveListRowTo(start_position, stop_position);
-//                        } else 
-//                        // swipe in basso
-//                        	if (e2.getY() - e1.getY() > dpTopx(SWIPE_MIN_DISTANCE) && Math.abs(velocityX) > dpTopx(SWIPE_THRESHOLD_VELOCITY)) {
-//                                int start_position = list.pointToPosition((int)e1.getX(), (int)e1.getY());
-//                                int stop_position = list.pointToPosition((int)e2.getX(), (int)e2.getY());
-//                                moveListRowTo(start_position, stop_position);
-//                        }
-                        
-                } catch (Exception e) {
-                	e.printStackTrace();
-                }
-                return true;
-        }
-	}
-	
-	
+	 @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) 
+    {
+    	savedInstanceState.putLongArray(SESSION_ID_LIST, adaperList.getSessionId());
+    	super.onSaveInstanceState(savedInstanceState);
+    }
 	
 ///////////////////////////////////////
 /////////// METODI UTILI /////////////
 //////////////////////////////////////
 	
 	/*** carica le sessioni nell'interfaccia ***/
-	public void loadSession()
+	public void loadSessionList()
 	{
 		// apro la connessione al db
 		dbAdapter.open();
@@ -260,37 +236,32 @@ public class MergeSessionActivity extends Activity{
 		return dip * scale + 0.5f;
 	}
 	
-	/*** scambia due righe nelle posizioni indicate ***/
-	public void switchListRow(int start_position, int stop_position)
-	{
-		if (start_position >= 0 && stop_position >= 0) {
-			
-			// scambia id
-			long tempId = sessionIdList[start_position];
-			sessionIdList[start_position] = sessionIdList[stop_position];
-			sessionIdList[stop_position] = tempId;
-			
-			// scambia due sessioni
-			RecordedSession sTemp = sessions.get(stop_position);
-			sessions.set(start_position,sessions.get(stop_position));
-			sessions.set(stop_position, sTemp);
-			
-			adaperList.notifyDataSetChanged();
-		}
-	}
-	
 	/*** sposta una riga nella posizione indicata ***/
 	public void moveListRowTo(int start_position, int stop_position)
 	{
 		if (start_position >= 0 && stop_position >= 0) {
 			
-			// sposta id
-			sessionIdList[stop_position] = sessionIdList[start_position];
-			
 			// sposta il nome
 			sessions.add(stop_position,sessions.remove(start_position));
-			
 			adaperList.notifyDataSetChanged();
 		}
 	}
+	
+	/*** restituisce l'offset in base alla rotazione dello schermo ***/
+    public int getOffsetSwipe()
+    {
+    	int orientation = getResources().getConfiguration().orientation;
+		
+    	switch(orientation){
+    		case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+    		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
+    			return SWIPE_OFFSET_PORTRAIT;
+    		case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+    		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
+    			return SWIPE_OFFSET_LANDSCAPE;
+    			// nel caso si trovi in reverse-landscape nelle API 8
+    		default:
+    			return SWIPE_OFFSET_LANDSCAPE;
+    	}
+    }
 }
