@@ -48,16 +48,16 @@ public class PlayerActivity extends Activity {
 	private ImageView thumbnail;
 	public static SeekBar sb_musicProgress;
 	private int[] sample;
-	private long sessionId, elapsed;
-	private int upsampling, playbackHeadPosition;
-	private static long duration, remaining_millis;
+	private long sessionId;
+	private int upsampling;
+	private static long duration;
 	private DbAdapter dbAdapter;
 	private Cursor cursor;
 	public Intent intentPlayer;
 	public static String[] data_x, data_y, data_z;
 	private String image;
 	private Thread t;
-	private Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+	private static Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 	public boolean isPause;
 	// TODO sistemare timer durata musica
 	/*
@@ -195,7 +195,7 @@ public class PlayerActivity extends Activity {
 				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
 				sample = new int[(nSample > 0 ? nSample : 1)];
 				
-				if(nSample < 15) 
+				if(false & nSample < 15) 
 				{
 						Toast.makeText(this, "Pochi campioni, selezionare un'altro asse", Toast.LENGTH_SHORT).show();
 						finish();
@@ -249,14 +249,13 @@ public class PlayerActivity extends Activity {
 					};
 					t.start();
 				
-				}
-				
 				duration = MusicUpsampling.duration(upsampling, sample.length, 44100);
 				
 				// avvio subito la riproduzione della musica
 				intentPlayer.putExtra(ACC_DATA, sample);
 				intentPlayer.putExtra(UPSAMPLING, upsampling);
 				startService(intentPlayer);
+				}
 	
 			}
 			
@@ -311,14 +310,15 @@ public class PlayerActivity extends Activity {
 //					Intent intent = new Intent(NOTIFICATION);
 //					intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
 //					sendBroadcast(intent);
-					stopService();
+//					stopService();
 //					try {
-//						Thread.sleep(400);
+//						Thread.sleep(200);
 //					} catch (InterruptedException e) {
 //						// TODO Auto-generated catch block
 //						e.printStackTrace();
 //					}
-					finish();
+//					finish();
+					onBackPressed();
 				}
 			});
 			
@@ -366,7 +366,7 @@ public class PlayerActivity extends Activity {
     public void onDestroy() {
     	super.onDestroy();
     	// forza la chiusura del servizio
-//    	stopService(intentPlayer);
+//    	stopService();
     	inizialized = false;
 //    	if(countDownTimer != null)
 //			countDownTimer.cancel();

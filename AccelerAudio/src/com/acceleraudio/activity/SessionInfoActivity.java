@@ -213,10 +213,18 @@ public class SessionInfoActivity extends Activity {
 			playSession.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					// avvio la PlayerActivity
-					Intent i = new Intent(v.getContext(), PlayerActivity.class);
-					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
-					v.getContext().startActivity(i);
+					// impedisco di riprodurre se non viene selezionato almeno un asse
+					if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
+					{
+						Toast.makeText(v.getContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+					}
+					else
+					{
+						// avvio la PlayerActivity
+						Intent i = new Intent(v.getContext(), PlayerActivity.class);
+						i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
+						v.getContext().startActivity(i);
+					}
 				}
 			});
 			

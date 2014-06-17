@@ -9,12 +9,14 @@ import com.acceleraudio.util.MusicUpsampling;
 import android.app.Activity;
 import android.media.AudioTrack;
 import android.os.CountDownTimer;
+import android.util.Log;
 
 public class AudioTrackTimer extends AudioTrack {
 
 	private long elapsed, duration, remaining_millis;
 	private int playbackHeadPosition, sampleLength, upsampling, sampleIndex;
 	private CountDownTimer countDownTimer;
+	private MyTimer timer;
 	
 	/**
 	 * @param streamType
@@ -41,9 +43,14 @@ public class AudioTrackTimer extends AudioTrack {
 	@Override
 	public void play(){
 		super.play();
-		if(duration > 0) loadCountDownTimer();
-		if(countDownTimer != null) 
-			countDownTimer.start();
+		if(duration > 0) {
+//			loadCountDownTimer();
+			elapsed = remaining_millis;
+			timer = new MyTimer(remaining_millis, 1);
+			timer.start();
+		}
+//		if(countDownTimer != null) 
+//			countDownTimer.start();
 	}
 	
 	public void pause(int sampleIndex){
@@ -51,15 +58,23 @@ public class AudioTrackTimer extends AudioTrack {
 		this.sampleIndex = sampleIndex;
 		if(countDownTimer != null)
 			countDownTimer.cancel();
+		timer.cancel();
 		playbackHeadPosition = getPlaybackHeadPosition();
-//		remaining_millis = (duration - (MusicUpsampling.duration(upsampling, sampleIndex, getSampleRate()) + (long)(playbackHeadPosition/22.5)));
+		// TODO: sistemare il calcolo del tempo rimanente quando viene messo in pausa
+//		remaining_millis = (duration - (MusicUpsampling.duration(upsampling, sampleIndex, getSampleRate()) + (long)(( getPlaybackHeadPosition( ) / getSampleRate( ) ) * 1000.0)));
 	}
 	
 	@Override
 	public void stop(){
 		super.stop();
+		remaining_millis = duration;
 		if(countDownTimer != null)
+		{
 			countDownTimer.cancel();
+			Log.w("music timer", "stopped");
+			countDownTimer = null;
+		}
+		timer.cancel();
 	}
 	
 	@Override
@@ -70,7 +85,7 @@ public class AudioTrackTimer extends AudioTrack {
 	public void loadCountDownTimer()
     {
     	elapsed = remaining_millis;
-    	countDownTimer = new CountDownTimer(remaining_millis, 5) {
+    	CountDownTimer countDownTimerT = new CountDownTimer(remaining_millis, 1) {
 			public void onTick(long millisUntilFinished) {
 				long time_elapsed = duration - (millisUntilFinished + elapsed);
 				PlayerActivity.currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
@@ -79,13 +94,36 @@ public class AudioTrackTimer extends AudioTrack {
 			}
 			
 			public void onFinish() {
-				PlayerActivity.currentTimeTV.setText("" + (remaining_millis/1000));
-				PlayerActivity.sb_musicProgress.setProgress((int)remaining_millis);
+//				PlayerActivity.currentTimeTV.setText("" + (remaining_millis/1000));
+//				PlayerActivity.sb_musicProgress.setProgress((int)remaining_millis);
 				remaining_millis = duration;
 				
-				loadCountDownTimer();
-				countDownTimer.start();
+//				loadCountDownTimer();
+//				countDownTimer.start();
 			}
-		};
+		}.start();
+		
+		countDownTimer = countDownTimerT;
     }
+	
+	class MyTimer extends CountDownTimer{
+
+		public MyTimer(long millisInFuture, long countDownInterval) {
+			super(millisInFuture, countDownInterval);
+		}
+
+		@Override
+		public void onFinish() {
+			remaining_millis = duration;
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) {
+			long time_elapsed = duration - (millisUntilFinished + elapsed);
+			PlayerActivity.currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
+			PlayerActivity.sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
+			remaining_millis = millisUntilFinished;
+		}
+		
+	}
 }
