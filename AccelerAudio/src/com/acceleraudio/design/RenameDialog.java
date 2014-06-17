@@ -72,4 +72,12 @@ public class RenameDialog extends DialogFragment {
 		savedInstanceState.putInt(POSITION, position);
     	super.onSaveInstanceState(savedInstanceState);
     }
+
+    public void setText(String title) {
+    	newName.setText(title);
+	}
+    
+	public void setTitle(String title) {
+		getDialog().setTitle(title);
+	}
 }

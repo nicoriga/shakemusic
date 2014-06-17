@@ -6,15 +6,12 @@ import com.acceleraudio.util.MusicUpsampling;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -195,6 +192,7 @@ public class PlayerActivity extends Activity {
 				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
 				sample = new int[(nSample > 0 ? nSample : 1)];
 				
+				// TODO: verificare che funzioni anche con 1 campione
 				if(false & nSample < 15) 
 				{
 						Toast.makeText(this, "Pochi campioni, selezionare un'altro asse", Toast.LENGTH_SHORT).show();

@@ -8,7 +8,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -18,28 +17,36 @@ import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.acceleraudio.database.DbAdapter;
+import com.acceleraudio.design.RenameDialog;
+import com.acceleraudio.design.RenameDialog.RenameDialogListener;
 import com.acceleraudio.util.AvailableSpace;
 import com.acceleraudio.util.MusicUpsampling;
 import com.acceleraudio.util.Util;
 import com.acceleraudio.util.Wav;
 import com.malunix.acceleraudio.R;
 
-public class FileExplore extends ListActivity {
+public class FileExplore extends FragmentActivity implements RenameDialogListener{
 	
 private List<String> item = null, path = null;
 private String root, sessionName;
+private ListView list;
 private TextView myPath;
 private Button save;
+private File myFile;
 private DbAdapter dbAdapter;
 private Cursor cursor;
 public static String[] data_x, data_y, data_z;
@@ -60,6 +67,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 		a = this;
 
 		setContentView(R.layout.file_manager_layout);
+		list = (ListView)findViewById(R.id.list_file_manager);
 		myPath = (TextView)findViewById(R.id.path);
 		save = (Button) findViewById(R.id.UI_fileManager_BT_save);
 		
@@ -175,12 +183,12 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 									});
 								    
 									pd.show();
+									myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 									
 				 			        t = new Thread("wav_creation") {
 										public void run() {
 											setPriority(Thread.MIN_PRIORITY);
 											
-											File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 											try {
 												myFile.createNewFile();
 											
@@ -199,7 +207,17 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 											}
 										}
 									};
-									t.start();
+									// verifico se esiste un file con lo stesso nome
+									if(!myFile.exists())
+										t.start();
+									else
+										{
+											FragmentManager fm = getSupportFragmentManager();
+									        RenameDialog rd = new RenameDialog();
+									        rd.setSessionInfo(0, sessionName + ".wav");
+									        rd.show(fm, "rename_dialog");
+										}
+										
 								}
 								else
 									Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
@@ -231,6 +249,34 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 			}
 		});
 		}
+		
+		list.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+				File file = new File(path.get(position));
+				if (file.isDirectory())
+				{
+					if(file.canRead())
+						getDir(path.get(position));
+					else
+					{
+						// TODO: sistemare messaggio stringa
+						new AlertDialog.Builder(view.getContext()).setIcon(R.drawable.icon).setTitle("[" + file.getName() + "] folder can't be read!").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+							}
+						}).show();
+					}
+				}
+				else
+				{
+					new AlertDialog.Builder(view.getContext()).setIcon(R.drawable.icon).setTitle("[" + file.getName() + "]").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+						}
+					}).show();
+				}
+			}
+		});
 	}
 
     @Override
@@ -267,35 +313,8 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 		 }
 		
 		 ArrayAdapter<String> fileList = new ArrayAdapter<String>(this, R.layout.row, item);
-		 setListAdapter(fileList);
+		 list.setAdapter(fileList);
     }
-
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		File file = new File(path.get(position));
-		if (file.isDirectory())
-		{
-			if(file.canRead())
-				getDir(path.get(position));
-			else
-			{
-				// TODO: sistemare messaggio stringa
-				new AlertDialog.Builder(this).setIcon(R.drawable.icon).setTitle("[" + file.getName() + "] folder can't be read!").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-					}
-				}).show();
-			}
-		}
-		else
-		{
-			new AlertDialog.Builder(this).setIcon(R.drawable.icon).setTitle("[" + file.getName() + "]").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-				}
-			}).show();
-		}
-	}
 	
 	private long totalAudioLenght(){
 		return buffsize * sample.length * 2;
@@ -303,5 +322,24 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 	
 	private long totalDataLenght(){
 		return totalAudioLenght()+36;
+	}
+
+	@Override
+	public void onFinishRenameDialog(int sessionId, String newName,	boolean confirm) {
+		if(confirm){
+			sessionName = newName;
+			myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
+			if(!myFile.exists())
+				t.start();
+			else
+				{
+					FragmentManager fm = getSupportFragmentManager();
+			        RenameDialog rd = new RenameDialog();
+			        rd.setSessionInfo(0, sessionName + ".wav");
+			        rd.show(fm, "rename_dialog");
+				}
+		}
+		else
+			pd.dismiss();
 	}
 }
