@@ -340,6 +340,9 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 				}
 		}
 		else
+		{
 			pd.dismiss();
+			isExporting = false;
+		}
 	}
 }

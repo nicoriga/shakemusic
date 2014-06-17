@@ -21,8 +21,8 @@
     <ListView
         android:id="@+id/list_file_manager"
         android:layout_width="fill_parent"
-        android:layout_height="350dp"
-        android:layout_weight="0.90" >
+        android:layout_height="418dp" >
+
     </ListView>
 
     <TextView
