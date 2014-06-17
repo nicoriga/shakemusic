@@ -36,7 +36,7 @@ public class MusicUpsampling
         
         for(int x=0; x < sample.length; x++){
         	// modifica la frequenza con i campioni prelevati dall'accelerometro
-        	fr =  262 + (Math.abs(sample[x])*10);
+        	fr =  262 + (Math.abs(sample[x])*100);
         	for(int i=0; i < buffsize; i++){
         		sampleS[i] = (short) (amp*Math.sin(ph));
         		ph += twoph*fr/sample_rate;

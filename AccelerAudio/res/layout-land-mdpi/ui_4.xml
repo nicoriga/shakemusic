@@ -22,15 +22,6 @@
         android:text="@string/timer_end"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <ImageButton
-        android:id="@+id/UI4_BT_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="35dp"
-        android:src="@drawable/play_player" />
-
     <TextView
         android:id="@+id/UI4_TV_sessionName"
         android:layout_width="wrap_content"
@@ -62,16 +53,16 @@
         android:id="@+id/UI4_BT_stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI4_TV_sessionName"
         android:layout_alignTop="@+id/UI4_BT_play"
+        android:layout_toLeftOf="@+id/UI4_BT_play"
         android:src="@drawable/stop_player" />
 
     <ImageButton
         android:id="@+id/UI4_BT_pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/UI4_TV_sessionName"
-        android:layout_alignTop="@+id/UI4_BT_play"
+        android:layout_alignTop="@+id/UI4_BT_stop"
+        android:layout_toRightOf="@+id/UI4_BT_play"
         android:src="@drawable/pause_player" />
 
     <Button
@@ -84,5 +75,14 @@
         android:drawablePadding="5dp"
         android:drawableRight="@drawable/export"
         android:text="@string/export" />
+
+    <ImageButton
+        android:id="@+id/UI4_BT_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/UI4_SB_musicProgress"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/play_player" />
 
 </RelativeLayout>

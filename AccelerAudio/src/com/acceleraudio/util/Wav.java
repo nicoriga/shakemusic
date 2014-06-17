@@ -7,9 +7,9 @@ public class Wav
 {	
 	private static final int bitsForSample = 16; 
     
-	public static void WriteWaveFileHeader(long totalAudioLen, long totalDataLen, long longSampleRate, int channels, OutputStream out) throws IOException 
+	public static void WriteWaveFileHeader(long totalAudioLen, long totalDataLen, long soundRate, int channels, OutputStream out) throws IOException 
 	{
-		int byteRate = (int) (channels * longSampleRate * bitsForSample / 8);
+		int byteRate = (int) (channels * soundRate * bitsForSample / 8);
 		
 		byte[] header = new byte[44];
         
@@ -37,10 +37,10 @@ public class Wav
         header[21] = 0;
         header[22] = (byte) channels;
         header[23] = 0;
-        header[24] = (byte) (longSampleRate & 0xff);
-        header[25] = (byte) ((longSampleRate >> 8) & 0xff);
-        header[26] = (byte) ((longSampleRate >> 16) & 0xff);
-        header[27] = (byte) ((longSampleRate >> 24) & 0xff);
+        header[24] = (byte) (soundRate & 0xff);
+        header[25] = (byte) ((soundRate >> 8) & 0xff);
+        header[26] = (byte) ((soundRate >> 16) & 0xff);
+        header[27] = (byte) ((soundRate >> 24) & 0xff);
         header[28] = (byte) (byteRate & 0xff);
         header[29] = (byte) ((byteRate >> 8) & 0xff);
         header[30] = (byte) ((byteRate >> 16) & 0xff);

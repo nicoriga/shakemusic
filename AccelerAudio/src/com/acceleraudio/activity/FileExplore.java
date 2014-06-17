@@ -49,15 +49,15 @@ private Thread t;
 private ProgressDialog pd;
 private Activity a;
 private boolean isExporting = false;
-private final long longSampleRate = 44100;
-private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+private final int soundRate = 48000 ;
+private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dbAdapter = new DbAdapter(this);
 		a = this;
-		// TODO da sistemare le viste
+
 		setContentView(R.layout.file_manager_layout);
 		myPath = (TextView)findViewById(R.id.path);
 		save = (Button) findViewById(R.id.UI_fileManager_BT_save);
@@ -65,7 +65,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHAN
 		// verifico che la memoria sia caricata
 		String state = Environment.getExternalStorageState();
 		if( state.equals(Environment.MEDIA_MOUNTED) ){
-			root=Environment.getExternalStorageDirectory().getPath();
+			root = Environment.getExternalStorageDirectory().getPath();
 			getDir(root);
 			
 			Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ " MB disponibili", Toast.LENGTH_LONG).show();
@@ -98,7 +98,6 @@ private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHAN
 							data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
 							data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
 							data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
-							//TODO: si potrebbe togliere il numero dei sample presente nel database.
 							boolean axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1");
 							boolean axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1");
 							boolean axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
@@ -122,23 +121,24 @@ private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHAN
 								for(int i = 0; i<data_x.length; i++)
 									if(data_x[i].length()>0)
 									{
-										sample[z] = ((int)(Float.parseFloat(data_x[i])*10)); 
+										sample[z] = ((int)(Float.parseFloat(data_x[i]))); 
 										z++;
 									}
 							if(axis_y)
 								for(int i = 0; i<data_y.length; i++)
 									if(data_y[i].length()>0)
 									{ 
-										sample[z] = ((int)(Float.parseFloat(data_y[i])*10)); 
+										sample[z] = ((int)(Float.parseFloat(data_y[i]))); 
 										z++;
 									}
 							if(axis_z)
 								for(int i = 0; i<data_z.length; i++)
 									if(data_z[i].length()>0)
 									{ 
-										sample[z] = ((int)(Float.parseFloat(data_z[i])*10)); 
+										sample[z] = ((int)(Float.parseFloat(data_z[i]))); 
 										z++;
 									}
+							
 							final String savePath = myPath.getText().toString().substring(10);
 							File f = new File(savePath);
 							Log.w("permesso scrittura", "" + f.canWrite());
@@ -174,7 +174,6 @@ private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHAN
 										setPriority(Thread.MIN_PRIORITY);
 										
 										File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-			//							File myFile = new File("/sdcard/" + sessionName	+ ".wav");
 										try {
 											myFile.createNewFile();
 										
@@ -182,9 +181,8 @@ private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHAN
 											long totalAudioLen = totalAudioLenght();
 											long totalDataLen = totalDataLenght();
 											int channels = 1;
-											Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, longSampleRate, channels,fOut);
-			// 			        			fOut.write(byteBuff.array());
-											MusicUpsampling.note(fOut, 44100, upsampling, sample, pd);
+											Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, soundRate, channels,fOut);
+											MusicUpsampling.note(fOut, soundRate, upsampling, sample, pd);
 											fOut.close();
 											pd.dismiss();
 											Util.unlockOrientation(a);
