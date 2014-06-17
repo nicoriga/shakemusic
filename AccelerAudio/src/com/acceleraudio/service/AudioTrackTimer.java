@@ -41,7 +41,7 @@ public class AudioTrackTimer extends AudioTrack {
 	@Override
 	public void play(){
 		super.play();
-		loadCountDownTimer();
+		if(duration > 0) loadCountDownTimer();
 		if(countDownTimer != null) 
 			countDownTimer.start();
 	}

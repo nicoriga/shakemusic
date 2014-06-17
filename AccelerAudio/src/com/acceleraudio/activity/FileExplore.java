@@ -33,6 +33,7 @@ import com.acceleraudio.util.Wav;
 import com.malunix.acceleraudio.R;
 
 public class FileExplore extends ListActivity {
+	
 private List<String> item = null, path = null;
 private String root="/", sessionName;
 private TextView myPath;

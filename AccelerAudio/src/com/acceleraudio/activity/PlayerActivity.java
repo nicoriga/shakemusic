@@ -1,7 +1,5 @@
 package com.acceleraudio.activity;
 
-import java.util.TimerTask;
-
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.PlayerTrack;
 import com.acceleraudio.util.MusicUpsampling;
@@ -11,14 +9,12 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -40,7 +36,10 @@ public class PlayerActivity extends Activity {
 	public static String INIZIALIZED = "playerActivity.inizialied";
 	public static String SAMPLE = "playerActivity.sample";
 	public static String IMAGE = "playerActivity.image";
+	public static String INTENT_PLAYER = "playerActivity.intentPlayer";
+	public static String PROGRESS_TIME = "playerActivity.progressTime";
 	
+	// TODO: rimuovere inizialized, perchè non serve
 	private Boolean inizialized = false, axis_x, axis_y, axis_z;
 	private TextView sessionName;
 	public static TextView currentTimeTV, durationTV;
@@ -58,9 +57,10 @@ public class PlayerActivity extends Activity {
 	public static String[] data_x, data_y, data_z;
 	private String image;
 	private Thread t;
-	private static Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-	public static boolean isPause;
+	private Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+	public boolean isPause;
 	// TODO sistemare timer durata musica
+	/*
 	private CountDownTimer countDownTimer;
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
     	
@@ -91,15 +91,12 @@ public class PlayerActivity extends Activity {
 					}
     		}
         }
-    };
+    };*/
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_4);
-    	
-    	// creo intent per avviare il servizio di riproduzione audio
-    	intentPlayer = new Intent(this, PlayerTrack.class);
     	
 ////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
@@ -129,11 +126,18 @@ public class PlayerActivity extends Activity {
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
 				image = savedInstanceState.getString(IMAGE);
 				duration = savedInstanceState.getLong(PlayerTrack.DURATION);
+				intentPlayer = savedInstanceState.getParcelable(INTENT_PLAYER);
+				currentTimeTV.setText(savedInstanceState.getString(PROGRESS_TIME));
 				
 				durationTV.setText("" + duration/1000);
 				sb_musicProgress.setMax((int)duration);
 				
-				if(inizialized)
+				if(isPause)
+				{
+					play.setEnabled(true);
+					pause.setEnabled(false);
+				}
+				else
 				{
 					play.setEnabled(false);
 					pause.setEnabled(true);
@@ -141,6 +145,9 @@ public class PlayerActivity extends Activity {
 			}
 			else
 			{
+				// creo intent per avviare il servizio di riproduzione audio
+		    	intentPlayer = new Intent(this, PlayerTrack.class);
+		    	
 				isPause = false;
 				
 ////////////////////////////////////////////////////////
@@ -151,14 +158,14 @@ public class PlayerActivity extends Activity {
 				sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
     	
 ////////////////////////////////////////////////////////
-/// prelevo dati dal database e li carico nella vista///
+/// prelevo dati dal database /////////////////////////
 ///////////////////////////////////////////////////////
 
 				// apro la connessione al db
 				dbAdapter = new DbAdapter(this);
 				dbAdapter.open();
 				
-				// prelevo record by ID 
+				// prelevo record per ID 
 				cursor = dbAdapter.fetchSessionById(sessionId);
 				cursor.moveToFirst();
 				
@@ -168,7 +175,6 @@ public class PlayerActivity extends Activity {
 				data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
 				data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
 				data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
-				//TODO: si potrebbe togliere il numero dei sample presente nel database.
 				axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1");
 				axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1");
 				axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
@@ -178,12 +184,14 @@ public class PlayerActivity extends Activity {
 				cursor.close();
 				dbAdapter.close();
 				
+				// se la sessione non ha almeno un asse selezionato la riproduzione non può avvenire
 				if(!(axis_x || axis_y || axis_z)) 
 				{
 						Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT).show();
 						finish();
 				}
 				
+				// creo array con la lunghezza degli assi selezionati
 				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
 				sample = new int[(nSample > 0 ? nSample : 1)];
 				
@@ -199,21 +207,21 @@ public class PlayerActivity extends Activity {
 						for(int i = 0; i<data_x.length; i++)
 							if(data_x[i].length()>0)
 							{
-								sample[z] = ((int)(Float.parseFloat(data_x[i])*10)); 
+								sample[z] = ((int)(Float.parseFloat(data_x[i]))); 
 								z++;
 							}
 					if(axis_y)
 						for(int i = 0; i<data_y.length; i++)
 							if(data_y[i].length()>0)
 							{ 
-								sample[z] = ((int)(Float.parseFloat(data_y[i])*10)); 
+								sample[z] = ((int)(Float.parseFloat(data_y[i]))); 
 								z++;
 							}
 					if(axis_z)
 						for(int i = 0; i<data_z.length; i++)
 							if(data_z[i].length()>0)
 							{ 
-								sample[z] = ((int)(Float.parseFloat(data_z[i])*10)); 
+								sample[z] = ((int)(Float.parseFloat(data_z[i]))); 
 								z++;
 							}
 					
@@ -224,7 +232,7 @@ public class PlayerActivity extends Activity {
 					
 					t = new Thread("Thumbnail_Decoding"){
 						public void run() {
-							// setta la priorità massia del thread
+							// setta la priorità massima del thread
 			                setPriority(Thread.MAX_PRIORITY);
 			                
 			                // converto la stringa in una immagine bitmap
@@ -264,8 +272,13 @@ public class PlayerActivity extends Activity {
 				public void onClick(View v) {
 					if(isPause)
 					{
+						isPause = false;
+						
+						// manda il comando di avvio per essere sicuri che il servizio non sia stato chiuso
+//						startService(intentPlayer);
+						
 						Intent intent = new Intent(NOTIFICATION);
-						intent.putExtra(PlayerTrack.PLAY, PlayerTrack.PLAY_MUSIC);
+						intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
 						sendBroadcast(intent);
 						
 						inizialized = true;
@@ -280,8 +293,9 @@ public class PlayerActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					isPause = true;
+					
 					Intent intent = new Intent(NOTIFICATION);
-					intent.putExtra(PlayerTrack.PAUSE, PlayerTrack.PAUSE_MUSIC);
+					intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PAUSE_MUSIC);
 					sendBroadcast(intent);
 					
 					inizialized = false;
@@ -294,10 +308,10 @@ public class PlayerActivity extends Activity {
 			stop.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Intent intent = new Intent(NOTIFICATION);
-					intent.putExtra(PlayerTrack.STOP, PlayerTrack.PAUSE_MUSIC);
-					sendBroadcast(intent);
-//					stopService(intentPlayer);
+//					Intent intent = new Intent(NOTIFICATION);
+//					intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
+//					sendBroadcast(intent);
+					stopService();
 //					try {
 //						Thread.sleep(400);
 //					} catch (InterruptedException e) {
@@ -351,18 +365,19 @@ public class PlayerActivity extends Activity {
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	//stopService(intentPlayer);
+    	// forza la chiusura del servizio
+//    	stopService(intentPlayer);
     	inizialized = false;
-    	if(countDownTimer != null)
-			countDownTimer.cancel();
+//    	if(countDownTimer != null)
+//			countDownTimer.cancel();
     }
     
     @Override
 	public void onBackPressed() {
 	    super.onBackPressed();
-	    stopService(intentPlayer); // stoppa il servizio della musica
-	    if(countDownTimer != null)
-			countDownTimer.cancel();
+	    stopService(); // stoppa il servizio della musica
+//	    if(countDownTimer != null)
+//			countDownTimer.cancel();
     }
     
     @Override
@@ -376,10 +391,12 @@ public class PlayerActivity extends Activity {
     	savedInstanceState.putIntArray(SAMPLE, sample);
     	savedInstanceState.putString(IMAGE, image);
     	savedInstanceState.putLong(PlayerTrack.DURATION, duration);
+    	savedInstanceState.putParcelable(INTENT_PLAYER, intentPlayer);
+    	savedInstanceState.putString(PROGRESS_TIME, currentTimeTV.getText().toString());
     	super.onSaveInstanceState(savedInstanceState);
     }
     
-    public static void setMaxDuration(){
+    public void setMaxDuration(){
     	durationTV.setText("" + duration/1000);
     	sb_musicProgress.setMax((int)duration);
     }
@@ -405,4 +422,12 @@ public class PlayerActivity extends Activity {
 //		};
 //    }
 
+    /*** stoppa il servizio in modo automatico ***/
+    public void stopService(){
+    	Intent intent = new Intent(NOTIFICATION);
+		intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
+		sendBroadcast(intent);
+		
+//		stopService(intentPlayer);
+    }
 }
