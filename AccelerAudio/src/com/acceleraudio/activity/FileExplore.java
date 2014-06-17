@@ -16,6 +16,7 @@ import android.database.SQLException;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,7 +36,7 @@ import com.malunix.acceleraudio.R;
 public class FileExplore extends ListActivity {
 	
 private List<String> item = null, path = null;
-private String root="/", sessionName;
+private String root, sessionName;
 private TextView myPath;
 private Button save;
 private DbAdapter dbAdapter;
@@ -60,135 +61,143 @@ private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHAN
 		setContentView(R.layout.file_manager_layout);
 		myPath = (TextView)findViewById(R.id.path);
 		save = (Button) findViewById(R.id.UI_fileManager_BT_save);
-		getDir(root);
 		
-		Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ " MB disponibili", Toast.LENGTH_LONG).show();
-		
-		save.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				try 
-				{
-					isExporting = true;
-					
-					Bundle b = getIntent().getExtras();
-					sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
+		// verifico che la memoria sia caricata
+		String state = Environment.getExternalStorageState();
+		if( state.equals(Environment.MEDIA_MOUNTED) ){
+			root=Environment.getExternalStorageDirectory().getPath();
+			getDir(root);
+			
+			Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ " MB disponibili", Toast.LENGTH_LONG).show();
+			
+			save.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					try 
+					{
+						isExporting = true;
+						
+						Bundle b = getIntent().getExtras();
+						sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
 	    	
 ////////////////////////////////////////////////////////
 /// prelevo dati dal database e li carico nella vista///
 ///////////////////////////////////////////////////////
 
-					// apro la connessione al db
-					dbAdapter.open();
-					
-					// prelevo record by ID 
-					cursor = dbAdapter.fetchSessionById(sessionId);
-					cursor.moveToFirst();
-					
-					if(cursor.getCount()>0){
+						// apro la connessione al db
+						dbAdapter.open();
 						
-						// carico dati
-						sessionName = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
-						data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
-						data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
-						data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
-						//TODO: si potrebbe togliere il numero dei sample presente nel database.
-						boolean axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1");
-						boolean axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1");
-						boolean axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
-						upsampling = cursor.getInt(( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
+						// prelevo record by ID 
+						cursor = dbAdapter.fetchSessionById(sessionId);
+						cursor.moveToFirst();
 						
-						// chiudo connessioni
-						cursor.close();
-						dbAdapter.close();
-						
-						if(!(axis_x || axis_y || axis_z)) 
-						{
-							Toast.makeText(getApplicationContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
-							finish();
-						}
-						
-						int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
-						sample = new int[(nSample > 0 ? nSample : 1)];
-						
-						int z=0;
-						if(axis_x)
-							for(int i = 0; i<data_x.length; i++)
-								if(data_x[i].length()>0)
-								{
-									sample[z] = ((int)(Float.parseFloat(data_x[i])*10)); 
-									z++;
-								}
-						if(axis_y)
-							for(int i = 0; i<data_y.length; i++)
-								if(data_y[i].length()>0)
-								{ 
-									sample[z] = ((int)(Float.parseFloat(data_y[i])*10)); 
-									z++;
-								}
-						if(axis_z)
-							for(int i = 0; i<data_z.length; i++)
-								if(data_z[i].length()>0)
-								{ 
-									sample[z] = ((int)(Float.parseFloat(data_z[i])*10)); 
-									z++;
-								}
-						
-						// verifica che ci sia lo spazio disponibile nella memory card
-						if(AvailableSpace.getExternalAvailableSpaceInBytes()> totalDataLenght()){
-							Log.w("Save Directory", myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-		 			        
-							Util.lockOrientation(a, v.getRootView());
+						if(cursor.getCount()>0){
 							
-							pd = new ProgressDialog(FileExplore.this);
-							pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-							pd.setCancelable(false);
-							pd.setMax(sample.length);
-						    pd.setMessage("Attendere Prego");
-						    pd.setTitle("Salvataggio");
-						    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {@Override
-						        public void onClick(DialogInterface dialog, int which) {
-						            dialog.dismiss();
-					               	synchronized (t) {
-										t.interrupt();
+							// carico dati
+							sessionName = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
+							data_x = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_X))).split(" ");
+							data_y = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Y))).split(" ");
+							data_z = (cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_SENSOR_DATA_Z))).split(" ");
+							//TODO: si potrebbe togliere il numero dei sample presente nel database.
+							boolean axis_x = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_X)).equals("1");
+							boolean axis_y = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Y)).equals("1");
+							boolean axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
+							upsampling = cursor.getInt(( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
+							
+							// chiudo connessioni
+							cursor.close();
+							dbAdapter.close();
+							
+							if(!(axis_x || axis_y || axis_z)) 
+							{
+								Toast.makeText(getApplicationContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+								finish();
+							}
+							
+							int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
+							sample = new int[(nSample > 0 ? nSample : 1)];
+							
+							int z=0;
+							if(axis_x)
+								for(int i = 0; i<data_x.length; i++)
+									if(data_x[i].length()>0)
+									{
+										sample[z] = ((int)(Float.parseFloat(data_x[i])*10)); 
+										z++;
+									}
+							if(axis_y)
+								for(int i = 0; i<data_y.length; i++)
+									if(data_y[i].length()>0)
+									{ 
+										sample[z] = ((int)(Float.parseFloat(data_y[i])*10)); 
+										z++;
+									}
+							if(axis_z)
+								for(int i = 0; i<data_z.length; i++)
+									if(data_z[i].length()>0)
+									{ 
+										sample[z] = ((int)(Float.parseFloat(data_z[i])*10)); 
+										z++;
+									}
+							final String savePath = myPath.getText().toString().substring(10);
+							File f = new File(savePath);
+							Log.w("permesso scrittura", "" + f.canWrite());
+
+							// verifica che ci sia lo spazio disponibile nella memory card
+							if(AvailableSpace.getExternalAvailableSpaceInBytes()> totalDataLenght()){
+								Log.w("Save Directory", savePath +"/"+ sessionName + ".wav");
+			 			        
+								Util.lockOrientation(a, v.getRootView());
+								
+								pd = new ProgressDialog(FileExplore.this);
+								pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+								pd.setCancelable(false);
+								pd.setMax(sample.length);
+							    pd.setMessage("Attendere Prego");
+							    pd.setTitle("Salvataggio");
+							    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {@Override
+							        public void onClick(DialogInterface dialog, int which) {
+							            dialog.dismiss();
+						               	synchronized (t) {
+											t.interrupt();
+											File myFile = new File(savePath +"/"+ sessionName + ".wav");
+											myFile.delete();
+											Util.unlockOrientation(a);
+											isExporting = false;
+										}
+							        }
+							    });
+								pd.show();
+								
+			 			        t = new Thread("wav_creation") {
+									public void run() {
+										setPriority(Thread.MIN_PRIORITY);
+										
 										File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-										myFile.delete();
-										Util.unlockOrientation(a);
-										isExporting = false;
+			//							File myFile = new File("/sdcard/" + sessionName	+ ".wav");
+										try {
+											myFile.createNewFile();
+										
+											FileOutputStream fOut = new FileOutputStream(myFile);
+											long totalAudioLen = totalAudioLenght();
+											long totalDataLen = totalDataLenght();
+											int channels = 1;
+											Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, longSampleRate, channels,fOut);
+			// 			        			fOut.write(byteBuff.array());
+											MusicUpsampling.note(fOut, 44100, upsampling, sample, pd);
+											fOut.close();
+											pd.dismiss();
+											Util.unlockOrientation(a);
+											isExporting = false;
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
 									}
-						        }
-						    });
-							pd.show();
-							
-		 			        t = new Thread("wav_creation") {
-								public void run() {
-									setPriority(Thread.MIN_PRIORITY);
-									
-									File myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-		//							File myFile = new File("/sdcard/" + sessionName	+ ".wav");
-									try {
-										myFile.createNewFile();
-									
-										FileOutputStream fOut = new FileOutputStream(myFile);
-										long totalAudioLen = totalAudioLenght();
-										long totalDataLen = totalDataLenght();
-										int channels = 1;
-										Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, longSampleRate, channels,fOut);
-		// 			        			fOut.write(byteBuff.array());
-										MusicUpsampling.note(fOut, 44100, upsampling, sample, pd);
-										fOut.close();
-										pd.dismiss();
-										Util.unlockOrientation(a);
-										isExporting = false;
-									} catch (IOException e) {
-										e.printStackTrace();
-									}
-								}
-							};
-							t.start();
-						}
-						else
-							Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
+								};
+								t.start();
+							}
+							else
+								Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
 					}
 				}
 				catch(SQLException e){
@@ -202,6 +211,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHAN
 				}
 			}
 		});
+		}
 	}
 
     @Override
