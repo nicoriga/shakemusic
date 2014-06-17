@@ -34,6 +34,7 @@
     <string name="error_database_rename_session">Errore database: rinomina sessione</string>
     <string name="error_database_update_change">Database: Errore caricamento modifiche </string>
 	<string name="error_memory_low">Memoria diponibile insufficente </string>
+	<string name="error_write_privileges">Impossibile salvare in questa cartella </string>
 	
     
 	<string-array name="upsampling_array">

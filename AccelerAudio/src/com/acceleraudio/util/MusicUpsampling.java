@@ -10,9 +10,10 @@ import android.media.AudioTrack;
 
 public class MusicUpsampling
 {
+	public static boolean isRunning;
 	
 	/**
-	 * scrive audio PCM nel file di output usando Upsampling: note 
+	 * scrive audio PCM nel file di output
 	 * 
 	 * @param out file su cui viene scritto audio PCM
 	 * @param sample_rate sample rate espresso in Hz
@@ -33,8 +34,9 @@ public class MusicUpsampling
         double fr; // frequenza
         double ph = 0.0; // pi greco
         ByteBuffer byteBuff = ByteBuffer.allocate(buffsize*2);
+        isRunning = true;
         
-        for(int x=0; x < sample.length; x++){
+        for(int x=0; x < sample.length && isRunning; x++){
         	// modifica la frequenza con i campioni prelevati dall'accelerometro
         	fr =  262 + (Math.abs(sample[x])*100);
         	for(int i=0; i < buffsize; i++){
