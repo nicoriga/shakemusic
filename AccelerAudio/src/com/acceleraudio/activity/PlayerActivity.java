@@ -270,13 +270,16 @@ public class PlayerActivity extends Activity {
 			play.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive())
 					{
 						if(isPause){
 							isPause = false;
-							
-							// manda il comando di avvio per essere sicuri che il servizio non sia stato chiuso
-	//						startService(intentPlayer);
 							
 							Intent intent = new Intent(NOTIFICATION);
 							intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
@@ -297,6 +300,13 @@ public class PlayerActivity extends Activity {
 			pause.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 					isPause = true;
 					
 					Intent intent = new Intent(NOTIFICATION);
