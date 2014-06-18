@@ -223,7 +223,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 												t.start();
 											}
 										})
-										.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+										.setNegativeButton("Rinomina", new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int which) {
 												FragmentManager fm = getSupportFragmentManager();

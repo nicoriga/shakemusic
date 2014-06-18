@@ -3,14 +3,17 @@ package com.acceleraudio.activity;
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.PlayerTrack;
 import com.acceleraudio.util.MusicUpsampling;
+import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -126,7 +129,7 @@ public class PlayerActivity extends Activity {
 				intentPlayer = savedInstanceState.getParcelable(INTENT_PLAYER);
 				currentTimeTV.setText(savedInstanceState.getString(PROGRESS_TIME));
 				
-				durationTV.setText("" + duration/1000);
+				durationTV.setText("" + Util.millisecondsToMinutesSeconds(duration));
 				sb_musicProgress.setMax((int)duration);
 				
 				if(isPause)
@@ -253,9 +256,9 @@ public class PlayerActivity extends Activity {
 				intentPlayer.putExtra(ACC_DATA, sample);
 				intentPlayer.putExtra(UPSAMPLING, upsampling);
 				startService(intentPlayer);
-				}
-	
 			}
+	
+		}
 			
 			thumbnail.setImageBitmap(bmp);
 			
@@ -267,20 +270,25 @@ public class PlayerActivity extends Activity {
 			play.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(isPause)
+					if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive())
 					{
-						isPause = false;
-						
-						// manda il comando di avvio per essere sicuri che il servizio non sia stato chiuso
-//						startService(intentPlayer);
-						
-						Intent intent = new Intent(NOTIFICATION);
-						intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
-						sendBroadcast(intent);
-						
-						inizialized = true;
-						play.setEnabled(false);
-						pause.setEnabled(true);
+						if(isPause){
+							isPause = false;
+							
+							// manda il comando di avvio per essere sicuri che il servizio non sia stato chiuso
+	//						startService(intentPlayer);
+							
+							Intent intent = new Intent(NOTIFICATION);
+							intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
+							sendBroadcast(intent);
+							
+							inizialized = true;
+							play.setEnabled(false);
+							pause.setEnabled(true);
+						}
+					}
+					else{
+						Toast.makeText(v.getContext(), "Speacker occupato", Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -395,7 +403,7 @@ public class PlayerActivity extends Activity {
     }
     
     public void setMaxDuration(){
-    	durationTV.setText("" + duration/1000);
+    	durationTV.setText("" + Util.millisecondsToMinutesSeconds(duration));
     	sb_musicProgress.setMax((int)duration);
     }
     

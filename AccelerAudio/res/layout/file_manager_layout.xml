@@ -18,22 +18,15 @@
             android:text="@string/save" />
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/list_file_manager"
-        android:layout_width="fill_parent"
-        android:layout_height="418dp" >
-
-    </ListView>
-
-    <TextView
+     <TextView
         android:id="@+id/path"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@android:id/empty"
+    <ListView
+        android:id="@+id/list_file_manager"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="No Data" />
+        android:layout_height="fill_parent" >
+
+    </ListView>
 
 </LinearLayout>

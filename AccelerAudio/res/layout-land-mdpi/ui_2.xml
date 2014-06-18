@@ -34,7 +34,7 @@
 	
 	        <EditText
 	            android:id="@+id/UI2_ET_sessionTitle"
-	            android:layout_width="wrap_content"
+	            android:layout_width="500dp"
 	            android:layout_height="wrap_content"
 	            android:layout_marginLeft="20dp"
 	            android:ems="10"

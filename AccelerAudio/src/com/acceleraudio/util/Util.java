@@ -88,5 +88,13 @@ public class Util{
     {
     	a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
+    
+    public static String millisecondsToMinutesSeconds (long milliseconds){
+	    int seconds = (int) (milliseconds / 1000) % 60 ;
+	    int minutes = (int) ((milliseconds / (1000*60)) % 60);
+	    double temp = milliseconds / 10000;
+	    int decimalSeconds = (int) (((temp+0.001)*100)%100);
+	    return minutes + ":" + seconds + "." + decimalSeconds;
+    }
 }
 

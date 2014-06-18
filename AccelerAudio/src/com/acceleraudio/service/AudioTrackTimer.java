@@ -5,6 +5,7 @@ package com.acceleraudio.service;
 
 import com.acceleraudio.activity.PlayerActivity;
 import com.acceleraudio.util.MusicUpsampling;
+import com.acceleraudio.util.Util;
 
 import android.app.Activity;
 import android.media.AudioTrack;
@@ -122,7 +123,8 @@ public class AudioTrackTimer extends AudioTrack {
 		@Override
 		public void onTick(long millisUntilFinished) {
 			long time_elapsed = duration - (millisUntilFinished + elapsed);
-			PlayerActivity.currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
+			PlayerActivity.currentTimeTV.setText("" + Util.millisecondsToMinutesSeconds(elapsed + time_elapsed));
+//			PlayerActivity.currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
 			PlayerActivity.sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
 			remaining_millis = millisUntilFinished;
 		}

@@ -126,7 +126,7 @@
         
         <Spinner
         android:id="@+id/UI5_SP_frequency"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content" />
     </TableRow>
 
@@ -154,7 +154,7 @@
         
         <Spinner
         android:id="@+id/UI5_SP_upsampling"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp" />
     </TableRow>

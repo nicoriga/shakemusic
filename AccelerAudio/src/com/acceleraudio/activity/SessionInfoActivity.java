@@ -5,11 +5,13 @@ import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -220,10 +222,14 @@ public class SessionInfoActivity extends Activity {
 					}
 					else
 					{
-						// avvio la PlayerActivity
-						Intent i = new Intent(v.getContext(), PlayerActivity.class);
-						i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
-						v.getContext().startActivity(i);
+						if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive()){
+							// avvio la PlayerActivity
+							Intent i = new Intent(v.getContext(), PlayerActivity.class);
+							i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
+							v.getContext().startActivity(i);
+						}
+						else
+							Toast.makeText(v.getContext(), "Speacker occupato", Toast.LENGTH_SHORT).show();
 					}
 				}
 			});

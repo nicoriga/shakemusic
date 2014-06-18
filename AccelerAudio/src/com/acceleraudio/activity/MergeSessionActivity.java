@@ -43,8 +43,12 @@ public class MergeSessionActivity extends Activity{
 	private long sessionId; 
     
     // Distanza azione riordinamento touch
-    private static final int SWIPE_OFFSET_PORTRAIT = 250;
-    private static final int SWIPE_OFFSET_LANDSCAPE = 440;
+	// per telefono
+//    private static final int SWIPE_OFFSET_PORTRAIT = 250;
+//    private static final int SWIPE_OFFSET_LANDSCAPE = 440;
+    // per tablet
+    private static final int SWIPE_OFFSET_PORTRAIT = 420;
+    private static final int SWIPE_OFFSET_LANDSCAPE = 700;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {

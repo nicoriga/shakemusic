@@ -151,15 +151,24 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					sessions.add(0,s);
 				}
 				cursor.close();
-				
-				// aggiorno il nome della sessione.. potrebbe essere stata rinominata
+			}
+			
+			if(sessions.size()>0){
+			// aggiorno il nome della sessione.. potrebbe essere stata rinominata
 				cursor = dbAdapter.fetchSessionByIdMinimal(sessions.get(focusPosition).getId());
 				cursor.moveToFirst();
+				RecordedSession x;
 				if ( !cursor.isAfterLast() )
-					sessions.get(focusPosition).setName(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
-				cursor.close();
-				adaperList.notifyDataSetChanged();
+				{
+					x = sessions.get(focusPosition);
+					x.setName(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
+	//				sessions.add(focusPosition,x);
+	//				sessions.remove(focusPosition+1);
+				}
+			cursor.close();
 			}
+			adaperList.notifyDataSetChanged();
+			
 			dbAdapter.close();
 			
 //			adaperListCheck = new ListSessionAdapter(this, R.layout.list_session_select_layout, sessions);

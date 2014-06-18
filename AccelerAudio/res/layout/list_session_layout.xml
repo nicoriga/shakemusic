@@ -17,6 +17,8 @@
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/img"
         android:layout_width="fill_parent"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:layout_height="50dp" />
     
     <TextView
