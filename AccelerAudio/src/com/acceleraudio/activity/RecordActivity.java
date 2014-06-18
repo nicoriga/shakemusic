@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.RecordTrack;
+import com.acceleraudio.util.AvailableSpace;
 import com.acceleraudio.util.ImageBitmap;
 import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
@@ -210,23 +211,30 @@ public class RecordActivity extends Activity {
 					resetProgressBar();
 					
 					// Verifica che siano stati presi dati dall'accelerometro
-					if(data_x.size() > 15 || data_y.size() > 15 || data_z.size() > 15)
+					//TODO: da eliminare il true
+					if(AvailableSpace.getinternalAvailableSpace(AvailableSpace.SIZE_MB)>1)
 					{
-						saveAccelerometerData();
-						// avvio la SessionInfoActivity
-						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
-						i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
-						v.getContext().startActivity(i);
-						finish();
+//						if(data_x.size() > 15 || data_y.size() > 15 || data_z.size() > 15)
+						if((data_x.size()+ data_y.size() + data_z.size()) > 0)
+						{
+							saveAccelerometerData();
+							// avvio la SessionInfoActivity
+							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
+							i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
+							v.getContext().startActivity(i);
+							finish();
+						}
+						else
+						{
+							Toast.makeText(v.getContext(), getString(R.string.error_low_recorded_data), Toast.LENGTH_SHORT).show();
+							if(remaining_time == 0) finish(); // se non ci sono dati da salvare quindi chiude l'activity
+							// se si hanno registrato pochi campioni mettere in pausa
+							// in modo da permettere all'utente di registrarne ancora
+							pauseSession.performClick();
+						}
 					}
 					else
-					{
-						Toast.makeText(v.getContext(), getString(R.string.error_low_recorded_data), Toast.LENGTH_SHORT).show();
-						if(remaining_time == 0) finish(); // se non ci sono dati da salvare quindi chiude l'activity
-						// se si hanno registrato pochi campioni mettere in pausa
-						// in modo da permettere all'utente di registrarne ancora
-						pauseSession.performClick();
-					}
+						Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
 				}
 			});
 			

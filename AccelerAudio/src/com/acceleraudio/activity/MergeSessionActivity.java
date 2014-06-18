@@ -16,6 +16,7 @@ import android.database.SQLException;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -77,7 +78,7 @@ public class MergeSessionActivity extends Activity{
     		gestureListener = new ListView.OnTouchListener() {
     		        public boolean onTouch(View v, MotionEvent event) {
     		        	int action = event.getAction();
-    		            if(Math.abs(event.getX()) < dpTopx(getOffsetSwipe()))
+    		            if(Math.abs(event.getX()) < convertDpToPixel(getOffsetSwipe()))
     		        		return false;
     		        	try {
 							switch(action)
@@ -180,7 +181,7 @@ public class MergeSessionActivity extends Activity{
 		}
 	}
 	
-	 @Override
+	@Override
     public void onSaveInstanceState(Bundle savedInstanceState) 
     {
     	savedInstanceState.putLongArray(SESSION_ID_LIST, adaperList.getSessionId());
@@ -231,9 +232,10 @@ public class MergeSessionActivity extends Activity{
 	}
 	
 	/*** metodo per convertire i pixel in dp***/
-	public float dpTopx(int dip) {
-		float scale = getResources().getDisplayMetrics().density;
-		return dip * scale + 0.5f;
+	public float convertDpToPixel(int dip) {
+//		float scale = getResources().getDisplayMetrics().density;
+//		return dip * scale + 0.5f;
+		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, getResources().getDisplayMetrics());
 	}
 	
 	/*** sposta una riga nella posizione indicata ***/

@@ -32,7 +32,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
  
 public class ListSessionActivity extends FragmentActivity  implements RenameDialogListener{
-
+	
+	public static String SELECTED_MODE = "listSessionActivity.selectedMode";
+	public static String SESSION_SELECTED_LIST = "listSessionActivity.sessionSelectedList";
+	public static String SESSION_SELECTED_LIST_SIZE = "listSessionActivity.sessionSelectedListSize";
+	public static String TOT_SAMPLE = "listSessionActivity.totSample";
+	
 	private Button newSession, preferences, merge, next, cancel;
 	private ListView list;
 	private ArrayList<RecordedSession> sessions;
@@ -42,8 +47,9 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
     private Thread t;
     private boolean select_mode = false;
     private long lastId = -1;
-    private int focusPosition;
-    public static ProgressBar totSample;
+    private int focusPosition, totSample;
+    public static ProgressBar totSamplePB;
+    private long[] selectedSessionId;
     
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,10 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
     	dbAdapter = new DbAdapter(this);
     	Cursor cursor = null;
     	try {
+    		
+    		if(savedInstanceState != null)
+    			select_mode = savedInstanceState.getBoolean(SELECTED_MODE);
+    		
     		// carico l'interfaccia
     		loadInterface();
     		
@@ -85,6 +95,15 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			adaperListCheck = new ListSessionAdapter(this, R.layout.list_session_select_layout, sessions);
 			adaperList = new ListSessionAdapter(this, (R.layout.list_session_layout), sessions);
 			list.setAdapter(adaperList);
+			
+			if(savedInstanceState != null){
+				if(savedInstanceState.getInt(SESSION_SELECTED_LIST_SIZE)>0){
+					totSample = savedInstanceState.getInt(TOT_SAMPLE);
+					selectedSessionId = savedInstanceState.getLongArray(SESSION_SELECTED_LIST);
+					adaperListCheck.setSelectedSession(totSample,selectedSessionId);
+					totSamplePB.setProgress(totSample);
+				}
+			}
 			
 		} catch (Exception e) {
 			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
@@ -120,9 +139,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				
 				// prelevo tutti i record 
 				cursor = dbAdapter.fetchSessionByIdMinimal(lastId);
-				
 				cursor.moveToFirst();
-				while ( !cursor.isAfterLast() ) {
+				if ( !cursor.isAfterLast() ) {
 					RecordedSession s = new RecordedSession(cursor.getLong( cursor.getColumnIndex(DbAdapter.T_SESSION_SESSIONID)),
 															cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)),
 															cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE)),
@@ -131,10 +149,16 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 															cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Y)) +
 															cursor.getInt( cursor.getColumnIndex(DbAdapter.T_SESSION_N_DATA_Z)));
 					sessions.add(0,s);
-					cursor.moveToNext();
 				}
-				
 				cursor.close();
+				
+				// aggiorno il nome della sessione.. potrebbe essere stata rinominata
+				cursor = dbAdapter.fetchSessionByIdMinimal(sessions.get(focusPosition).getId());
+				cursor.moveToFirst();
+				if ( !cursor.isAfterLast() )
+					sessions.get(focusPosition).setName(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
+				cursor.close();
+				adaperList.notifyDataSetChanged();
 			}
 			dbAdapter.close();
 			
@@ -173,7 +197,20 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			super.onBackPressed();
 	}
 	
+	@Override
+    public void onSaveInstanceState(Bundle savedInstanceState) 
+    {
+		savedInstanceState.putBoolean(SELECTED_MODE, select_mode);
+		savedInstanceState.putInt(SESSION_SELECTED_LIST_SIZE, adaperListCheck.getSelectedSize());
+		if(adaperListCheck.getSelectedSize() > 0){
+			savedInstanceState.putLongArray(SESSION_SELECTED_LIST, adaperListCheck.getSelectedSessionId());
+			savedInstanceState.putInt(TOT_SAMPLE, adaperListCheck.getTotSample());
+		}
+    	super.onSaveInstanceState(savedInstanceState);
+    }
+	
 	/**** creazione del menu contestuale ****/
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) 
 	{
@@ -189,6 +226,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	}
 
 	/**** svolge azione dal menu contestuale ****/
+	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) 
 	{
@@ -282,6 +320,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	}
 	
 	/**** visualizza dialog per rinomina sessione ****/
+	
 	private void showRenameDialog(int position, String oldName) {
         FragmentManager fm = getSupportFragmentManager();
         RenameDialog rd = new RenameDialog();
@@ -290,6 +329,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
     }
 	
 	/**** rinomina la sessione dopo la conferma del dialog ****/
+	
 	@Override
 	public void onFinishRenameDialog(int position, String sessionName, boolean confirm) {
 		if(confirm)
@@ -328,8 +368,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		{
 			next = (Button)findViewById(R.id.UI1_BT_next);
 			cancel = (Button)findViewById(R.id.UI1_BT_cancel);
-			totSample = (ProgressBar)findViewById(R.id.UI1S_PB_totSample);
-			totSample.setMax(MergeSessionActivity.MAX_SAMPLE);
+			totSamplePB = (ProgressBar)findViewById(R.id.UI1S_PB_totSample);
+			totSamplePB.setMax(MergeSessionActivity.MAX_SAMPLE);
 			merge.setEnabled(false);
 			list.setAdapter(adaperListCheck);
 		}
@@ -402,7 +442,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			next.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					Intent i = new Intent(view.getContext(), MergeSessionActivity.class);
-					i.putExtra(DbAdapter.T_SESSION_SESSIONID, adaperListCheck.getSelectedSession());
+					i.putExtra(DbAdapter.T_SESSION_SESSIONID, adaperListCheck.getSelectedSessionId());
 					
 					if(adaperListCheck.getSelectedSize() > 1)
 					{

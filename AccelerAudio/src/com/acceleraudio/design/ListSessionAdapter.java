@@ -27,7 +27,6 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 	private int layout;
 	private int totSample;
 	
-	// TODO eliminare sessionIdList
 	public ListSessionAdapter(Activity context, int layout, ArrayList<RecordedSession> sessions) 
 	{
 		super(context, layout, sessions);
@@ -78,7 +77,7 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 						if (!sessions.get(position).isSelected()) {
 							sessions.get(position).select(true);
 							totSample += sessions.get(position).getNumSample();
-							ListSessionActivity.totSample.setProgress(totSample);
+							ListSessionActivity.totSamplePB.setProgress(totSample);
 //							if(getTotSample() > MergeSessionActivity.MAX_SAMPLE)ListSessionActivity.totSample.setBackground();
 						}
 					}
@@ -86,7 +85,7 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 						if (sessions.get(position).isSelected()) {
 							sessions.get(position).select(false);
 							totSample -= sessions.get(position).getNumSample();
-							ListSessionActivity.totSample.setProgress(totSample);
+							ListSessionActivity.totSamplePB.setProgress(totSample);
 						}
 					}
 					
@@ -100,12 +99,8 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 		return rowView;
 	}
 	
-	public void setLayout(int layout){
-		this.layout = layout;
-	}
-	
 	// restituisce un array degli id delle sessioni selezionate
-	public long[] getSelectedSession()
+	public long[] getSelectedSessionId()
 	{
 		ArrayList<Long> selectedSessionId = new  ArrayList<Long>();
 		for (int i=0; i<sessions.size(); i++) if(sessions.get(i).isSelected()) selectedSessionId.add(sessions.get(i).getId());
@@ -142,6 +137,16 @@ public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 		int x = 0;
 		for (int i=0; i<sessions.size(); i++) if(sessions.get(i).isSelected()) x++;
 		return x;
+	}
+	
+	public void setSelectedSession(int totSample, long[] selectedSessionId){
+		this.totSample = totSample;
+		for(int x=0; x<selectedSessionId.length; x++)
+			for (int i=0; i<sessions.size(); i++) 
+				if(sessions.get(i).getId() == selectedSessionId[x]){
+					sessions.get(i).select(true);
+					break;
+				}
 	}
 	
 	// deseleziona tutte le sessioni

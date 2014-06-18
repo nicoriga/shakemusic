@@ -56,9 +56,10 @@ public class AudioTrackTimer extends AudioTrack {
 	public void pause(int sampleIndex){
 		super.pause();
 		this.sampleIndex = sampleIndex;
-		if(countDownTimer != null)
-			countDownTimer.cancel();
-		timer.cancel();
+//		if(countDownTimer != null)
+//			countDownTimer.cancel();
+		if(timer != null) 
+			timer.cancel();
 		playbackHeadPosition = getPlaybackHeadPosition();
 		// TODO: sistemare il calcolo del tempo rimanente quando viene messo in pausa
 //		remaining_millis = (duration - (MusicUpsampling.duration(upsampling, sampleIndex, getSampleRate()) + (long)(( getPlaybackHeadPosition( ) / getSampleRate( ) ) * 1000.0)));
@@ -68,13 +69,14 @@ public class AudioTrackTimer extends AudioTrack {
 	public void stop(){
 		super.stop();
 		remaining_millis = duration;
-		if(countDownTimer != null)
-		{
-			countDownTimer.cancel();
-			Log.w("music timer", "stopped");
-			countDownTimer = null;
-		}
-		timer.cancel();
+//		if(countDownTimer != null)
+//		{
+//			countDownTimer.cancel();
+//			Log.w("music timer", "stopped");
+//			countDownTimer = null;
+//		}
+		if(timer != null) 
+			timer.cancel();
 	}
 	
 	@Override
@@ -82,29 +84,29 @@ public class AudioTrackTimer extends AudioTrack {
 		return super.getPlaybackHeadPosition();
 	}
 	
-	public void loadCountDownTimer()
-    {
-    	elapsed = remaining_millis;
-    	CountDownTimer countDownTimerT = new CountDownTimer(remaining_millis, 1) {
-			public void onTick(long millisUntilFinished) {
-				long time_elapsed = duration - (millisUntilFinished + elapsed);
-				PlayerActivity.currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
-				PlayerActivity.sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
-				remaining_millis = millisUntilFinished;
-			}
-			
-			public void onFinish() {
-//				PlayerActivity.currentTimeTV.setText("" + (remaining_millis/1000));
-//				PlayerActivity.sb_musicProgress.setProgress((int)remaining_millis);
-				remaining_millis = duration;
-				
-//				loadCountDownTimer();
-//				countDownTimer.start();
-			}
-		}.start();
-		
-		countDownTimer = countDownTimerT;
-    }
+//	public void loadCountDownTimer()
+//    {
+//    	elapsed = remaining_millis;
+//    	CountDownTimer countDownTimerT = new CountDownTimer(remaining_millis, 1) {
+//			public void onTick(long millisUntilFinished) {
+//				long time_elapsed = duration - (millisUntilFinished + elapsed);
+//				PlayerActivity.currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
+//				PlayerActivity.sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
+//				remaining_millis = millisUntilFinished;
+//			}
+//			
+//			public void onFinish() {
+////				PlayerActivity.currentTimeTV.setText("" + (remaining_millis/1000));
+////				PlayerActivity.sb_musicProgress.setProgress((int)remaining_millis);
+//				remaining_millis = duration;
+//				
+////				loadCountDownTimer();
+////				countDownTimer.start();
+//			}
+//		}.start();
+//		
+//		countDownTimer = countDownTimerT;
+//    }
 	
 	class MyTimer extends CountDownTimer{
 

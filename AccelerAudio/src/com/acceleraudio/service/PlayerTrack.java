@@ -91,7 +91,6 @@ public class PlayerTrack extends IntentService{
         Intent intentS = new Intent(PlayerActivity.NOTIFICATION);
 		intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
 		sendBroadcast(intentS);
-		// loop musicale 
 		
 		short samples1[] = new short[sizeBuff];
 		
@@ -106,6 +105,7 @@ public class PlayerTrack extends IntentService{
 //        sendBroadcast(intentPlay);
         inizialized = true;
         
+        // loop musicale
         while(isRunning){
         	if(audioTrackTimer.getPlayState() == AudioTrackTimer.PLAYSTATE_PAUSED)
 				try {

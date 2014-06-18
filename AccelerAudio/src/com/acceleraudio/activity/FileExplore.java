@@ -86,7 +86,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 					{
 						final String savePath = myPath.getText().toString().substring(10);
 						File f = new File(savePath);
-						Log.w("permesso scrittura", "" + f.canWrite());
+						Log.w("permesso scrittura: ", "" + f.canWrite());
 						
 						if(f.canWrite()){
 							isExporting = true;
@@ -182,7 +182,6 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 										}
 									});
 								    
-									pd.show();
 									myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 									
 				 			        t = new Thread("wav_creation") {
@@ -207,16 +206,39 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 											}
 										}
 									};
+									
 									// verifico se esiste un file con lo stesso nome
 									if(!myFile.exists())
+									{
+										pd.show();
 										t.start();
+									}
 									else
-										{
-											FragmentManager fm = getSupportFragmentManager();
-									        RenameDialog rd = new RenameDialog();
-									        rd.setSessionInfo(0, sessionName + ".wav");
-									        rd.show(fm, "rename_dialog");
-										}
+									{
+										new AlertDialog.Builder(v.getContext()).setTitle("File già presente: Vuoi sovrascrivere?")
+										.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												pd.show();
+												t.start();
+											}
+										})
+										.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												FragmentManager fm = getSupportFragmentManager();
+											    RenameDialog rd = new RenameDialog();
+											    rd.setSessionInfo(0, sessionName + ".wav");
+											    rd.show(fm, "rename_dialog");
+											}
+										})
+										.setNeutralButton("Annulla", new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												
+											}
+										}).show();
+									}
 										
 								}
 								else
@@ -229,7 +251,6 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 							dbAdapter.close();
 						}
 					} else{ 
-//						Toast.makeText(v.getContext(), getString(R.string.error_write_privileges), Toast.LENGTH_SHORT).show();
 						new AlertDialog.Builder(v.getContext()).setTitle(getString(R.string.error_write_privileges)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
@@ -330,14 +351,17 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 			sessionName = newName;
 			myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 			if(!myFile.exists())
+			{
+				pd.show();
 				t.start();
+			}
 			else
-				{
-					FragmentManager fm = getSupportFragmentManager();
-			        RenameDialog rd = new RenameDialog();
-			        rd.setSessionInfo(0, sessionName + ".wav");
-			        rd.show(fm, "rename_dialog");
-				}
+			{
+				FragmentManager fm = getSupportFragmentManager();
+			    RenameDialog rd = new RenameDialog();
+			    rd.setSessionInfo(0, sessionName + ".wav");
+			    rd.show(fm, "rename_dialog");
+			}
 		}
 		else
 		{

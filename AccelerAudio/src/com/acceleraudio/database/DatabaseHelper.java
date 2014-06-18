@@ -42,7 +42,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Metodo chiamato durante l'upgrade del database
     @Override
     public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) { 
-    	db.execSQL("DROP TABLE IF EXISTS session");
-        onCreate(db);         
     }
 }
