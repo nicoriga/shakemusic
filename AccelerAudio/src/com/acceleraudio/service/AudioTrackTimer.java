@@ -33,12 +33,19 @@ public class AudioTrackTimer extends AudioTrack {
 	
 	@Override
 	public void play(){
-		super.play();
 		if(duration > 0) {
 			elapsed = remaining_millis;
 			timer = new MyTimer(remaining_millis, 1);
 			timer.start();
 		}
+		try {
+			synchronized (this) {
+				this.wait(3);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		super.play();
 	}
 	
 	public void pause(int sampleIndex){
