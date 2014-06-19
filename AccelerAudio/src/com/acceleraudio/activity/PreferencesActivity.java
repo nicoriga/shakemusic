@@ -21,6 +21,14 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * permette di modificare le impostazioni predefinite della sessione che viene registrata 
+ */
 public class PreferencesActivity extends Activity {
 	
 	public static String FIRST_START = "first.start";
@@ -76,6 +84,7 @@ public class PreferencesActivity extends Activity {
 ///////////  aggiungo listener  /////////////////////////
 ////////////////////////////////////////////////////////
 
+			/*** aggiorno le impostazioni degl assi scelti ***/
 			final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
 				@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -93,6 +102,7 @@ public class PreferencesActivity extends Activity {
 			axis_y.setOnCheckedChangeListener(axis_change);
 			axis_z.setOnCheckedChangeListener(axis_change);
 			
+			/*** aggiorno le impostazioni del campionamento e velocita sensore***/
 			final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -158,7 +168,7 @@ public class PreferencesActivity extends Activity {
 ///////////  metodi ausiliari  /////////////////////////
 ////////////////////////////////////////////////////////
     
-    // carica le impostazioni dell'applicazione
+    /*** carica le impostazioni dell'applicazione ***/
     private void LoadPreferences()
     {
     	if(pref.getBoolean(FIRST_START, true))
