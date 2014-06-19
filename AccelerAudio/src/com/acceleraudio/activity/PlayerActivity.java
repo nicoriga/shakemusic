@@ -27,6 +27,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * permette di riprodure la musica dai dati dell'accelerometro della sessione
+ */
 public class PlayerActivity extends Activity {
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.playerActivity";
@@ -35,14 +43,12 @@ public class PlayerActivity extends Activity {
 	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
 	public static String SOUND_RATE = "playerActivity.soundRate";
 	public static String UPSAMPLING = "playerActivity.upsampling";
-	public static String INIZIALIZED = "playerActivity.inizialied";
 	public static String SAMPLE = "playerActivity.sample";
 	public static String IMAGE = "playerActivity.image";
 	public static String INTENT_PLAYER = "playerActivity.intentPlayer";
 	public static String PROGRESS_TIME = "playerActivity.progressTime";
 	
-	// TODO: rimuovere inizialized, perchè non serve
-	private Boolean inizialized = false, axis_x, axis_y, axis_z;
+	private Boolean axis_x, axis_y, axis_z;
 	private TextView sessionName;
 	public static TextView currentTimeTV, durationTV;
 	private ImageButton play, pause, stop;
@@ -67,7 +73,7 @@ public class PlayerActivity extends Activity {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_4);
     	
-////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
@@ -89,7 +95,6 @@ public class PlayerActivity extends Activity {
 			{
 				sessionId = savedInstanceState.getLong(SESSION_ID);
 				sessionName.setText(savedInstanceState.getString(SESSION_NAME));
-				inizialized = savedInstanceState.getBoolean(INIZIALIZED);
 				isPause = savedInstanceState.getBoolean(PlayerTrack.PAUSE);
 				sample = savedInstanceState.getIntArray(SAMPLE);
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
@@ -258,7 +263,6 @@ public class PlayerActivity extends Activity {
 							intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
 							sendBroadcast(intent);
 							
-							inizialized = true;
 							play.setEnabled(false);
 							pause.setEnabled(true);
 						}
@@ -285,7 +289,6 @@ public class PlayerActivity extends Activity {
 					intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PAUSE_MUSIC);
 					sendBroadcast(intent);
 					
-					inizialized = false;
 					play.setEnabled(true);
 					pause.setEnabled(false);
 				}
@@ -335,7 +338,6 @@ public class PlayerActivity extends Activity {
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	inizialized = false;
     }
     
     @Override
@@ -349,7 +351,6 @@ public class PlayerActivity extends Activity {
     {
     	savedInstanceState.putLong(SESSION_ID, sessionId);
     	savedInstanceState.putString(SESSION_NAME, sessionName.getText().toString());
-    	savedInstanceState.putBoolean(INIZIALIZED, inizialized);
     	savedInstanceState.putBoolean(PlayerTrack.PAUSE, isPause);
     	savedInstanceState.putInt(UPSAMPLING, upsampling);
     	savedInstanceState.putIntArray(SAMPLE, sample);
