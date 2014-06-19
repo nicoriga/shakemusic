@@ -8,6 +8,14 @@ import android.app.ProgressDialog;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * contiene algoritmo di upsampling e metodo per la calcolare la durata
+ */
 public class MusicUpsampling
 {
 	public static boolean isRunning;
