@@ -166,8 +166,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				cursor.close();
 			}
 			
-			if(sessions.size()>0){
 			// aggiorno il nome della sessione.. potrebbe essere stata rinominata
+			if(sessions.size()>0){
 				cursor = dbAdapter.fetchSessionByIdMinimal(sessions.get(focusPosition).getId());
 				cursor.moveToFirst();
 				RecordedSession x;
@@ -203,7 +203,9 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	@Override
 	public void onPause(){
 		super.onPause();
-		select_mode = false;
+//		select_mode = false;
+//		totSample = 0;
+//		adaperListCheck.resetSelectedSession();
 	}
 	
 	@Override
@@ -390,8 +392,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			totSamplePB.setMax(MergeSessionActivity.MAX_SAMPLE);
 			merge.setEnabled(false);
 			list.setAdapter(adaperListCheck);
-			if(totSample>0)
-				totSamplePB.setProgress(totSample);
+			if(adaperListCheck!=null && adaperListCheck.getTotSample()>0)
+				totSamplePB.setProgress(adaperListCheck.getTotSample());
 		}
 		else
 		{
@@ -422,6 +424,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				{
 					focusPosition = 0;
 					if(select_mode) adaperListCheck.resetSelectedSession();
+					select_mode = false;
 					Intent i = new Intent(v.getContext(), RecordActivity.class);
 					v.getContext().startActivity(i);
 				}
@@ -434,6 +437,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		preferences.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				if(select_mode) adaperListCheck.resetSelectedSession();
+				select_mode = false;
 				Intent i = new Intent(view.getContext(), PreferencesActivity.class);
 				view.getContext().startActivity(i);
 			}
@@ -444,6 +448,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 				focusPosition = position;
 				if(select_mode) adaperListCheck.resetSelectedSession();
+				select_mode = false;
 				Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
 				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessions.get(position).getId());
 				view.getContext().startActivity(i);
