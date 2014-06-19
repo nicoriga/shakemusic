@@ -4,15 +4,19 @@ import android.os.Environment;
 import android.os.StatFs;
 
 /**
- * @author Malunix
- * 
  * classe per gestire la memoria disponibile
- *
+ * 
  * sono stati utilizzati dei metodi deprecati perché gli unici disponibili per le API 8
+ * 
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * file manager per scegliere la cartella su cui esportare la sessione in formato WAV
  */
 public class AvailableSpace {
 
-    //Variabili
     public final static long SIZE_KB = 1024L;
     public final static long SIZE_MB = SIZE_KB * SIZE_KB;
     public final static long SIZE_GB = SIZE_KB * SIZE_KB * SIZE_KB;
