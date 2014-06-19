@@ -89,7 +89,8 @@ public class Util{
     	a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
     
-    public static String millisecondsToMinutesSeconds (long milliseconds){
+    public static String millisecondsToMinutesSeconds (long milliseconds)
+    {
 	    int seconds = (int) (milliseconds / 1000) % 60 ;
 	    int minutes = (int) ((milliseconds / (1000*60)) % 60);
 	    double temp = milliseconds / 10000;

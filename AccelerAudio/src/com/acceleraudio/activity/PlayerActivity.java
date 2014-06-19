@@ -59,39 +59,6 @@ public class PlayerActivity extends Activity {
 	private Thread t;
 	private static Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 	public boolean isPause;
-	// TODO sistemare timer durata musica
-	/*
-	private CountDownTimer countDownTimer;
-	private BroadcastReceiver receiver = new BroadcastReceiver() {
-    	
-    	@Override
-        public void onReceive(Context context, Intent intent) {
-    		Bundle bundle = intent.getExtras();
-    		if (bundle != null) {
-    			if(intent.hasExtra(PlayerTrack.DURATION))
-    			{
-					duration = bundle.getLong(PlayerTrack.DURATION);
-					remaining_millis = duration;
-					durationTV.setText("" + duration/1000);
-					sb_musicProgress.setMax((int)duration);
-    			}
-    			if(intent.hasExtra(PlayerTrack.PAUSE))
-    				if(bundle.getInt(PlayerTrack.PAUSE) == PlayerTrack.PAUSE_MUSIC)
-    					if(countDownTimer != null)
-    					{
-    						countDownTimer.cancel();
-    						playbackHeadPosition = bundle.getInt(PlayerTrack.PLAYBACK_POSITION);
-//    						remaining_millis = duration - (playbackHeadPosition);
-    					}
-    			if(intent.hasExtra(PlayerTrack.PLAY))
-					if(bundle.getInt(PlayerTrack.PLAY) == PlayerTrack.PLAY_MUSIC)
-					{
-//						loadCountDownTimer();
-						if(countDownTimer != null) countDownTimer.start();
-					}
-    		}
-        }
-    };*/
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -226,7 +193,7 @@ public class PlayerActivity extends Activity {
 								z++;
 							}
 					
-					Log.w("sample tot:", ""+z);
+					Log.w("PlayerActivity", "sample tot: "+z);
 					
 					play.setEnabled(false);
 					pause.setEnabled(true);
@@ -250,7 +217,7 @@ public class PlayerActivity extends Activity {
 					};
 					t.start();
 				
-				duration = MusicUpsampling.duration(upsampling, sample.length, 44100);
+				duration = MusicUpsampling.duration(upsampling, sample.length, PlayerTrack.SOUND_RATE_48000);
 				
 				// avvio subito la riproduzione della musica
 				intentPlayer.putExtra(ACC_DATA, sample);
@@ -273,7 +240,6 @@ public class PlayerActivity extends Activity {
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive())
@@ -303,7 +269,6 @@ public class PlayerActivity extends Activity {
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
@@ -323,17 +288,6 @@ public class PlayerActivity extends Activity {
 			stop.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					Intent intent = new Intent(NOTIFICATION);
-//					intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
-//					sendBroadcast(intent);
-//					stopService();
-//					try {
-//						Thread.sleep(200);
-//					} catch (InterruptedException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					finish();
 					onBackPressed();
 				}
 			});
@@ -369,31 +323,18 @@ public class PlayerActivity extends Activity {
     protected void onResume() {
     	super.onResume();
     	setMaxDuration();
-//    	registerReceiver(receiver, new IntentFilter(PlayerTrack.NOTIFICATION));
-    }
-	    
-    @Override
-    protected void onPause() {
-    	super.onPause();
-//    	unregisterReceiver(receiver);
     }
     
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	// forza la chiusura del servizio
-//    	stopService();
     	inizialized = false;
-//    	if(countDownTimer != null)
-//			countDownTimer.cancel();
     }
     
     @Override
 	public void onBackPressed() {
 	    super.onBackPressed();
 	    stopService(); // stoppa il servizio della musica
-//	    if(countDownTimer != null)
-//			countDownTimer.cancel();
     }
     
     @Override
@@ -417,33 +358,10 @@ public class PlayerActivity extends Activity {
     	sb_musicProgress.setMax((int)duration);
     }
     
-//    public void loadCountDownTimer()
-//    {
-//    	elapsed = remaining_millis;
-//    	countDownTimer = new CountDownTimer(remaining_millis, 5) {
-//			public void onTick(long millisUntilFinished) {
-//				long time_elapsed = duration - (millisUntilFinished + elapsed);
-//				currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
-//				sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
-//				remaining_millis = millisUntilFinished;
-//			}
-//			
-//			public void onFinish() {
-//				currentTimeTV.setText("" + (remaining_millis/1000));
-//				sb_musicProgress.setProgress((int)remaining_millis);
-//				
-//				loadCountDownTimer();
-//				countDownTimer.start();
-//			}
-//		};
-//    }
-
     /*** stoppa il servizio in modo automatico ***/
     public void stopService(){
     	Intent intent = new Intent(NOTIFICATION);
 		intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
 		sendBroadcast(intent);
-		
-//		stopService(intentPlayer);
     }
 }

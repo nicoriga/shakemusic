@@ -26,8 +26,8 @@ public class PlayerTrack extends IntentService{
 	public static final int PLAY_MUSIC = 0;
 	public static final int PAUSE_MUSIC = 1;
 	public static final int STOP_MUSIC = 2;
-//	private Thread t;
-	private int sound_rate, playbackHeadPosition;
+	public static final int SOUND_RATE_48000 = 48000;
+	private int sound_rate;
 	private boolean isRunning, inizialized ;
 	private int[] sample;
 	int x, upsampling;
@@ -42,16 +42,10 @@ public class PlayerTrack extends IntentService{
     			if(intent.hasExtra(COMMAND)){
     				int command = bundle.getInt(PlayerTrack.COMMAND);
     					if(command == PAUSE_MUSIC)
-    					{
     						audioTrackTimer.pause(x);
-    						playbackHeadPosition = audioTrackTimer.getPlaybackHeadPosition();
-//    						Intent intentPause = new Intent(NOTIFICATION);
-//			        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
-//			        		intentPause.putExtra(PLAYBACK_POSITION, playbackHeadPosition);
-//					        sendBroadcast(intentPause);
-    					} else if(command == PLAY_MUSIC){
+    					else if(command == PLAY_MUSIC)
     						resume();
-    					} else if(command == STOP_MUSIC)
+    					else if(command == STOP_MUSIC)
 							stop();
     			}
     		}
@@ -69,7 +63,7 @@ public class PlayerTrack extends IntentService{
 		sample = intent.getIntArrayExtra(PlayerActivity.ACC_DATA);
 //		if(sample == null) onDestroy();
 		Log.w("PlayerTrack", "sample: " +sample.length);
-		sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 48000);
+		sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, SOUND_RATE_48000);
 		upsampling = intent.getIntExtra(PlayerActivity.UPSAMPLING, 1);
 		
 		duration = MusicUpsampling.duration(upsampling, sample.length, sound_rate);
@@ -77,7 +71,7 @@ public class PlayerTrack extends IntentService{
 		
 		isRunning = true;
 		
-		 // setta dimensione buffer
+		// setta dimensione buffer
         final int buffsize = AudioTrackTimer.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         
         int sizeBuff = buffsize + upsampling;
@@ -92,17 +86,12 @@ public class PlayerTrack extends IntentService{
 		intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
 		sendBroadcast(intentS);
 		
-		short samples1[] = new short[sizeBuff];
+		short samples[] = new short[sizeBuff];
 		
         int amp = 10000;
         double twophi = Math.PI*2; // 2pi grego
-        double fr; // frequenza
-        double phi = 0.0; // pi greco
+        double fr, increment, angle = 0.0;
         
-//        Intent intentPlay = new Intent(NOTIFICATION);
-//        intentPlay.putExtra(DURATION, duration);
-//        intentPlay.putExtra(PLAY, PLAY_MUSIC);
-//        sendBroadcast(intentPlay);
         inizialized = true;
         
         // loop musicale
@@ -117,37 +106,31 @@ public class PlayerTrack extends IntentService{
 				}
         	// modifica la frequenza con i campioni prelevati dall'accelerometro
         	fr =  362 + (Math.abs(sample[x])*100);
+        	increment = twophi*fr/sound_rate;
         	for(int i=0; i < sizeBuff; i++){
-        		samples1[i] = (short) (amp*Math.sin(phi));
-        		phi += twophi*fr/sound_rate;
+        		samples[i] = (short) (amp*Math.sin(angle));
+        		angle += increment;
         	}
-        	audioTrackTimer.write(samples1, 0, sizeBuff);
+        	audioTrackTimer.write(samples, 0, sizeBuff);
         	x++;
         	if(x == sample.length) 
-        		{
-        		// stoppo e riavvio il coutdowntimer
-//	        		Intent intentPause = new Intent(NOTIFICATION);
-//	        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
-//			        sendBroadcast(intentPause);
-        			x = 0;
-        			Log.w("PlayerTrack", "restart loop " +sample.length);
-        			try {
-    					synchronized (this) {
-    						this.wait(400);
-    						audioTrackTimer.stop();
-    						this.wait(300);
-    						intentS = new Intent(PlayerActivity.NOTIFICATION);
-    						intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
-    						sendBroadcast(intentS);
-    					}
-    				} catch (InterruptedException e) {
-    					e.printStackTrace();
-    				}
-//        			intentPlay.putExtra(DURATION, duration);
-//        			intentPlay.putExtra(PLAY, PLAY_MUSIC);
-//			        sendBroadcast(intentPlay);
-			        
-        		}
+        	{
+        		// stoppo e riavvio la musica
+    			x = 0;
+    			Log.w("PlayerTrack", "restart loop " +sample.length);
+    			try {
+					synchronized (this) {
+						this.wait(400);
+						audioTrackTimer.stop();
+						this.wait(300);
+						intentS = new Intent(PlayerActivity.NOTIFICATION);
+						intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
+						sendBroadcast(intentS);
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+        	}
         }	
         
         audioTrackTimer.stop();
@@ -177,10 +160,6 @@ public class PlayerTrack extends IntentService{
 			this.notify();
 //			audioTrack.setPlaybackHeadPosition(playbackHeadPosition);
 			if(inizialized)audioTrackTimer.play();
-			
-//			Intent intentPlay = new Intent(NOTIFICATION);
-//			intentPlay.putExtra(PLAY, PLAY_MUSIC);
-//	        sendBroadcast(intentPlay);
 		}
     }
     
