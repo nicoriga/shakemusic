@@ -81,4 +81,6 @@
 	<string name="minute">1</string>
 	<string name="second">0</string>
 	<string name="campionamento">Campionamento</string>
+	<string name="iconSwipe">iconaSwipe</string>
+	
 </resources>

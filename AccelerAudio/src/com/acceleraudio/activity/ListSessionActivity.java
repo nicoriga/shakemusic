@@ -101,7 +101,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					totSample = savedInstanceState.getInt(TOT_SAMPLE);
 					selectedSessionId = savedInstanceState.getLongArray(SESSION_SELECTED_LIST);
 					adaperListCheck.setSelectedSession(totSample,selectedSessionId);
-					totSamplePB.setProgress(totSample);
 				}
 			}
 			
@@ -162,8 +161,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				{
 					x = sessions.get(focusPosition);
 					x.setName(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
-	//				sessions.add(focusPosition,x);
-	//				sessions.remove(focusPosition+1);
 				}
 			cursor.close();
 			}
@@ -297,7 +294,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				// esporta la sessione
 				// Avvio il File Manager
 				focusPosition = info.position;
-				Intent i1 = new Intent(context, FileExplore.class);
+				Intent i1 = new Intent(context, FileExplorer.class);
 				i1.putExtra(DbAdapter.T_SESSION_SESSIONID, sessions.get(info.position).getId());
 				context.startActivity(i1);
 				return true;
@@ -381,6 +378,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			totSamplePB.setMax(MergeSessionActivity.MAX_SAMPLE);
 			merge.setEnabled(false);
 			list.setAdapter(adaperListCheck);
+			if(totSample>0)
+				totSamplePB.setProgress(totSample);
 		}
 		else
 		{
@@ -457,6 +456,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					{
 						int nSample = adaperListCheck.getTotSample();
 						if(nSample < MergeSessionActivity.MAX_SAMPLE){
+							select_mode = false;
+							totSample = 0;
 							view.getContext().startActivity(i);
 							adaperListCheck.resetSelectedSession();
 						}
@@ -472,6 +473,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			cancel.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View view) {
 					select_mode = false;
+					totSample = 0;
 					adaperListCheck.resetSelectedSession();
 					setContentView(R.layout.ui_1);
 					loadInterface();

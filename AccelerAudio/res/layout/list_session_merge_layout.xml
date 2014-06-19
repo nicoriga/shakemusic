@@ -7,7 +7,7 @@
 		android:id="@+id/img"
 		android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
-        android:contentDescription="iconaSessione"
+        android:contentDescription="@string/thumbnail"
 		android:layout_width="50dp"
 		android:layout_height="50dp"/>
     
@@ -35,7 +35,7 @@
 		android:layout_alignParentRight="true"
 		android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
-        android:contentDescription="iconaSwipe"
+        android:contentDescription="@string/iconSwipe"
         android:src="@android:drawable/ic_menu_sort_by_size"
         android:paddingRight="10dp"
 		android:layout_width="40dp"

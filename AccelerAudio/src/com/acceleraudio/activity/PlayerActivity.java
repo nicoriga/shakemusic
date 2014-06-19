@@ -343,7 +343,7 @@ public class PlayerActivity extends Activity {
 				@Override
 				public void onClick(View view) {
 					pause.performClick();
-					Intent i = new Intent(view.getContext(), FileExplore.class);
+					Intent i = new Intent(view.getContext(), FileExplorer.class);
 					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 					view.getContext().startActivity(i);
 				}

@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.acceleraudio.activity.SessionInfoActivity"></activity>
-        <activity android:name="com.acceleraudio.activity.FileExplore" android:configChanges="orientation"></activity>
+        <activity android:name="com.acceleraudio.activity.FileExplorer" android:configChanges="orientation"></activity>
         <activity android:name="com.acceleraudio.activity.PlayerActivity"></activity>
         <activity android:name="com.acceleraudio.activity.PreferencesActivity"></activity>
         <activity android:name="com.acceleraudio.activity.RecordActivity" ></activity>

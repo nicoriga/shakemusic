@@ -39,26 +39,26 @@ import com.acceleraudio.util.Util;
 import com.acceleraudio.util.Wav;
 import com.malunix.acceleraudio.R;
 
-public class FileExplore extends FragmentActivity implements RenameDialogListener{
+public class FileExplorer extends FragmentActivity implements RenameDialogListener{
 	
-private List<String> item = null, path = null;
-private String root, sessionName;
-private ListView list;
-private TextView myPath;
-private Button save;
-private File myFile;
-private DbAdapter dbAdapter;
-private Cursor cursor;
-public static String[] data_x, data_y, data_z;
-private long sessionId;
-private int upsampling;
-private int[] sample;
-private Thread t;
-private ProgressDialog pd;
-private Activity a;
-private boolean isExporting = false;
-private final int soundRate = 48000 ;
-private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+	private List<String> item = null, path = null;
+	private String root, sessionName, savePath;
+	private ListView list;
+	private TextView myPath;
+	private Button save;
+	private File myFile;
+	private DbAdapter dbAdapter;
+	private Cursor cursor;
+	public static String[] data_x, data_y, data_z;
+	private long sessionId;
+	private int upsampling;
+	private int[] sample;
+	private Thread t;
+	private ProgressDialog pd;
+	private Activity a;
+	private boolean isExporting = false;
+	private final int soundRate = 48000 ;
+	private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +77,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 			root = Environment.getExternalStorageDirectory().getPath();
 			getDir(root);
 			
+			// visualizzo lo spazio disponibile
 			Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ " MB disponibili", Toast.LENGTH_LONG).show();
 			
 			save.setOnClickListener(new OnClickListener() {
@@ -84,7 +85,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 				public void onClick(View v) {
 					try 
 					{
-						final String savePath = myPath.getText().toString().substring(10);
+						savePath = myPath.getText().toString().substring(10);
 						File f = new File(savePath);
 						Log.w("permesso scrittura: ", "" + f.canWrite());
 						
@@ -155,32 +156,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 				 			        
 									Util.lockOrientation(a, v.getRootView());
 									
-									pd = new ProgressDialog(FileExplore.this);
-									pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-									pd.setCancelable(false);
-									pd.setMax(sample.length);
-								    pd.setMessage("Attendere Prego");
-								    pd.setTitle("Salvataggio");
-								    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {
-								    	@Override
-								        public void onClick(DialogInterface dialog, int which) {
-								            dialog.dismiss();
-							               	synchronized (t) {
-							               		MusicUpsampling.isRunning = false;
-//												t.interrupt();
-												File myFile = new File(savePath +"/"+ sessionName + ".wav");
-												myFile.delete();
-												Util.unlockOrientation(a);
-												isExporting = false;
-											}
-								        }
-								    });
-								    pd.setOnDismissListener(new OnDismissListener() {
-										@Override
-										public void onDismiss(DialogInterface dialog) {
-											getDir(savePath);
-										}
-									});
+									loadProgressDialog();
 								    
 									myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
 									
@@ -242,7 +218,11 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 										
 								}
 								else
-									Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
+									new AlertDialog.Builder(v.getContext()).setTitle(getString(R.string.error_memory_low)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+										}
+									}).show();
 						}
 						else
 						{
@@ -350,7 +330,7 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 		if(confirm){
 			sessionName = newName;
 			myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-			if(!myFile.exists())
+			if(!myFile.exists() && sessionName.length()>0)
 			{
 				pd.show();
 				t.start();
@@ -368,5 +348,33 @@ private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.
 			pd.dismiss();
 			isExporting = false;
 		}
+	}
+	
+	// crea il progress dialog
+	public void loadProgressDialog(){
+		
+		pd = new ProgressDialog(FileExplorer.this);
+		pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		pd.setCancelable(false);
+		pd.setMax(sample.length);
+	    pd.setMessage("Attendere Prego");
+	    pd.setTitle("Salvataggio");
+	    pd.setButton(DialogInterface.BUTTON_NEGATIVE, "Annulla", new DialogInterface.OnClickListener() {
+	    	@Override
+	        public void onClick(DialogInterface dialog, int which) {
+	            dialog.dismiss();
+           		MusicUpsampling.isRunning = false;
+				File myFile = new File(savePath +"/"+ sessionName + ".wav");
+				myFile.delete();
+				Util.unlockOrientation(a);
+				isExporting = false;
+	        }
+	    });
+	    pd.setOnDismissListener(new OnDismissListener() {
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				getDir(savePath);
+			}
+		});
 	}
 }
