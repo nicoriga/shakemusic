@@ -392,6 +392,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			merge.setEnabled(true);
 			list.setAdapter(adaperList);
 			registerForContextMenu(list);
+			totSample = 0;
 		}
 		
 		
@@ -410,10 +411,11 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					newSession.setEnabled(false);
 					Toast.makeText(v.getContext(), getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
 				}
-				// verifico spazio libero nella memoriia internas
+				// verifico spazio libero nella memoria interna
 				else if(AvailableSpace.getinternalAvailableSpace(AvailableSpace.SIZE_MB)>1)
 				{
 					focusPosition = 0;
+					if(select_mode) adaperListCheck.resetSelectedSession();
 					Intent i = new Intent(v.getContext(), RecordActivity.class);
 					v.getContext().startActivity(i);
 				}
@@ -425,6 +427,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		/**** avvia l'activity per modificare le preferenze di registrazione ****/
 		preferences.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
+				if(select_mode) adaperListCheck.resetSelectedSession();
 				Intent i = new Intent(view.getContext(), PreferencesActivity.class);
 				view.getContext().startActivity(i);
 			}
@@ -434,6 +437,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 				focusPosition = position;
+				if(select_mode) adaperListCheck.resetSelectedSession();
 				Intent i = new Intent(view.getContext(), SessionInfoActivity.class);
 				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessions.get(position).getId());
 				view.getContext().startActivity(i);
@@ -443,6 +447,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		/**** visualizza checkbox per selezionare le sessioni da unire ****/
 		merge.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
+				if(select_mode) adaperListCheck.resetSelectedSession();
 				select_mode = true;
 				loadInterface();
 			}
