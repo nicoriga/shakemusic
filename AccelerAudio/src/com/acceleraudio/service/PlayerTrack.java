@@ -42,7 +42,7 @@ public class PlayerTrack extends IntentService{
     			if(intent.hasExtra(COMMAND)){
     				int command = bundle.getInt(PlayerTrack.COMMAND);
     					if(command == PAUSE_MUSIC)
-    						audioTrackTimer.pause(x);
+    						pause();
     					else if(command == PLAY_MUSIC)
     						resume();
     					else if(command == STOP_MUSIC)
@@ -118,18 +118,18 @@ public class PlayerTrack extends IntentService{
         		// stoppo e riavvio la musica
     			x = 0;
     			Log.w("PlayerTrack", "restart loop " +sample.length);
-    			try {
-					synchronized (this) {
-						this.wait(400);
-						audioTrackTimer.stop();
-						this.wait(300);
-						intentS = new Intent(PlayerActivity.NOTIFICATION);
-						intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
-						sendBroadcast(intentS);
-					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+//    			try {
+//					synchronized (this) {
+//						this.wait(400);
+//						audioTrackTimer.stop();
+//						this.wait(300);
+//						intentS = new Intent(PlayerActivity.NOTIFICATION);
+//						intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
+//						sendBroadcast(intentS);
+//					}
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
         	}
         }	
         
@@ -160,6 +160,14 @@ public class PlayerTrack extends IntentService{
 			this.notify();
 //			audioTrack.setPlaybackHeadPosition(playbackHeadPosition);
 			if(inizialized)audioTrackTimer.play();
+		}
+    }
+    
+    public void pause()
+    {
+    	synchronized (this) {
+			this.notify();
+			audioTrackTimer.pause(x);
 		}
     }
     

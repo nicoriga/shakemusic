@@ -43,6 +43,13 @@ public class AudioTrackTimer extends AudioTrack {
 	
 	public void pause(int sampleIndex){
 		super.pause();
+		try {
+			synchronized (this) {
+				this.wait(100);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		if(timer != null) 
 			timer.cancel();
 		remaining_millis = (duration - MusicUpsampling.duration(upsampling, sampleIndex, getSampleRate()));
@@ -65,6 +72,8 @@ public class AudioTrackTimer extends AudioTrack {
 		@Override
 		public void onFinish() {
 			remaining_millis = duration;
+			timer = new MyTimer(remaining_millis, 1);
+			timer.start();
 		}
 
 		@Override
