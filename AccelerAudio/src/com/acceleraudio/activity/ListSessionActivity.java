@@ -16,6 +16,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -251,10 +252,15 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		{
 			case 0:
 				focusPosition = info.position;
-				// Avvio la PlayerActivity
-				Intent i = new Intent(context, PlayerActivity.class);
-				i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessions.get(info.position).getId());
-				context.startActivity(i);
+				// verifico che lo speacker non sia occupato
+				if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive()){
+					// Avvio la PlayerActivity
+					Intent i = new Intent(context, PlayerActivity.class);
+					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessions.get(info.position).getId());
+					context.startActivity(i);
+				}
+				else
+					Toast.makeText(this, "Speacker occupato", Toast.LENGTH_SHORT).show();
 				return true;
 			
 			case 1:
