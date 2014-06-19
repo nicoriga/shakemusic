@@ -326,7 +326,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	}
 	
 	/**** visualizza dialog per rinomina sessione ****/
-	
 	private void showRenameDialog(int position, String oldName) {
         FragmentManager fm = getSupportFragmentManager();
         RenameDialog rd = new RenameDialog();
@@ -335,7 +334,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
     }
 	
 	/**** rinomina la sessione dopo la conferma del dialog ****/
-	
 	@Override
 	public void onFinishRenameDialog(int position, String sessionName, boolean confirm) {
 		if(confirm)

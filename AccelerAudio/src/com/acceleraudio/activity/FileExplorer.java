@@ -154,7 +154,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 								if(AvailableSpace.getExternalAvailableSpaceInBytes()> totalDataLenght()){
 									Log.w("Save Directory", savePath +"/"+ sessionName + ".wav");
 				 			        
-									Util.lockOrientation(a, v.getRootView());
+//									Util.lockOrientation(a, v.getRootView());
 									
 									loadProgressDialog();
 								    
@@ -175,7 +175,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 												MusicUpsampling.note(fOut, soundRate, upsampling, sample, pd);
 												fOut.close();
 												pd.dismiss();
-												Util.unlockOrientation(a);
+//												Util.unlockOrientation(a);
 												isExporting = false;
 											} catch (IOException e) {
 												e.printStackTrace();
