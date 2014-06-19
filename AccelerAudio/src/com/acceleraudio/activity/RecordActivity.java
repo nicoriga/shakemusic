@@ -28,6 +28,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * permette di registrare una nuova sessione 
+ */
 public class RecordActivity extends Activity {
 	
 	public static String SAMPLE_RATE = "recordActivity.sample_rate";
@@ -42,8 +50,6 @@ public class RecordActivity extends Activity {
 	private static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
-	// essendo pubblici e statici, i dati non vengono persi durante la rotazione del display
-	// TODO verificare che questo sia il metodo piu adatto di procedere
 	public static ArrayList<Float> data_x, data_y, data_z;
 	public static int sample, x, y, z;
 	private DbAdapter dbAdapter;
@@ -87,10 +93,6 @@ public class RecordActivity extends Activity {
 			pauseSession.setEnabled(false);
 			stopSession.setEnabled(false);
 			
-//////////////////////////////////////////////////////////
-///////////// prelevo le impostazioni predefinite ////////
-//////////////////////////////////////////////////////////
-
 			if (savedInstanceState != null)
 			{
 				resetProgressBar();
@@ -210,8 +212,6 @@ public class RecordActivity extends Activity {
 					if(countDownTimer != null) countDownTimer.cancel();
 					resetProgressBar();
 					
-					// Verifica che siano stati presi dati dall'accelerometro
-					//TODO: da eliminare il true
 					if(AvailableSpace.getinternalAvailableSpace(AvailableSpace.SIZE_MB)>1)
 					{
 //						if(data_x.size() > 15 || data_y.size() > 15 || data_z.size() > 15)
@@ -275,6 +275,7 @@ public class RecordActivity extends Activity {
 ////////////////Metodi Utili  //////////////////////////
 ////////////////////////////////////////////////////////
 
+    /**** SALVA LA NUOVA SESSIONE NEL DATABASE ****/
     public void saveAccelerometerData(){
 		try {
 			
@@ -298,6 +299,7 @@ public class RecordActivity extends Activity {
 				name = nameSession.getText().toString();
 			else
 			{
+				// nome sessione di default
 				name = "Registrazione_" + (dbAdapter.getMaxId()+1);
 			}
 			
@@ -321,10 +323,6 @@ public class RecordActivity extends Activity {
 		}
     }
 
-//////////////////////////////
-///// METODI AUSILIARI //////
-/////////////////////////////
-    
     /*** aggiorna il numero di sample e le progressBar, nell'interfaccia ***/
     public static void updateSample(){
 		rec_sample.setText("" + sample);
