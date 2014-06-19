@@ -30,6 +30,15 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * permette di modificare le impostazioni della sessione
+ * inoltre si può esportare la sessione in WAV o avviare il player musicale 
+ */
 public class SessionInfoActivity extends Activity {
 	
 	private static String SESSION_ID = "sessionInfoActivity.session_id";
@@ -125,6 +134,7 @@ public class SessionInfoActivity extends Activity {
 				
 			}
 			
+			// decodifica immagine
 			t = new Thread("Thumbnail_Decoding"){
 				public void run() {
 					// setta la priorità massia del thread
@@ -132,10 +142,8 @@ public class SessionInfoActivity extends Activity {
 		            
 		            // converto la stringa in una immagine bitmap
 		    		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
-//		    		final Bitmap bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
 		    		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
 					
-		    		
 					runOnUiThread(new Runnable() {
 		                @Override
 		                public void run() {
@@ -149,9 +157,10 @@ public class SessionInfoActivity extends Activity {
 			thumbnail.setImageBitmap(bmp);
 			
 /////////////////////////////////////////////////////////
-////////////aggiungo listener cambio info ///////////////
+/////////// aggiungo listener cambio info ///////////////
 ////////////////////////////////////////////////////////
 
+			/*** aggiorno modifice nome sessione nel database ***/
 			et_sessionName.addTextChangedListener(new TextWatcher() {
 				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -167,6 +176,7 @@ public class SessionInfoActivity extends Activity {
 				}
 			});
 			
+			/*** aggiorno assi selezionati ***/
 			final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -177,6 +187,7 @@ public class SessionInfoActivity extends Activity {
 			axis_y.setOnCheckedChangeListener(axis_change);
 			axis_z.setOnCheckedChangeListener(axis_change);
 			
+			/*** aggiorno upsampling selezionato ***/
 			final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> arg0, View v, int arg2, long arg3) {
@@ -222,6 +233,7 @@ public class SessionInfoActivity extends Activity {
 					}
 					else
 					{
+						// verifico che lo speacker non sia occupato
 						if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive()){
 							// avvio la PlayerActivity
 							Intent i = new Intent(v.getContext(), PlayerActivity.class);
@@ -299,6 +311,7 @@ public class SessionInfoActivity extends Activity {
 				else
 				{
 					dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString())));
+					// aggiorno la data solo se vengono modificati i parametri musicali della sessione
 					date_change.setText(getString(R.string.modified_date) + " " + dbAdapter.getDate());
 				}
 				// chiudo la connessione al db
