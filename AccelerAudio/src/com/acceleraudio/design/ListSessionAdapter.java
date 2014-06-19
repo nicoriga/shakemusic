@@ -20,6 +20,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * adapter personalizzato per la lista delle sessioni
+ */
 public class ListSessionAdapter extends ArrayAdapter<RecordedSession>
 {
 	private final Activity context;

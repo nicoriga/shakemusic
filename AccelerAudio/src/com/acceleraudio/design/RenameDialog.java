@@ -10,6 +10,14 @@ import android.widget.EditText;
 
 import com.malunix.acceleraudio.R;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * dialog personalizzato per rinominare il nome della sessione
+ */
 public class RenameDialog extends DialogFragment {
 
 	public static String POSITION = "renameDialog.position";

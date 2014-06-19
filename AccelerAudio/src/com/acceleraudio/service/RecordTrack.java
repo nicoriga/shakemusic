@@ -12,6 +12,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * servizio per registrare i campioni dall'accelerometro
+ */
 public class RecordTrack extends IntentService{
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.recordtrack";
