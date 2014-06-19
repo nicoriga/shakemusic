@@ -17,7 +17,9 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -217,16 +219,21 @@ public class PlayerActivity extends Activity {
 					};
 					t.start();
 				
-				duration = MusicUpsampling.duration(upsampling, sample.length, PlayerTrack.SOUND_RATE_48000);
-				
-				// avvio subito la riproduzione della musica
-				intentPlayer.putExtra(ACC_DATA, sample);
-				intentPlayer.putExtra(UPSAMPLING, upsampling);
-				startService(intentPlayer);
+					duration = MusicUpsampling.duration(upsampling, sample.length, PlayerTrack.SOUND_RATE_48000);
+					
+					// avvio subito la riproduzione della musica
+					intentPlayer.putExtra(ACC_DATA, sample);
+					intentPlayer.putExtra(UPSAMPLING, upsampling);
+					startService(intentPlayer);
+				}
 			}
-	
-		}
 			
+			sb_musicProgress.setOnTouchListener(new OnTouchListener(){
+		        @Override
+		        public boolean onTouch(View v, MotionEvent event) {
+		            return true;
+		        }
+		    });
 			thumbnail.setImageBitmap(bmp);
 			
 /////////////////////////////////////////////////////////

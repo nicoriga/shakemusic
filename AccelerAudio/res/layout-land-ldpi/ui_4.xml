@@ -108,17 +108,19 @@
 		            android:showDividers="none"
 		            android:gravity="center">
         
-            	    <Button
+            	    <ImageButton
 			            android:id="@+id/UI4_BT_play"
 			            android:layout_width="100dp"
 			            android:layout_height="wrap_content"
-			            android:text="@string/play" />
+			            android:contentDescription="@string/play"
+            			android:src="@drawable/play_player" />
             	    
-            	    <Button
+            	    <ImageButton
 			            android:id="@+id/UI4_BT_stop"
 			            android:layout_width="100dp"
 			            android:layout_height="wrap_content"
-			            android:text="@string/stop" />
+			            android:contentDescription="@string/stop"
+            			android:src="@drawable/stop_player" />
 
 				</LinearLayout>
             
@@ -129,11 +131,12 @@
 		            android:showDividers="none"
 		            android:gravity="center">         
 
-			        <Button
+			        <ImageButton
 			            android:id="@+id/UI4_BT_pause"
 			            android:layout_width="100dp"
 			            android:layout_height="wrap_content"
-			            android:text="@string/pause" />
+			            android:contentDescription="@string/pause"
+            			android:src="@drawable/pause_player" />
 			
 			        <Button
 			            android:id="@+id/UI4_BT_export"
@@ -154,14 +157,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp" 
         android:weightSum="1.0">
-		
-        
-		
    	</TableRow>
     
-    
-    
-    
-    	
-
 </LinearLayout>
