@@ -30,7 +30,18 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
- 
+
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * visualizza elenco sessioni registrate, permette la registrazione di nuove sessioni,
+ * la modifica delle impostazioni predefinite.
+ * permette inoltre di esportare, unire, rinominare, eliminare le sessioni
+ * ed avviare il player musicale
+ */
 public class ListSessionActivity extends FragmentActivity  implements RenameDialogListener{
 	
 	public static String SELECTED_MODE = "listSessionActivity.selectedMode";
@@ -65,15 +76,17 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
     		// carico l'interfaccia
     		loadInterface();
     		
-    		// apro la connessione al db
+    		///////// prelevo i dati dal database ///////////
 			dbAdapter.open();
 			
+			/* mi salvo l'ultimo id per verificare se viene registrata una nuova sessione
+			 * e in tal caso aggiungerla alla lista
+			 * */
 			lastId = dbAdapter.getMaxId();
 			
 			// prelevo tutti i record 
 			cursor = dbAdapter.fetchAllSession();
 			
-			// istanzio array
 			sessions = new ArrayList<RecordedSession>();
 			
 			cursor.moveToFirst();
@@ -92,11 +105,14 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			cursor.close();
 			dbAdapter.close();
 			
+			// adapter con elenco sessioni e checkBox per la selezione delle sessioni da unire
 			adaperListCheck = new ListSessionAdapter(this, R.layout.list_session_select_layout, sessions);
+			// adapter con solo elenco sessioni
 			adaperList = new ListSessionAdapter(this, (R.layout.list_session_layout), sessions);
 			list.setAdapter(adaperList);
 			
 			if(savedInstanceState != null){
+				// gestisto la rotazione nel caso si fosse nelle modalità di selezione delle sessioni da unire
 				if(savedInstanceState.getInt(SESSION_SELECTED_LIST_SIZE)>0){
 					totSample = savedInstanceState.getInt(TOT_SAMPLE);
 					selectedSessionId = savedInstanceState.getLongArray(SESSION_SELECTED_LIST);
@@ -116,13 +132,10 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	public void onResume() {
 		super.onResume();
 		
-////////////////////////////////////////////////////////
-///////////// Popolo la listview ///////////////////////
-///////////////////////////////////////////////////////
-
 		Cursor cursor = null;
 		
 		try {
+			// carico interfaccia
 			loadInterface();
 			
 			// apro la connessione al db
@@ -136,7 +149,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			{
 				lastId = maxId;
 				
-				// prelevo tutti i record 
+				// prelevo dati della nuova sessione
 				cursor = dbAdapter.fetchSessionByIdMinimal(lastId);
 				cursor.moveToFirst();
 				if ( !cursor.isAfterLast() ) {
@@ -168,9 +181,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			
 			dbAdapter.close();
 			
-//			adaperListCheck = new ListSessionAdapter(this, R.layout.list_session_select_layout, sessions);
-//			adaperList = new ListSessionAdapter(this, (R.layout.list_session_layout), sessions);
-//			list.setAdapter(adaperList);
 			list.setSelection(focusPosition);
 			registerForContextMenu(list);	
 		
@@ -216,7 +226,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
     }
 	
 	/**** creazione del menu contestuale ****/
-	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) 
 	{
@@ -232,7 +241,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	}
 
 	/**** svolge azione dal menu contestuale ****/
-	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) 
 	{
@@ -440,8 +448,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			}
 		});
 		
-		// nel caso si è nella modalità di selezione
-		// si aggiungono i listener per i bottoni in più
+		/* nel caso si è nella modalità di selezione
+		  si aggiungono i listener per i bottoni in più*/
 		if (select_mode) {
 			
 			/**** avvia activity per riordinare le sessioni da unire ****/
