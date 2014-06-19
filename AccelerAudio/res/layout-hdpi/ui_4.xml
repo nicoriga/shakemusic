@@ -28,18 +28,21 @@
             android:id="@+id/UI4_BT_pause"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/pause"
             android:src="@drawable/pause_player"/>
 
         <ImageButton
             android:id="@+id/UI4_BT_play"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/play"
             android:src="@drawable/play_player"/>
 
         <ImageButton
             android:id="@+id/UI4_BT_stop"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/stop"
             android:src="@drawable/stop_player" />
 
     </TableRow>
