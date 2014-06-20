@@ -166,7 +166,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				cursor.close();
 			}
 			
-			// aggiorno il nome della sessione.. potrebbe essere stata rinominata
+			// aggiorno il nome e la data modifica della sessione.. potrebbe essere stata rinominata o modificati i parametri
 			if(sessions.size()>0){
 				cursor = dbAdapter.fetchSessionByIdMinimal(sessions.get(focusPosition).getId());
 				cursor.moveToFirst();
@@ -175,6 +175,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				{
 					x = sessions.get(focusPosition);
 					x.setName(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_NAME)));
+					x.setModifiedDate(cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_DATE_CHANGE)));
 				}
 			cursor.close();
 			}
