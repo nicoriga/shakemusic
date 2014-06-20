@@ -12,22 +12,19 @@
 
         <Button
             android:id="@+id/UI2_BT_listsession"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/list_session" />
             
         <Button
             android:id="@+id/UI2_button_play"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/play" />
 
         <Button
             android:id="@+id/UI2_button_export"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/export" />
 
@@ -93,14 +90,7 @@
             android:text="@string/z" />
     </TableRow>
 
-    <TableRow
-        android:id="@+id/UI2_tableRow3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" >
 
-        
-    </TableRow>
 
     <TableRow
         android:id="@+id/UI2_tableRow4"

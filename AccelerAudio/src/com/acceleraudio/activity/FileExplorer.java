@@ -3,6 +3,7 @@ package com.acceleraudio.activity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,14 @@ import com.acceleraudio.util.Util;
 import com.acceleraudio.util.Wav;
 import com.malunix.acceleraudio.R;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * file manager per scegliere la cartella su cui esportare la sessione in formato WAV
+ */
 public class FileExplorer extends FragmentActivity implements RenameDialogListener{
 	
 	private List<String> item = null, path = null;
@@ -59,7 +68,8 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 	private boolean isExporting = false;
 	private final int soundRate = 48000 ;
 	private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-
+	private RandomAccessFile newSparseFile;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -80,25 +90,26 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 			// visualizzo lo spazio disponibile
 			Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ " MB disponibili", Toast.LENGTH_LONG).show();
 			
+			/*** imposto azione quando viene premuto il tasto per iniziare l'esportazione del file wav ***/
 			save.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					try 
 					{
+						// mi ricavo la destinazione scelta
 						savePath = myPath.getText().toString().substring(10);
 						File f = new File(savePath);
 						Log.w("permesso scrittura: ", "" + f.canWrite());
 						
+						// verifico di avere i permessi di scrittura
 						if(f.canWrite()){
 							isExporting = true;
 							
 							Bundle b = getIntent().getExtras();
 							sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
 	    	
-							// apro la connessione al db
+							// prelevo i dati della sessione dal database
 							dbAdapter.open();
-							
-							// prelevo record by ID 
 							cursor = dbAdapter.fetchSessionById(sessionId);
 							cursor.moveToFirst();
 							
@@ -114,10 +125,10 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 								boolean axis_z = cursor.getString( cursor.getColumnIndex(DbAdapter.T_SESSION_AXIS_Z)).equals("1");
 								upsampling = cursor.getInt(( cursor.getColumnIndex(DbAdapter.T_SESSION_UPSAMPLING)));
 								
-								// chiudo connessioni
 								cursor.close();
 								dbAdapter.close();
 								
+								// controllo che la sessione avesse almeno un asse selezionato
 								if(!(axis_x || axis_y || axis_z)) 
 								{
 									Toast.makeText(getApplicationContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
@@ -150,28 +161,36 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 											z++;
 										}
 								
-								// verifica che ci sia lo spazio disponibile nella memory card
+								// verifica che sia disponibile nella memory card lo spazio richiesto per l'esportazione
 								if(AvailableSpace.getExternalAvailableSpaceInBytes()> totalDataLenght()){
 									Log.w("Save Directory", savePath +"/"+ sessionName + ".wav");
 				 			        
 //									Util.lockOrientation(a, v.getRootView());
 									
+									// inizializzo la finestra di caricamento
 									loadProgressDialog();
-								    
-									myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
+									// crea un file vuoto con la lunghezza del file WAV da esportare
+									newSparseFile = new RandomAccessFile(savePath +"/"+ sessionName + ".wav","rw");
+									newSparseFile.setLength(totalDataLenght());
+									newSparseFile.close();
+
+									myFile = new File(savePath +"/"+ sessionName + ".wav");
 									
 				 			        t = new Thread("wav_creation") {
 										public void run() {
 											setPriority(Thread.MIN_PRIORITY);
 											
 											try {
-												myFile.createNewFile();
+//												myFile.createNewFile();
+												File renameFile = new File(savePath +"/"+ sessionName + ".wav");
+												myFile.renameTo(renameFile);
 											
 												FileOutputStream fOut = new FileOutputStream(myFile);
 												long totalAudioLen = totalAudioLenght();
-												long totalDataLen = totalDataLenght();
 												int channels = 1;
-												Wav.WriteWaveFileHeader(totalAudioLen,totalDataLen, soundRate, channels,fOut);
+												// scrivo header wav nel file
+												Wav.WriteWaveFileHeader(totalAudioLen, soundRate, channels, fOut);
+												// scrivo 
 												MusicUpsampling.note(fOut, soundRate, upsampling, sample, pd);
 												fOut.close();
 												pd.dismiss();
@@ -191,15 +210,17 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 									}
 									else
 									{
-										new AlertDialog.Builder(v.getContext()).setTitle("File già presente: Vuoi sovrascrivere?")
-										.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+										// avvio un dialog per gestire il nome di salvataggio del file
+										new AlertDialog.Builder(v.getContext()).setTitle(getString(R.string.notify_file_exist))
+										.setIcon(android.R.drawable.ic_dialog_alert)
+										.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int which) {
 												pd.show();
 												t.start();
 											}
 										})
-										.setNegativeButton("Rinomina", new DialogInterface.OnClickListener() {
+										.setNegativeButton(getString(R.string.rename), new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int which) {
 												FragmentManager fm = getSupportFragmentManager();
@@ -208,72 +229,90 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 											    rd.show(fm, "rename_dialog");
 											}
 										})
-										.setNeutralButton("Annulla", new DialogInterface.OnClickListener() {
+										.setNeutralButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int which) {
-												
+												isExporting = false;
 											}
 										}).show();
 									}
 										
 								}
+								// messaggio memoria disponibile non sufficente
 								else
-									new AlertDialog.Builder(v.getContext()).setTitle(getString(R.string.error_memory_low)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-										}
+									new AlertDialog.Builder(v.getContext())
+										.setIcon(android.R.drawable.ic_dialog_alert)
+										.setTitle(getString(R.string.error_memory_low))
+										.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+											}
 									}).show();
-						}
-						else
-						{
-							// chiudo connessioni
-							cursor.close();
-							dbAdapter.close();
-						}
-					} else{ 
-						new AlertDialog.Builder(v.getContext()).setTitle(getString(R.string.error_write_privileges)).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
 							}
-						}).show();
+							else
+							{
+								cursor.close();
+								dbAdapter.close();
+							}
+						} else{ 
+							// messaggio di notifica se non si hanno i privilegi di scrittura
+							new AlertDialog.Builder(v.getContext())
+								.setIcon(android.R.drawable.ic_dialog_alert)
+								.setTitle(getString(R.string.error_write_privileges))
+								.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+									}
+							}).show();
+						}
+					}
+					catch(SQLException e){
+						if(cursor != null & !cursor.isClosed())
+							cursor.close();
+						if(!dbAdapter.isOpen())
+							dbAdapter.close();
+						e.printStackTrace();
+					}
+					catch (Exception e) 
+					{
+					     Log.e("FileExplorer Save Error", "Could not create file",e);
 					}
 				}
-				catch(SQLException e){
-					if(cursor != null & !cursor.isClosed())cursor.close();
-					if(!dbAdapter.isOpen())dbAdapter.close();
-					e.printStackTrace();
-				}
-				catch (Exception e) 
-				{
-				     Log.e("FileExplorer Save Error", "Could not create file",e);
-				}
-			}
-		});
+			});
 		}
 		
+		/*** imposto azione nel caso venga premuto un elemento della lista ***/
 		list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 				File file = new File(path.get(position));
+				// verifico se è una cartella
 				if (file.isDirectory())
 				{
 					if(file.canRead())
 						getDir(path.get(position));
 					else
 					{
-						// TODO: sistemare messaggio stringa
-						new AlertDialog.Builder(view.getContext()).setIcon(R.drawable.icon).setTitle("[" + file.getName() + "] folder can't be read!").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-							}
+						// messaggio di errore: permessi insufficenti per la lettura
+						new AlertDialog.Builder(view.getContext())
+							.setIcon(android.R.drawable.ic_dialog_alert)
+							.setTitle(file.getName() + getString(R.string.error_read_privileges))
+							.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+								}
 						}).show();
 					}
 				}
 				else
 				{
-					new AlertDialog.Builder(view.getContext()).setIcon(R.drawable.icon).setTitle("[" + file.getName() + "]").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-						}
+					// se è un file mostro un dialog con il nome del file
+					new AlertDialog.Builder(view.getContext())
+						.setIcon(android.R.drawable.ic_dialog_info)
+						.setTitle(file.getName())
+						.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+							}
 					}).show();
 				}
 			}
@@ -282,10 +321,18 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 
     @Override
     public void onBackPressed(){
+    	// permetto di tornare indietro solo a fine esportazione
     	if(!isExporting)
     		super.onBackPressed();
     }
+    
+    @Override
+    public void onResume(){
+    	super.onResume();
+    	getDir(myPath.getText().toString().substring(10));
+    }
 	
+    // compila la lista in base al percorso dato come parametro
 	private void getDir(String dirPath)
 	{
 		 myPath.setText("Location: " + dirPath);
@@ -317,26 +364,31 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 		 list.setAdapter(fileList);
     }
 	
+	// lunghezza totale della musica in byte
 	private long totalAudioLenght(){
-		return buffsize * sample.length * 2;
+		return (upsampling + buffsize) * sample.length * 2;
 	}
 	
+	// lunghezza totale della musica in byte + lunghezza header del wav
 	private long totalDataLenght(){
 		return totalAudioLenght()+36;
 	}
 
+	/*** azione svolta quando viene chiuso il dialog per cambiare il nome del file di esportazione ***/
 	@Override
 	public void onFinishRenameDialog(int sessionId, String newName,	boolean confirm) {
 		if(confirm){
 			sessionName = newName;
-			myFile = new File(myPath.getText().toString().substring(10) +"/"+ sessionName + ".wav");
-			if(!myFile.exists() && sessionName.length()>0)
+			File temp = new File(savePath +"/"+ sessionName + ".wav");
+			// verifico che non sia presente un file con lo stesso nome e che il nome non sia vuoto
+			if(!temp.exists() && sessionName.length()>0)
 			{
 				pd.show();
 				t.start();
 			}
 			else
 			{
+				// avvio un'altro dialog per rinominare 
 				FragmentManager fm = getSupportFragmentManager();
 			    RenameDialog rd = new RenameDialog();
 			    rd.setSessionInfo(0, sessionName + ".wav");
@@ -350,7 +402,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 		}
 	}
 	
-	// crea il progress dialog
+	// inizializzo il progress dialog
 	public void loadProgressDialog(){
 		
 		pd = new ProgressDialog(FileExplorer.this);

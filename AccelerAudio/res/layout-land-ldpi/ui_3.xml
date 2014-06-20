@@ -80,7 +80,7 @@
 		            android:id="@+id/UI3textView4" 
 			        android:layout_height="wrap_content" 
 			        android:layout_width="wrap_content"
-			        android:text="@string/time_00_00"
+			        android:text="@string/remaining_time"
 			        android:textAppearance="?android:attr/textAppearanceMedium" />
 		
 		        <TextView
@@ -94,37 +94,6 @@
 			
         </LinearLayout>
         
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:showDividers="none" 
-            android:layout_marginLeft="50dp">
-   	        
-            	<RadioGroup
-		   	        android:id="@+id/UI3_orientation"
-		   	        android:layout_width="wrap_content"
-		   	        android:layout_height="match_parent"
-		   	        android:gravity="center_vertical"
-		   	        android:orientation="vertical" >
-		
-			        <RadioButton
-			            android:id="@+id/UI3_RB_landscape"
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:checked="true"
-			            android:text="@string/landscape" />
-			
-			        <RadioButton
-			            android:id="@+id/UI3_RB_portrait"
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:text="@string/portrait" />
-			  	
-			  	</RadioGroup>
-            
-   	  	</LinearLayout>
         
     </TableRow>   
     
@@ -189,15 +158,15 @@
 				        android:id="@+id/UI3_BT_stop"
 				        style="?android:attr/buttonStyleSmall"
 				        android:layout_height="wrap_content"
-				        android:layout_width="80dp"
+				        android:layout_width="70dp"
 				        android:text="@string/stop" />
-		   	    
-			   	    <Button
-				       	android:id="@+id/UI3_BT_record"
+		   	    	
+		   	    	<Button
+				        android:id="@+id/UI3_BT_pause"
 				        style="?android:attr/buttonStyleSmall"
 				        android:layout_height="wrap_content"
-				        android:layout_width="80dp"
-				        android:text="@string/record" />
+				        android:layout_width="70dp"
+				        android:text="@string/pause" />
 			   	    
 			   	</LinearLayout>
 		   	    
@@ -209,19 +178,13 @@
 		            android:layout_marginTop="10dp"
 		            android:gravity="center">
 			   	    
-			   	    <Button
-				        android:id="@+id/UI3_BT_pause"
+            	    <Button
+				       	android:id="@+id/UI3_BT_record"
 				        style="?android:attr/buttonStyleSmall"
 				        android:layout_height="wrap_content"
-				        android:layout_width="80dp"
-				        android:text="@string/pause" />
-			   	    
-			   	    <Button
-				        android:id="@+id/UI3_BT_save"
-				        style="?android:attr/buttonStyleSmall"
-				        android:layout_height="wrap_content"
-				        android:layout_width="80dp"
-				        android:text="@string/save" />
+				        android:layout_width="90dp"
+				        android:text="@string/record" />
+
 			 	
 			 	</LinearLayout>
 			   	    

@@ -3,13 +3,31 @@ package com.acceleraudio.util;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * classe per scrivere intestazione file wav
+ */
 public class Wav
 {	
 	private static final int bitsForSample = 16; 
     
-	public static void WriteWaveFileHeader(long totalAudioLen, long totalDataLen, long soundRate, int channels, OutputStream out) throws IOException 
+	/**
+	 * scrive header wav sull'OutputStream passato
+	 * 
+	 * @param totalAudioLen lunghezza musica espressa in byte
+	 * @param soundRate sound rate espresso in Hz
+	 * @param channels numero di canali
+	 * @param out file su cui scivere
+	 * @throws IOException
+	 */
+	public static void WriteWaveFileHeader(long totalAudioLen, long soundRate, int channels, OutputStream out) throws IOException 
 	{
 		int byteRate = (int) (channels * soundRate * bitsForSample / 8);
+		long totalDataLen = totalAudioLen + 36;
 		
 		byte[] header = new byte[44];
         

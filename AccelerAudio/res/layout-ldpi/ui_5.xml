@@ -14,7 +14,7 @@
 	        android:id="@+id/UI5textView1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Opzioni di Registrazione Predefinite"
+	        android:text="@string/standard_record_option"
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
     
     </TableRow>    
@@ -29,7 +29,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
-	        android:text="Assi:"
+	        android:text="@string/axes"
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
         
         <CheckBox
@@ -37,21 +37,21 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
-	        android:text="X" />
+	        android:text="@string/x" />
         
         <CheckBox
 	        android:id="@+id/UI5_CB_Y"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
-	        android:text="Y" />
+	        android:text="@string/y" />
         
         <CheckBox
 	        android:id="@+id/UI5_CB_Z"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
-	        android:text="Z" />
+	        android:text="@string/z" />
         
     </TableRow>
     
@@ -70,43 +70,34 @@
 		        android:id="@+id/UI5textView5"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:text="Durata Massima"
+		        android:text="@string/duration"
 		        android:textAppearance="?android:attr/textAppearanceMedium" />
-	        
-	        <LinearLayout
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:orientation="horizontal" 
-	            android:gravity="center"
-	            android:layout_marginTop="10dp">          
-	            
-	        </LinearLayout>
 		        
 			<LinearLayout
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:orientation="horizontal" 
-	            android:gravity="center">
+	            android:gravity="center"
+	            android:layout_marginTop="10dp">
 	            
 			    <Button
 			        android:id="@+id/UI5_BT_secondMinus"
 			        android:layout_width="60dp"
 			        android:layout_height="40dp"
-			        android:text="-" />
+			        android:text="@string/minus" />
 			    
 			    <EditText
 			        android:id="@+id/UI5_ET_second"
 			        android:layout_width="wrap_content"
 			        android:layout_height="40dp"
 			        android:inputType="number" 
-			        android:ems="5"
-			        android:text="0"/>
+			        android:ems="5"/>
 			    
 			    <Button
 			        android:id="@+id/UI5_BT_secondPlus"
 			        android:layout_width="60dp"
 			        android:layout_height="40dp"
-			        android:text="+" />
+			        android:text="@string/plus" />
 	            
 			</LinearLayout>	    
 	        
@@ -133,7 +124,7 @@
 		        android:id="@+id/UI5textView3"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:text="Campionamento"
+		        android:text="@string/campionamento"
 		        android:textAppearance="?android:attr/textAppearanceMedium" />
             
             <Spinner
@@ -153,7 +144,7 @@
 		        android:id="@+id/UI5textView4"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:text="Upsampling"
+		        android:text="@string/upsampling"
 		        android:textAppearance="?android:attr/textAppearanceMedium" />
 		    
 		    <Spinner

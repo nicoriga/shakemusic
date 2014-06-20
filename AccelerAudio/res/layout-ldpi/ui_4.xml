@@ -88,26 +88,26 @@
         android:layout_marginRight="10dp" 
         android:weightSum="1.0">
 		
-        <Button
+        <ImageButton
             android:id="@+id/UI4_BT_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".2"
-            android:text="Pause" />
+            android:src="@drawable/pause_player" />
 
-        <Button
+        <ImageButton
             android:id="@+id/UI4_BT_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".6"
-            android:text="Play" />
+            android:src="@drawable/play_player" />
 
-        <Button
+        <ImageButton
             android:id="@+id/UI4_BT_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".2"
-            android:text="Stop" />
+            android:src="@drawable/stop_player" />
 		
    	</TableRow>
     

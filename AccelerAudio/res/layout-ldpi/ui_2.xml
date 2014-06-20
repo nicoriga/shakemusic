@@ -14,7 +14,7 @@
             android:id="@+id/UI2_BT_listsession"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Lista Sessioni" />
+            android:text="@string/list_session" />
             
        
 
@@ -32,7 +32,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_marginLeft="10dp"
-	            android:text="Nome Sessione"
+	            android:text="@string/session_name"
 	            android:textAppearance="?android:attr/textAppearanceLarge" />
 	
 	        <EditText
@@ -40,6 +40,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_marginLeft="20dp"
+	            android:inputType="text"
 	            android:ems="10" />
     	</TableRow>
 
@@ -53,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="Seleziona Assi:"
+            android:text="@string/axes_select"
             android:textAppearance="?android:attr/textAppearanceMedium" />
         
          <CheckBox
@@ -61,21 +62,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="X" />
+            android:text="@string/x" />
 
         <CheckBox
             android:id="@+id/UI2_CB_Y"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="Y" />
+            android:text="@string/y" />
 
         <CheckBox
             android:id="@+id/UI2_CB_Z"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="Z" />
+            android:text="@string/z" />
     </TableRow>
 
     <TableRow
@@ -97,7 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="Upsampling"
+            android:text="@string/upsampling"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
@@ -117,6 +118,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginLeft="10dp"
+            android:contentDescription="@string/thumbnail"
             android:src="@drawable/ic_launcher" />
 
         <LinearLayout
@@ -130,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Data Creazione:"
+                android:text="@string/creation_date"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
@@ -139,7 +141,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Data Modifica:"
+                android:text="@string/modified_date"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
 
@@ -157,14 +159,14 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Riproduci" />
+            android:text="@string/play" />
 
         <Button
             android:id="@+id/UI2_button_export"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Esporta" />
+            android:text="@string/export" />
         
         
     </TableRow>

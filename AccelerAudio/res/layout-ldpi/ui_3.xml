@@ -133,13 +133,14 @@
    	    android:id="@+id/tableRow5"
    	    android:layout_width="match_parent"
    	    android:layout_height="80dp"
-   	    android:gravity="center" >
+   	    android:gravity="center" 
+   	    android:layout_marginTop="10dp">
    	    
    	    <Button
 	        android:id="@+id/UI3_BT_stop"
 	        style="?android:attr/buttonStyleSmall"
 	        android:layout_height="wrap_content"
-	        android:layout_width="80dp"
+	        android:layout_width="70dp"
 	        android:text="Stop" />
 	   	    
    	    <Button
@@ -153,47 +154,8 @@
 	        android:id="@+id/UI3_BT_pause"
 	        style="?android:attr/buttonStyleSmall"
 	        android:layout_height="wrap_content"
-	        android:layout_width="80dp"
+	        android:layout_width="70dp"
 	        android:text="Pause" />
-	   	    
-   	    <Button
-	        android:id="@+id/UI3_BT_save"
-	        style="?android:attr/buttonStyleSmall"
-	        android:layout_height="wrap_content"
-	        android:layout_width="80dp"
-	        android:text="Salva" />
-   	    
-   	</TableRow>
-   	
-   	<TableRow
-   	    android:id="@+id/tableRow6"
-   	    android:layout_width="match_parent"
-   	    android:layout_height="wrap_content"
-   	    android:gravity="center" >
-   	    
-   	    <RadioGroup
-   	        android:id="@+id/UI3_orientation"
-   	        android:layout_width="match_parent"
-   	        android:layout_height="wrap_content"
-   	        android:orientation="horizontal" >
-
-	        <RadioButton
-	            android:id="@+id/UI3_RB_landscape"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_marginLeft="20dp"
-	            android:checked="true"
-	            android:text="Landscape" />
-	
-	        <RadioButton
-	            android:id="@+id/UI3_RB_portrait"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_marginLeft="20dp"
-	            android:text="Portrait" />
-		
-		</RadioGroup>
-   	    
    	    
    	</TableRow>
 

@@ -24,6 +24,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * permette di riordinare un elenco di sessioni e unire i campioni per ogni asse
+ * in modo da creare una nuova sessione 
+ */
 public class MergeSessionActivity extends Activity{
 	
 	public static final int MAX_SAMPLE = 11000;
@@ -44,11 +53,11 @@ public class MergeSessionActivity extends Activity{
     
     // Distanza azione riordinamento touch
 	// per telefono
-//    private static final int SWIPE_OFFSET_PORTRAIT = 250;
-//    private static final int SWIPE_OFFSET_LANDSCAPE = 440;
+    private static final int SWIPE_OFFSET_PORTRAIT = 250;
+    private static final int SWIPE_OFFSET_LANDSCAPE = 440;
     // per tablet
-    private static final int SWIPE_OFFSET_PORTRAIT = 420;
-    private static final int SWIPE_OFFSET_LANDSCAPE = 700;
+//    private static final int SWIPE_OFFSET_PORTRAIT = 420;
+//    private static final int SWIPE_OFFSET_LANDSCAPE = 700;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,10 +68,6 @@ public class MergeSessionActivity extends Activity{
     	
     	Bundle b = getIntent().getExtras();
     	sessionIdList = b.getLongArray(DbAdapter.T_SESSION_SESSIONID);
-    	
-////////////////////////////////////////////////////////
-///////////// collego widget con xml ///////////////////
-///////////////////////////////////////////////////////
     	
     	try {
     		setContentView(R.layout.merge_layout);
@@ -75,10 +80,13 @@ public class MergeSessionActivity extends Activity{
     		if(savedInstanceState != null)
     			sessionIdList = savedInstanceState.getLongArray(SESSION_ID_LIST);
     		
+    		// carica la lista delle sessioni usando la sessionIdList
     		loadSessionList();
     			
     		adaperList = new ListSessionAdapter(this, R.layout.list_session_merge_layout, sessions);
     		list.setAdapter(adaperList);
+    		
+    		// gestore eventi touch
     		gestureListener = new ListView.OnTouchListener() {
     		        public boolean onTouch(View v, MotionEvent event) {
     		        	int action = event.getAction();
@@ -151,7 +159,6 @@ public class MergeSessionActivity extends Activity{
 							cancel.setEnabled(false);
 							
 							// unisco le sessioni
-							// apro la connessione al db
 							dbAdapter.open();
 							sessionId = dbAdapter.mergeSession(
 											adaperList.getSessionId(),
@@ -160,7 +167,6 @@ public class MergeSessionActivity extends Activity{
 											(pref.getBoolean(PreferencesActivity.AXIS_Y,true) ? 1 : 0),
 											(pref.getBoolean(PreferencesActivity.AXIS_Z,true) ? 1 : 0),
 											pref.getInt(PreferencesActivity.UPSAMPLING, 0));
-							// chiudo la connessione
 							dbAdapter.close();
 							
 							// avvia activity con le info della sessione
@@ -237,8 +243,6 @@ public class MergeSessionActivity extends Activity{
 	
 	/*** metodo per convertire i pixel in dp***/
 	public float convertDpToPixel(int dip) {
-//		float scale = getResources().getDisplayMetrics().density;
-//		return dip * scale + 0.5f;
 		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, getResources().getDisplayMetrics());
 	}
 	
@@ -247,7 +251,7 @@ public class MergeSessionActivity extends Activity{
 	{
 		if (start_position >= 0 && stop_position >= 0) {
 			
-			// sposta il nome
+			// sposta la sessione
 			sessions.add(stop_position,sessions.remove(start_position));
 			adaperList.notifyDataSetChanged();
 		}
