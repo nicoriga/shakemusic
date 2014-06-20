@@ -306,10 +306,11 @@ public class SessionInfoActivity extends Activity {
 				dbAdapter.open();
 				
 				// aggiorno i dati delle preferenze
-				if(v.getId() == et_sessionName.getId())
+				if(v.getId() == et_sessionName.getId()){
 					// verifico che aggiornamento vada a buon fine
-					if(dbAdapter.updateSessionName(sessionId, et_sessionName.getText().toString()))
+					if(!dbAdapter.updateSessionName(sessionId, et_sessionName.getText().toString()))
 						Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
+				}
 				else
 				{
 					// verifico che aggiornamento vada a buon fine

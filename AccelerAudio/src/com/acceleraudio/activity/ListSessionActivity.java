@@ -332,7 +332,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			try {
 				focusPosition = (info.position == 0 ? 0 : info.position-1);
 				dbAdapter.open();
-				if(dbAdapter.deleteSession(sessions.get(info.position).getId()))
+				if(!dbAdapter.deleteSession(sessions.get(info.position).getId()))
 					Toast.makeText(context, getString(R.string.error_database_delete_session), Toast.LENGTH_SHORT).show();
 				dbAdapter.close();
 				sessions.remove(info.position);
