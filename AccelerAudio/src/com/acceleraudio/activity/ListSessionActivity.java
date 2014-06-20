@@ -283,12 +283,18 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 									dbAdapter.open();
 									RecordedSession s = dbAdapter.duplicateSessionById(sessions.get(x).getId());
 									dbAdapter.close();
-									sessions.add(x, s);
-									lastId = s.getId();
+									if(s !=null){
+										sessions.add(x, s);
+										lastId = s.getId();
+									}
+									else
+										Toast.makeText(context, getString(R.string.error_database_duplicate_session), Toast.LENGTH_SHORT).show();
+										
 								} catch (SQLException e) {
 									e.printStackTrace();
 									if(!dbAdapter.isOpen())
 										dbAdapter.close();
+									Toast.makeText(context, getString(R.string.error_database_duplicate_session), Toast.LENGTH_SHORT).show();
 								} catch (NullPointerException e) {
 									e.printStackTrace();
 								}
@@ -326,7 +332,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			try {
 				focusPosition = (info.position == 0 ? 0 : info.position-1);
 				dbAdapter.open();
-				dbAdapter.deleteSession(sessions.get(info.position).getId());
+				if(dbAdapter.deleteSession(sessions.get(info.position).getId()))
+					Toast.makeText(context, getString(R.string.error_database_delete_session), Toast.LENGTH_SHORT).show();
 				dbAdapter.close();
 				sessions.remove(info.position);
 				adaperList.notifyDataSetChanged();
@@ -361,6 +368,8 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					{
 						sessions.get(position).setName(sessionName);
 					}
+					else
+						Toast.makeText(this, getString(R.string.error_database_rename_session), Toast.LENGTH_SHORT).show();
 					dbAdapter.close();
 					adaperList.notifyDataSetChanged();
 				} catch (SQLException e) {

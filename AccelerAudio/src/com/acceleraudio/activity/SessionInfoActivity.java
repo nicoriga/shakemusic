@@ -307,12 +307,19 @@ public class SessionInfoActivity extends Activity {
 				
 				// aggiorno i dati delle preferenze
 				if(v.getId() == et_sessionName.getId())
-					dbAdapter.updateSessionName(sessionId, et_sessionName.getText().toString());
+					// verifico che aggiornamento vada a buon fine
+					if(dbAdapter.updateSessionName(sessionId, et_sessionName.getText().toString()))
+						Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
 				else
 				{
-					dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString())));
-					// aggiorno la data solo se vengono modificati i parametri musicali della sessione
-					date_change.setText(getString(R.string.modified_date) + " " + dbAdapter.getDate());
+					// verifico che aggiornamento vada a buon fine
+					if(dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString()))))
+					{
+						// aggiorno la data solo se vengono modificati i parametri musicali della sessione
+						date_change.setText(getString(R.string.modified_date) + " " + dbAdapter.getDate());
+					}
+					else
+						Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
 				}
 				// chiudo la connessione al db
 				dbAdapter.close();

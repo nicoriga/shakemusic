@@ -311,14 +311,20 @@ public class RecordActivity extends Activity {
 			// inserisco i dati della sessione nel database
 			sessionId = dbAdapter.createSession( name, "", (pref.getBoolean(PreferencesActivity.AXIS_X, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Y, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Z, true)? 1:0), pref.getInt(PreferencesActivity.UPSAMPLING, 0), x_sb.toString(), y_sb.toString(), z_sb.toString(), data_x.size(), data_y.size(), data_z.size() );
 			
-			//costruzione immagine
-	        Log.w("save Session", "...creata");
-	        final Bitmap bmpT = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-			ImageBitmap.color(bmpT, data_x, data_y, data_z, (int)sessionId);	
-			String encodedImage = ImageBitmap.encodeImage(bmpT);
-			Log.w("save Session", "...codificata");
-			dbAdapter.updateSessionImage(sessionId, encodedImage);
-			Log.w("save Session", "sessione inserita");
+			// solo nel caso inserimento della sessione vada a buon fine
+			if (sessionId > -1) {
+				//costruzione immagine
+				Log.w("save Session", "...creata");
+				final Bitmap bmpT = Bitmap.createBitmap(200, 200,Bitmap.Config.ARGB_8888);
+				ImageBitmap.color(bmpT, data_x, data_y, data_z, (int) sessionId);
+				String encodedImage = ImageBitmap.encodeImage(bmpT);
+				Log.w("save Session", "...codificata");
+				dbAdapter.updateSessionImage(sessionId, encodedImage);
+				Log.w("save Session", "sessione inserita");
+			}
+			else
+				Toast.makeText(this, getString(R.string.error_database_insert_new_session), Toast.LENGTH_SHORT).show();
+			
 			// chiudo la connessione al db
 			dbAdapter.close();
 			
