@@ -133,7 +133,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 								// controllo che la sessione avesse almeno un asse selezionato
 								if(!(axis_x || axis_y || axis_z)) 
 								{
-									Toast.makeText(getApplicationContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), R.string.error_no_axis_selected, Toast.LENGTH_SHORT).show();
 									finish();
 								}
 								
