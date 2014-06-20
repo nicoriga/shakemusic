@@ -1,5 +1,6 @@
 package com.acceleraudio.activity;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,6 +50,8 @@ import com.malunix.acceleraudio.R;
  * file manager per scegliere la cartella su cui esportare la sessione in formato WAV
  */
 public class FileExplorer extends FragmentActivity implements RenameDialogListener{
+	
+	private static String TEMP_FILE_NAME = "acceleraudio.wav.temp";
 	
 	private List<String> item = null, path = null;
 	private String root, sessionName, savePath;
@@ -167,12 +170,13 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 				 			        
 //									Util.lockOrientation(a, v.getRootView());
 									
-									// inizializzo la finestra di caricamento
-									loadProgressDialog();
 									// crea un file vuoto con la lunghezza del file WAV da esportare
-									newSparseFile = new RandomAccessFile(savePath +"/"+ sessionName + ".wav","rw");
+									newSparseFile = new RandomAccessFile(savePath + "/" + TEMP_FILE_NAME,"rw");
 									newSparseFile.setLength(totalDataLenght());
 									newSparseFile.close();
+									
+									// inizializzo la finestra di caricamento
+									loadProgressDialog();
 
 									myFile = new File(savePath +"/"+ sessionName + ".wav");
 									
@@ -182,9 +186,10 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 											
 											try {
 //												myFile.createNewFile();
-												File renameFile = new File(savePath +"/"+ sessionName + ".wav");
-												myFile.renameTo(renameFile);
 											
+												File tempFile = new File(savePath + "/" + TEMP_FILE_NAME);
+												tempFile.renameTo(myFile);
+												
 												FileOutputStream fOut = new FileOutputStream(myFile);
 												long totalAudioLen = totalAudioLenght();
 												int channels = 1;
@@ -196,6 +201,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 												pd.dismiss();
 //												Util.unlockOrientation(a);
 												isExporting = false;
+												
 											} catch (IOException e) {
 												e.printStackTrace();
 											}
@@ -379,9 +385,9 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 	public void onFinishRenameDialog(int sessionId, String newName,	boolean confirm) {
 		if(confirm){
 			sessionName = newName;
-			File temp = new File(savePath +"/"+ sessionName + ".wav");
+			myFile = new File(savePath +"/"+ sessionName + ".wav");
 			// verifico che non sia presente un file con lo stesso nome e che il nome non sia vuoto
-			if(!temp.exists() && sessionName.length()>0)
+			if(!myFile.exists() && sessionName.length()>0)
 			{
 				pd.show();
 				t.start();
