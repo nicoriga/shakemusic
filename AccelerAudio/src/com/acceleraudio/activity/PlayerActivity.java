@@ -134,7 +134,7 @@ public class PlayerActivity extends Activity {
 				sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
     	
 ////////////////////////////////////////////////////////
-/// prelevo dati dal database /////////////////////////
+////////// prelevo dati dal database //////////////////
 ///////////////////////////////////////////////////////
 
 				// apro la connessione al db
@@ -163,75 +163,80 @@ public class PlayerActivity extends Activity {
 				// se la sessione non ha almeno un asse selezionato la riproduzione non può avvenire
 				if(!(axis_x || axis_y || axis_z)) 
 				{
-						Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
 						finish();
 				}
-				
-				// creo array con la lunghezza degli assi selezionati
-				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
-				sample = new int[(nSample > 0 ? nSample : 1)];
-				
-				int z=0;
-				if(axis_x)
-					for(int i = 0; i<data_x.length; i++)
-						if(data_x[i].length()>0)
-						{
-							sample[z] = ((int)(Float.parseFloat(data_x[i]))); 
-							z++;
+				else
+				{
+					// creo array con la lunghezza degli assi selezionati
+					int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
+					sample = new int[(nSample > 0 ? nSample : 1)];
+					
+					// creo array sample da riprodurre
+					int z=0;
+					if(axis_x)
+						for(int i = 0; i<data_x.length; i++)
+							if(data_x[i].length()>0)
+							{
+								sample[z] = ((int)(Float.parseFloat(data_x[i]))); 
+								z++;
+							}
+					if(axis_y)
+						for(int i = 0; i<data_y.length; i++)
+							if(data_y[i].length()>0)
+							{ 
+								sample[z] = ((int)(Float.parseFloat(data_y[i]))); 
+								z++;
+							}
+					if(axis_z)
+						for(int i = 0; i<data_z.length; i++)
+							if(data_z[i].length()>0)
+							{ 
+								sample[z] = ((int)(Float.parseFloat(data_z[i]))); 
+								z++;
+							}
+					
+					Log.w("PlayerActivity", "sample tot: "+z);
+					
+					play.setEnabled(false);
+					pause.setEnabled(true);
+					
+					t = new Thread("Thumbnail_Decoding"){
+						public void run() {
+							// setta la priorità massima del thread
+			                setPriority(Thread.MAX_PRIORITY);
+			                
+			                // converto la stringa in una immagine bitmap
+			        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
+			        		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
+							
+							runOnUiThread(new Runnable() {
+		                        @Override
+		                        public void run() {
+		                        	thumbnail.setImageBitmap(bmp);
+		                        }
+		                    });
 						}
-				if(axis_y)
-					for(int i = 0; i<data_y.length; i++)
-						if(data_y[i].length()>0)
-						{ 
-							sample[z] = ((int)(Float.parseFloat(data_y[i]))); 
-							z++;
-						}
-				if(axis_z)
-					for(int i = 0; i<data_z.length; i++)
-						if(data_z[i].length()>0)
-						{ 
-							sample[z] = ((int)(Float.parseFloat(data_z[i]))); 
-							z++;
-						}
+					};
+					t.start();
 				
-				Log.w("PlayerActivity", "sample tot: "+z);
-				
-				play.setEnabled(false);
-				pause.setEnabled(true);
-				
-				t = new Thread("Thumbnail_Decoding"){
-					public void run() {
-						// setta la priorità massima del thread
-		                setPriority(Thread.MAX_PRIORITY);
-		                
-		                // converto la stringa in una immagine bitmap
-		        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
-		        		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
-						
-						runOnUiThread(new Runnable() {
-	                        @Override
-	                        public void run() {
-	                        	thumbnail.setImageBitmap(bmp);
-	                        }
-	                    });
-					}
-				};
-				t.start();
-			
-				duration = MusicUpsampling.duration(upsampling, sample.length, PlayerTrack.SOUND_RATE_48000);
-				
-				// avvio subito la riproduzione della musica
-				intentPlayer.putExtra(ACC_DATA, sample);
-				intentPlayer.putExtra(UPSAMPLING, upsampling);
-				startService(intentPlayer);
+					duration = MusicUpsampling.duration(upsampling, sample.length, PlayerTrack.SOUND_RATE_48000);
+					
+					// avvio subito la riproduzione della musica
+					intentPlayer.putExtra(ACC_DATA, sample);
+					intentPlayer.putExtra(UPSAMPLING, upsampling);
+					startService(intentPlayer);
+				}
 			}
 			
+			// blocco lo spostamento della seekBar
 			sb_musicProgress.setOnTouchListener(new OnTouchListener(){
 		        @Override
 		        public boolean onTouch(View v, MotionEvent event) {
 		            return true;
 		        }
 		    });
+			
 			thumbnail.setImageBitmap(bmp);
 			
 /////////////////////////////////////////////////////////
@@ -257,6 +262,7 @@ public class PlayerActivity extends Activity {
 						if(isPause){
 							isPause = false;
 							
+							// invio comando di pausa
 							Intent intent = new Intent(NOTIFICATION);
 							intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
 							sendBroadcast(intent);
@@ -266,7 +272,7 @@ public class PlayerActivity extends Activity {
 						}
 					}
 					else{
-						Toast.makeText(v.getContext(), "Speacker occupato", Toast.LENGTH_SHORT).show();
+						Toast.makeText(v.getContext(), getString(R.string.notify_speaker_occuped), Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -277,6 +283,7 @@ public class PlayerActivity extends Activity {
 				public void onClick(View v) {
 					isPause = true;
 					
+					// invio comando di pausa
 					Intent intent = new Intent(NOTIFICATION);
 					intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PAUSE_MUSIC);
 					sendBroadcast(intent);
@@ -290,6 +297,7 @@ public class PlayerActivity extends Activity {
 			stop.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					// stoppo la musica e chiudi activity
 					onBackPressed();
 				}
 			});
@@ -299,6 +307,7 @@ public class PlayerActivity extends Activity {
 				@Override
 				public void onClick(View view) {
 					pause.performClick();
+					// avvio il fileExplorer per esportazione
 					Intent i = new Intent(view.getContext(), FileExplorer.class);
 					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 					view.getContext().startActivity(i);
@@ -353,6 +362,7 @@ public class PlayerActivity extends Activity {
     	super.onSaveInstanceState(savedInstanceState);
     }
     
+    /*** imposta la durata massima della seekBar e della TextView***/
     public void setMaxDuration(){
     	durationTV.setText("" + Util.millisecondsToMinutesSeconds(duration));
     	sb_musicProgress.setMax((int)duration);
