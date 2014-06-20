@@ -142,9 +142,9 @@ public class Util{
     {
 	    int seconds = (int) (milliseconds / 1000) % 60 ;
 	    int minutes = (int) ((milliseconds / (1000*60)) % 60);
-	    double temp = milliseconds / 10000;
-	    int decimalSeconds = (int) (((temp+0.001)*100)%100);
-	    return minutes + ":" + seconds + "." + decimalSeconds;
+	    float temp = (float) milliseconds / 1000;
+	    int decimalSeconds = (int) (((temp+0.001)*10)%10);
+	    return (minutes>9? minutes: "0"+minutes) + ":" + (seconds>9? seconds: "0"+seconds) + "." + decimalSeconds;
     }
 }
 
