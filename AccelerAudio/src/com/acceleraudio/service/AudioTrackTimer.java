@@ -8,6 +8,15 @@ import com.acceleraudio.util.Util;
 import android.media.AudioTrack;
 import android.os.CountDownTimer;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * audioTrack personalizzata, contenete un countDownTimer per lo scorrimento della sbarra in riproduzine
+ * e per visualizzare il tempo trascorso nella PlayerActivity
+ */
 public class AudioTrackTimer extends AudioTrack {
 
 	private long elapsed, duration, remaining_millis;
@@ -16,13 +25,13 @@ public class AudioTrackTimer extends AudioTrack {
 	private boolean isPlaying;
 	
 	/**
-	 * @param streamType
-	 * @param sampleRateInHz
-	 * @param channelConfig
-	 * @param audioFormat
-	 * @param bufferSizeInBytes
-	 * @param mode
-	 * @param sampleLength
+	 * @param streamType tipo di stream
+	 * @param sampleRateInHz sound rate in Hz
+	 * @param channelConfig numero di canali
+	 * @param audioFormat formato audio
+	 * @param bufferSizeInBytes lunghezza buffer in Bytes
+	 * @param mode modalita di riproduzione
+	 * @param sampleLength numero di campioni da riprodurre
 	 * @throws IllegalArgumentException
 	 */
 	public AudioTrackTimer(int streamType, int sampleRateInHz, int channelConfig, int audioFormat, int bufferSizeInBytes, int mode, int upsampling, int sampleLength) throws IllegalArgumentException {
@@ -33,6 +42,11 @@ public class AudioTrackTimer extends AudioTrack {
 		isPlaying = false;
 	}
 	
+	/**
+	 * Avvia la riproduzione della musica e la sbarra di riproduzione
+	 * 
+	 * @see android.media.AudioTrack#play()
+	 */
 	@Override
 	public void play(){
 		isPlaying = true;
@@ -50,7 +64,14 @@ public class AudioTrackTimer extends AudioTrack {
 		}
 		super.play();
 	}
+	//
 	
+	/**
+	 * Mette in pausa la riproduzione e stoppa la sbarra di riproduzione
+	 * 
+	 * @param sampleIndex il campioni in riproduzione
+	 * @see android.media.AudioTrack#pause()
+	 */
 	public void pause(int sampleIndex){
 		super.pause();
 		try {
@@ -66,6 +87,12 @@ public class AudioTrackTimer extends AudioTrack {
 		remaining_millis = (duration - MusicUpsampling.duration(upsampling, sampleIndex, getSampleRate()));
 	}
 	
+	/**
+	 * Stoppa la riproduzione audio, blocca la sbarra di riproduzione
+	 * e resetta il tempo trascorso
+	 * 
+	 * @see android.media.AudioTrack#stop()
+	 */
 	@Override
 	public void stop(){
 		super.stop();
@@ -74,7 +101,12 @@ public class AudioTrackTimer extends AudioTrack {
 			timer.cancel();
 		isPlaying = false;
 	}
+	//
 	
+	/**
+	 * CountDownTimer personalizzato
+	 *
+	 */
 	class MyTimer extends CountDownTimer{
 
 		public MyTimer(long millisInFuture, long countDownInterval) {

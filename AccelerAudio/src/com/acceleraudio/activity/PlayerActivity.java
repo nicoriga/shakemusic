@@ -37,7 +37,7 @@ import android.widget.Toast;
  */
 public class PlayerActivity extends Activity {
 	
-	public static final String NOTIFICATION = "com.acceleraudio.service.playerActivity";
+	public static final String NOTIFICATION = "com.acceleraudio.activity.playerActivity";
 	public static String SESSION_ID = "playerActivity.session_id";
 	public static String SESSION_NAME = "playerActivity.session_Name";
 	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
@@ -47,6 +47,8 @@ public class PlayerActivity extends Activity {
 	public static String IMAGE = "playerActivity.image";
 	public static String INTENT_PLAYER = "playerActivity.intentPlayer";
 	public static String PROGRESS_TIME = "playerActivity.progressTime";
+	public static final String DURATION = "playertrack.duration";
+	public static final String PAUSE = "playertrack.pause";
 	
 	private Boolean axis_x, axis_y, axis_z;
 	private TextView sessionName;
@@ -95,11 +97,11 @@ public class PlayerActivity extends Activity {
 			{
 				sessionId = savedInstanceState.getLong(SESSION_ID);
 				sessionName.setText(savedInstanceState.getString(SESSION_NAME));
-				isPause = savedInstanceState.getBoolean(PlayerTrack.PAUSE);
+				isPause = savedInstanceState.getBoolean(PAUSE);
 				sample = savedInstanceState.getIntArray(SAMPLE);
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
 				image = savedInstanceState.getString(IMAGE);
-				duration = savedInstanceState.getLong(PlayerTrack.DURATION);
+				duration = savedInstanceState.getLong(DURATION);
 				intentPlayer = savedInstanceState.getParcelable(INTENT_PLAYER);
 				currentTimeTV.setText(savedInstanceState.getString(PROGRESS_TIME));
 				
@@ -169,68 +171,59 @@ public class PlayerActivity extends Activity {
 				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
 				sample = new int[(nSample > 0 ? nSample : 1)];
 				
-				// TODO: verificare che funzioni anche con 1 campione
-				if(false & nSample < 15) 
-				{
-						Toast.makeText(this, "Pochi campioni, selezionare un'altro asse", Toast.LENGTH_SHORT).show();
-						finish();
-				}
-				else
-				{
-					int z=0;
-					if(axis_x)
-						for(int i = 0; i<data_x.length; i++)
-							if(data_x[i].length()>0)
-							{
-								sample[z] = ((int)(Float.parseFloat(data_x[i]))); 
-								z++;
-							}
-					if(axis_y)
-						for(int i = 0; i<data_y.length; i++)
-							if(data_y[i].length()>0)
-							{ 
-								sample[z] = ((int)(Float.parseFloat(data_y[i]))); 
-								z++;
-							}
-					if(axis_z)
-						for(int i = 0; i<data_z.length; i++)
-							if(data_z[i].length()>0)
-							{ 
-								sample[z] = ((int)(Float.parseFloat(data_z[i]))); 
-								z++;
-							}
-					
-					Log.w("PlayerActivity", "sample tot: "+z);
-					
-					play.setEnabled(false);
-					pause.setEnabled(true);
-					
-					t = new Thread("Thumbnail_Decoding"){
-						public void run() {
-							// setta la priorità massima del thread
-			                setPriority(Thread.MAX_PRIORITY);
-			                
-			                // converto la stringa in una immagine bitmap
-			        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
-			        		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
-							
-							runOnUiThread(new Runnable() {
-		                        @Override
-		                        public void run() {
-		                        	thumbnail.setImageBitmap(bmp);
-		                        }
-		                    });
+				int z=0;
+				if(axis_x)
+					for(int i = 0; i<data_x.length; i++)
+						if(data_x[i].length()>0)
+						{
+							sample[z] = ((int)(Float.parseFloat(data_x[i]))); 
+							z++;
 						}
-					};
-					t.start();
+				if(axis_y)
+					for(int i = 0; i<data_y.length; i++)
+						if(data_y[i].length()>0)
+						{ 
+							sample[z] = ((int)(Float.parseFloat(data_y[i]))); 
+							z++;
+						}
+				if(axis_z)
+					for(int i = 0; i<data_z.length; i++)
+						if(data_z[i].length()>0)
+						{ 
+							sample[z] = ((int)(Float.parseFloat(data_z[i]))); 
+							z++;
+						}
 				
-					duration = MusicUpsampling.duration(upsampling, sample.length, PlayerTrack.SOUND_RATE_48000);
-					
-					// avvio subito la riproduzione della musica
-					intentPlayer.putExtra(ACC_DATA, sample);
-					intentPlayer.putExtra(UPSAMPLING, upsampling);
-					startService(intentPlayer);
-				}
+				Log.w("PlayerActivity", "sample tot: "+z);
+				
+				play.setEnabled(false);
+				pause.setEnabled(true);
+				
+				t = new Thread("Thumbnail_Decoding"){
+					public void run() {
+						// setta la priorità massima del thread
+		                setPriority(Thread.MAX_PRIORITY);
+		                
+		                // converto la stringa in una immagine bitmap
+		        		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
+		        		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
+						
+						runOnUiThread(new Runnable() {
+	                        @Override
+	                        public void run() {
+	                        	thumbnail.setImageBitmap(bmp);
+	                        }
+	                    });
+					}
+				};
+				t.start();
+			
+				duration = MusicUpsampling.duration(upsampling, sample.length, PlayerTrack.SOUND_RATE_48000);
+				
+				// avvio subito la riproduzione della musica
+				intentPlayer.putExtra(ACC_DATA, sample);
+				intentPlayer.putExtra(UPSAMPLING, upsampling);
+				startService(intentPlayer);
 			}
 			
 			sb_musicProgress.setOnTouchListener(new OnTouchListener(){
@@ -249,11 +242,16 @@ public class PlayerActivity extends Activity {
 			play.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					/* delay per permettere al servizio di mettersi in pausa correttamente
+					 * previene problemi nel caso venga premuto pausa e play velocemente
+					*/
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
+					
+					// verifica che lo speacker non stia riproducendo altra musica
 					if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive())
 					{
 						if(isPause){
@@ -277,12 +275,6 @@ public class PlayerActivity extends Activity {
 			pause.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					try {
-//						Thread.sleep(200);
-//					} catch (InterruptedException e) {
-//						e.printStackTrace();
-//					}
-					
 					isPause = true;
 					
 					Intent intent = new Intent(NOTIFICATION);
@@ -351,11 +343,11 @@ public class PlayerActivity extends Activity {
     {
     	savedInstanceState.putLong(SESSION_ID, sessionId);
     	savedInstanceState.putString(SESSION_NAME, sessionName.getText().toString());
-    	savedInstanceState.putBoolean(PlayerTrack.PAUSE, isPause);
+    	savedInstanceState.putBoolean(PAUSE, isPause);
     	savedInstanceState.putInt(UPSAMPLING, upsampling);
     	savedInstanceState.putIntArray(SAMPLE, sample);
     	savedInstanceState.putString(IMAGE, image);
-    	savedInstanceState.putLong(PlayerTrack.DURATION, duration);
+    	savedInstanceState.putLong(DURATION, duration);
     	savedInstanceState.putParcelable(INTENT_PLAYER, intentPlayer);
     	savedInstanceState.putString(PROGRESS_TIME, currentTimeTV.getText().toString());
     	super.onSaveInstanceState(savedInstanceState);
@@ -371,6 +363,7 @@ public class PlayerActivity extends Activity {
     	Intent intent = new Intent(NOTIFICATION);
 		intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
 		sendBroadcast(intent);
+		// un piccolo delay per permettere al servizio di stopparsi correttamente
 		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
