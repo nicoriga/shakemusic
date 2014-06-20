@@ -342,8 +342,8 @@ public class PlayerActivity extends Activity {
     
     @Override
 	public void onBackPressed() {
-	    super.onBackPressed();
 	    stopService(); // stoppa il servizio della musica
+	    super.onBackPressed();
     }
     
     @Override
@@ -371,5 +371,10 @@ public class PlayerActivity extends Activity {
     	Intent intent = new Intent(NOTIFICATION);
 		intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
 		sendBroadcast(intent);
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
     }
 }

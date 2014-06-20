@@ -141,7 +141,7 @@ public class PlayerTrack extends IntentService{
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "Play started", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Play started", Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent,flags,startId);
     }
     

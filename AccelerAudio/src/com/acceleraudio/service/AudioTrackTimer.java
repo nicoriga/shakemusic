@@ -13,6 +13,7 @@ public class AudioTrackTimer extends AudioTrack {
 	private long elapsed, duration, remaining_millis;
 	private int upsampling;
 	private MyTimer timer;
+	private boolean isPlaying;
 	
 	/**
 	 * @param streamType
@@ -29,10 +30,12 @@ public class AudioTrackTimer extends AudioTrack {
 		this.upsampling = upsampling;
 		duration = MusicUpsampling.duration(upsampling, sampleLength, sampleRateInHz);
 		remaining_millis = duration;
+		isPlaying = false;
 	}
 	
 	@Override
 	public void play(){
+		isPlaying = true;
 		if(duration > 0) {
 			elapsed = remaining_millis;
 			timer = new MyTimer(remaining_millis, 1);
@@ -59,6 +62,7 @@ public class AudioTrackTimer extends AudioTrack {
 		}
 		if(timer != null) 
 			timer.cancel();
+		isPlaying = false;
 		remaining_millis = (duration - MusicUpsampling.duration(upsampling, sampleIndex, getSampleRate()));
 	}
 	
@@ -68,6 +72,7 @@ public class AudioTrackTimer extends AudioTrack {
 		remaining_millis = duration;
 		if(timer != null) 
 			timer.cancel();
+		isPlaying = false;
 	}
 	
 	class MyTimer extends CountDownTimer{
@@ -79,8 +84,10 @@ public class AudioTrackTimer extends AudioTrack {
 		@Override
 		public void onFinish() {
 			remaining_millis = duration;
-			timer = new MyTimer(remaining_millis, 1);
-			timer.start();
+			if(isPlaying){
+				timer = new MyTimer(remaining_millis, 1);
+				timer.start();
+			}
 		}
 
 		@Override
@@ -90,6 +97,7 @@ public class AudioTrackTimer extends AudioTrack {
 //			PlayerActivity.currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
 			PlayerActivity.sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
 			remaining_millis = millisUntilFinished;
+			if(!isPlaying) onFinish();
 		}
 		
 	}
