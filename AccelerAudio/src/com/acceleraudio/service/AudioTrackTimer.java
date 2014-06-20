@@ -49,22 +49,14 @@ public class AudioTrackTimer extends AudioTrack {
 	 */
 	@Override
 	public void play(){
+		super.play();
 		isPlaying = true;
 		if(duration > 0) {
 			elapsed = remaining_millis;
 			timer = new MyTimer(remaining_millis, 1);
 			timer.start();
 		}
-		try {
-			synchronized (this) {
-				this.wait(3);
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		super.play();
 	}
-	//
 	
 	/**
 	 * Mette in pausa la riproduzione e stoppa la sbarra di riproduzione
@@ -126,7 +118,6 @@ public class AudioTrackTimer extends AudioTrack {
 		public void onTick(long millisUntilFinished) {
 			long time_elapsed = duration - (millisUntilFinished + elapsed);
 			PlayerActivity.currentTimeTV.setText("" + Util.millisecondsToMinutesSeconds(elapsed + time_elapsed));
-//			PlayerActivity.currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
 			PlayerActivity.sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
 			remaining_millis = millisUntilFinished;
 			if(!isPlaying) onFinish();
