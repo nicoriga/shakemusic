@@ -1,9 +1,5 @@
 package com.acceleraudio.database;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import com.acceleraudio.util.ImageBitmap;
 import com.acceleraudio.util.RecordedSession;
 
