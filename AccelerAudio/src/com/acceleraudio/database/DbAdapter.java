@@ -92,9 +92,9 @@ public class DbAdapter {
 	}
 	
 	/**
-	 * preleva la data corrente del sistema
+	 * preleva la data e ora corrente del sistema
 	 * 
-	 * @return la data nel formato dd-MM-yyyy
+	 * @return la data e ora nel formato dd-MM-yyyy HH:mm:ss
 	 */
 	public String getDate() 
 	{
