@@ -30,12 +30,22 @@ public class RenameDialog extends DialogFragment {
     public RenameDialog() {
     }
     
+    /**
+     * imposta le informazioni della sessione
+     * 
+     * @param position posizione della listView
+     * @param name nome della sessione
+     */
     public void setSessionInfo(int position, String name)
     {
     	this.position = position;
     	this.oldName = name;
     }
     
+    /**
+     * listener della chiusura del dialog
+     *
+     */
     public interface RenameDialogListener {
         void onFinishRenameDialog(int sessionId, String newName, boolean confirm);
     }
@@ -81,10 +91,16 @@ public class RenameDialog extends DialogFragment {
     	super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void setText(String title) {
-    	newName.setText(title);
+    /**
+     * @param name il nome da scrivere nella textView
+     */
+    public void setText(String name) {
+    	newName.setText(name);
 	}
     
+	/**
+	 * @param title imposto il titolo del dialog
+	 */
 	public void setTitle(String title) {
 		getDialog().setTitle(title);
 	}
