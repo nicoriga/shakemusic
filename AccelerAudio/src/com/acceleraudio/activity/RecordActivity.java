@@ -85,7 +85,6 @@ public class RecordActivity extends Activity {
 			progressBarX = (ProgressBar) findViewById(R.id.UI3_PB_X);
 			progressBarY = (ProgressBar) findViewById(R.id.UI3_PB_Y);
 			progressBarZ = (ProgressBar) findViewById(R.id.UI3_PB_Z);
-			//setProgressBarMax((int)accelerometro.getMaximumRange());
 			setProgressBarMax(20);
 			resetProgressBar();
 			rec_sample.setText("" + sample);
@@ -124,6 +123,7 @@ public class RecordActivity extends Activity {
 				sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
 				remaining_time = pref.getInt(PreferencesActivity.TIMER_SECONDS, 5)*1000;
 				
+				// inizializza variabili
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
 				data_z = new ArrayList<Float>();
@@ -155,6 +155,7 @@ public class RecordActivity extends Activity {
 					intentRecord.putExtra(RecordTrack.SENSOR_DELAY, sample_rate);
 					startService(intentRecord);
 					
+					// countDown che stoppa la registazione a tempo scaduto
 					countDownTimer = new CountDownTimer(remaining_time, 1000) {
 						public void onTick(long millisUntilFinished) {
 							remaining_time = millisUntilFinished;
@@ -212,9 +213,10 @@ public class RecordActivity extends Activity {
 					if(countDownTimer != null) countDownTimer.cancel();
 					resetProgressBar();
 					
+					// verifica che ci sia spazio disponibile per salvare i dati
 					if(AvailableSpace.getinternalAvailableSpace(AvailableSpace.SIZE_MB)>1)
 					{
-//						if(data_x.size() > 15 || data_y.size() > 15 || data_z.size() > 15)
+						// verifica che sia abbia registrato almeno un campione
 						if((data_x.size()+ data_y.size() + data_z.size()) > 0)
 						{
 							saveAccelerometerData();
@@ -227,9 +229,12 @@ public class RecordActivity extends Activity {
 						else
 						{
 							Toast.makeText(v.getContext(), getString(R.string.error_low_recorded_data), Toast.LENGTH_SHORT).show();
-							if(remaining_time == 0) finish(); // se non ci sono dati da salvare quindi chiude l'activity
-							// se si hanno registrato pochi campioni mettere in pausa
-							// in modo da permettere all'utente di registrarne ancora
+							
+							if(remaining_time == 0) finish(); // se non ci sono dati da salvare chiude l'activity
+							
+							/* se si hanno registrato pochi campioni mettere in pausa
+							 * in modo da permettere all'utente di registrarne ancora
+							 * */
 							pauseSession.performClick();
 						}
 					}
