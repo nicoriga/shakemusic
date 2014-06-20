@@ -2,6 +2,7 @@ package com.acceleraudio.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 
 /**
  * @author Nicola Rigato
@@ -24,7 +25,7 @@ public class Wav
 	 * @param out file su cui scivere
 	 * @throws IOException
 	 */
-	public static void WriteWaveFileHeader(long totalAudioLen, long soundRate, int channels, OutputStream out) throws IOException 
+	public static void WriteWaveFileHeader(long totalAudioLen, long soundRate, int channels, OutputStream out, RandomAccessFile raf) throws IOException 
 	{
 		int byteRate = (int) (channels * soundRate * bitsForSample / 8);
 		long totalDataLen = totalAudioLen + 36;
@@ -76,7 +77,7 @@ public class Wav
         header[42] = (byte) ((totalAudioLen >> 16) & 0xff);
         header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
 
-        out.write(header);
+        raf.write(header);
 
 	}
 

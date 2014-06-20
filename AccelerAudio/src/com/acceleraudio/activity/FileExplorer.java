@@ -1,6 +1,5 @@
 package com.acceleraudio.activity;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -173,7 +172,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 									// crea un file vuoto con la lunghezza del file WAV da esportare
 									newSparseFile = new RandomAccessFile(savePath + "/" + TEMP_FILE_NAME,"rw");
 									newSparseFile.setLength(totalDataLenght());
-									newSparseFile.close();
+									newSparseFile.seek(0);
 									
 									// inizializzo la finestra di caricamento
 									loadProgressDialog();
@@ -186,18 +185,21 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 											
 											try {
 //												myFile.createNewFile();
-											
-												File tempFile = new File(savePath + "/" + TEMP_FILE_NAME);
-												tempFile.renameTo(myFile);
+												
+												// rinomina il file temporaneo con il nome del file da esportare
+												new File(savePath + "/" + TEMP_FILE_NAME).renameTo(myFile);
 												
 												FileOutputStream fOut = new FileOutputStream(myFile);
 												long totalAudioLen = totalAudioLenght();
 												int channels = 1;
 												// scrivo header wav nel file
-												Wav.WriteWaveFileHeader(totalAudioLen, soundRate, channels, fOut);
+												Wav.WriteWaveFileHeader(totalAudioLen, soundRate, channels, fOut,newSparseFile);
 												// scrivo 
-												MusicUpsampling.note(fOut, soundRate, upsampling, sample, pd);
-												fOut.close();
+												MusicUpsampling.note(fOut, soundRate, upsampling, sample, pd, newSparseFile);
+												if(fOut != null) 
+													fOut.close();
+												if(newSparseFile != null) 
+													newSparseFile.close();
 												pd.dismiss();
 //												Util.unlockOrientation(a);
 												isExporting = false;
@@ -239,6 +241,12 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 											@Override
 											public void onClick(DialogInterface dialog, int which) {
 												isExporting = false;
+												new File(savePath + "/" + TEMP_FILE_NAME).delete();
+												try {
+													if(newSparseFile != null) newSparseFile.close();
+												} catch (IOException e) {
+													e.printStackTrace();
+												}
 											}
 										}).show();
 									}
@@ -405,6 +413,12 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 		{
 			pd.dismiss();
 			isExporting = false;
+			new File(savePath + "/" + TEMP_FILE_NAME).delete();
+			try {
+				if(newSparseFile != null)newSparseFile.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
