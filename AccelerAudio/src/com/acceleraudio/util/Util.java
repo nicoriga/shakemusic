@@ -9,9 +9,22 @@ import android.view.View;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * classe contenente metodi utili alle altre classi
+ */
 public class Util{
 	
-	/**** Seleziona elemento dello spinner in base al valore passato ****/
+    /**
+     * Seleziona elemento dello spinner in base al valore passato
+     * 
+     * @param spinner 
+     * @param value valore da impostare come selezionato
+     */
     public static void selectSpinnerItemByValue(Spinner spinner, String value)
     {
     	SpinnerAdapter adapter = spinner.getAdapter();
@@ -26,7 +39,12 @@ public class Util{
         } 
     }
     
-    /**** Copia ArrayList<Float> in Float[] ****/
+    /**
+     * Copia ArrayList<Float> in Float[]
+     * 
+     * @param alf array list float
+     * @return array float
+     */
     public static float[] toArrayFloat(ArrayList<Float> alf)
     {
     	float[] floatA = new float[alf.size()];
@@ -35,7 +53,12 @@ public class Util{
     	return floatA;
     }
     
-    /**** Copia float[] in ArrayList<Float> ****/
+    /**
+     * Copia float[] in ArrayList<Float>
+     * 
+     * @param f array float
+     * @return arrayList float
+     */
     public static ArrayList<Float> toArrayListFloat(float[] f)
     {
     	ArrayList<Float> floatL = new ArrayList<Float>();
@@ -44,7 +67,12 @@ public class Util{
     	return floatL;
     }
     
-    /**** ritorna il numero univoco della velocita del sensore in base al nome  ****/
+    /**
+     * ritorna il numero univoco della velocita del sensore in base al nome
+     * 
+     * @param n nome delay sensore
+     * @return delay sensore
+     */
     public static int sensorRateByString(String n)
     {
     	if(n.equalsIgnoreCase("lento")) return SensorManager.SENSOR_DELAY_NORMAL;
@@ -53,7 +81,12 @@ public class Util{
     	return SensorManager.SENSOR_DELAY_NORMAL;
     }
     
-    /**** ritorna il nome corrispondente alla velocita del sensore  ****/
+    /**
+     * ritorna il nome corrispondente alla velocita del sensore
+     * 
+     * @param r sensor delay
+     * @return nome delay sensore
+     */
     public static String sensorRateName(int r)
     {
     	if(r == SensorManager.SENSOR_DELAY_NORMAL) return "Lento";
@@ -62,7 +95,13 @@ public class Util{
     	return "Normale";
     }
     
-    /*** blocca la rotazione dello schermo ***/
+    /**
+     * blocca la rotazione dello schermo
+     * 
+     * @param a activity da bloccare
+     * @param v la view corrente
+     * @return il valore di orientamento
+     */
     public static int lockOrientation(Activity a, View v)
     {
     	int orientation = v.getResources().getConfiguration().orientation;
@@ -83,12 +122,22 @@ public class Util{
     	}
     }
     
-    /*** sblocca la rotazione dello schermo ***/
+    /**
+     * sblocca la rotazione dello schermo
+     * 
+     * @param a activity da sbloccare
+     */
     public static void unlockOrientation(Activity a)
     {
     	a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
-    
+
+    /**
+     * converte i millisecondi in una stringa nel formato minuti:secondi.decimi
+     * 
+     * @param milliseconds
+     * @return stringa mm:ss.dd
+     */
     public static String millisecondsToMinutesSeconds (long milliseconds)
     {
 	    int seconds = (int) (milliseconds / 1000) % 60 ;
