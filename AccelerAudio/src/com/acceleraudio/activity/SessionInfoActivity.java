@@ -241,7 +241,7 @@ public class SessionInfoActivity extends Activity {
 							v.getContext().startActivity(i);
 						}
 						else
-							Toast.makeText(v.getContext(), "Speacker occupato", Toast.LENGTH_SHORT).show();
+							Toast.makeText(v.getContext(), getString(R.string.notify_speaker_occuped), Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
