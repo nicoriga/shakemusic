@@ -18,6 +18,7 @@ import android.media.AudioTrack;
  */
 public class MusicUpsampling
 {
+	// serve per bloccare la scrittura delle note nel file
 	public static boolean isRunning;
 	
 	/**
@@ -44,8 +45,7 @@ public class MusicUpsampling
         isRunning = true;
         
         for(int x=0; x < sample.length && isRunning; x++){
-        	// modifica la frequenza con i campioni prelevati dall'accelerometro
-        	fr =  362 + (Math.abs(sample[x])*100);
+        	fr =  362 + (Math.abs(sample[x])*100); // modifica la frequenza con i campioni prelevati dall'accelerometro
         	increment = twophi*fr/sound_rate;
         	for(int i=0; i < buffsize; i++){
         		sampleS[i] = (short) (amp*Math.sin(angle));
