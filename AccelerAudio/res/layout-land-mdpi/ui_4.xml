@@ -29,6 +29,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:text="@string/session_name"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="40sp" />
 
@@ -54,6 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/UI4_BT_play"
         android:layout_toLeftOf="@+id/UI4_BT_play"
+        android:contentDescription="@string/stop"
         android:src="@drawable/stop_player" />
 
     <ImageButton
@@ -62,6 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/UI4_BT_stop"
         android:layout_toRightOf="@+id/UI4_BT_play"
+        android:contentDescription="@string/play"
         android:src="@drawable/pause_player" />
 
     <Button
@@ -82,6 +86,7 @@
         android:layout_below="@+id/UI4_SB_musicProgress"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
+        android:contentDescription="@string/play"
         android:src="@drawable/play_player" />
 
 </RelativeLayout>

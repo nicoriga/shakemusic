@@ -3,18 +3,23 @@ package com.acceleraudio.activity;
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.PlayerTrack;
 import com.acceleraudio.util.MusicUpsampling;
+import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,22 +27,30 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * permette di riprodure la musica dai dati dell'accelerometro della sessione
+ */
 public class PlayerActivity extends Activity {
 	
-	public static final String NOTIFICATION = "com.acceleraudio.service.playerActivity";
+	public static final String NOTIFICATION = "com.acceleraudio.activity.playerActivity";
 	public static String SESSION_ID = "playerActivity.session_id";
 	public static String SESSION_NAME = "playerActivity.session_Name";
 	public static String ACC_DATA = "playerActivity.accelerotemer_data"; // dati accelerometro
 	public static String SOUND_RATE = "playerActivity.soundRate";
 	public static String UPSAMPLING = "playerActivity.upsampling";
-	public static String INIZIALIZED = "playerActivity.inizialied";
 	public static String SAMPLE = "playerActivity.sample";
 	public static String IMAGE = "playerActivity.image";
 	public static String INTENT_PLAYER = "playerActivity.intentPlayer";
 	public static String PROGRESS_TIME = "playerActivity.progressTime";
+	public static final String DURATION = "playertrack.duration";
+	public static final String PAUSE = "playertrack.pause";
 	
-	// TODO: rimuovere inizialized, perchè non serve
-	private Boolean inizialized = false, axis_x, axis_y, axis_z;
+	private Boolean axis_x, axis_y, axis_z;
 	private TextView sessionName;
 	public static TextView currentTimeTV, durationTV;
 	private ImageButton play, pause, stop;
@@ -56,46 +69,13 @@ public class PlayerActivity extends Activity {
 	private Thread t;
 	private static Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
 	public boolean isPause;
-	// TODO sistemare timer durata musica
-	/*
-	private CountDownTimer countDownTimer;
-	private BroadcastReceiver receiver = new BroadcastReceiver() {
-    	
-    	@Override
-        public void onReceive(Context context, Intent intent) {
-    		Bundle bundle = intent.getExtras();
-    		if (bundle != null) {
-    			if(intent.hasExtra(PlayerTrack.DURATION))
-    			{
-					duration = bundle.getLong(PlayerTrack.DURATION);
-					remaining_millis = duration;
-					durationTV.setText("" + duration/1000);
-					sb_musicProgress.setMax((int)duration);
-    			}
-    			if(intent.hasExtra(PlayerTrack.PAUSE))
-    				if(bundle.getInt(PlayerTrack.PAUSE) == PlayerTrack.PAUSE_MUSIC)
-    					if(countDownTimer != null)
-    					{
-    						countDownTimer.cancel();
-    						playbackHeadPosition = bundle.getInt(PlayerTrack.PLAYBACK_POSITION);
-//    						remaining_millis = duration - (playbackHeadPosition);
-    					}
-    			if(intent.hasExtra(PlayerTrack.PLAY))
-					if(bundle.getInt(PlayerTrack.PLAY) == PlayerTrack.PLAY_MUSIC)
-					{
-//						loadCountDownTimer();
-						if(countDownTimer != null) countDownTimer.start();
-					}
-    		}
-        }
-    };*/
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.ui_4);
     	
-////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 ///////////// collego widget con xml ///////////////////
 ///////////////////////////////////////////////////////
 
@@ -117,16 +97,15 @@ public class PlayerActivity extends Activity {
 			{
 				sessionId = savedInstanceState.getLong(SESSION_ID);
 				sessionName.setText(savedInstanceState.getString(SESSION_NAME));
-				inizialized = savedInstanceState.getBoolean(INIZIALIZED);
-				isPause = savedInstanceState.getBoolean(PlayerTrack.PAUSE);
+				isPause = savedInstanceState.getBoolean(PAUSE);
 				sample = savedInstanceState.getIntArray(SAMPLE);
 				upsampling = savedInstanceState.getInt(UPSAMPLING);
 				image = savedInstanceState.getString(IMAGE);
-				duration = savedInstanceState.getLong(PlayerTrack.DURATION);
+				duration = savedInstanceState.getLong(DURATION);
 				intentPlayer = savedInstanceState.getParcelable(INTENT_PLAYER);
 				currentTimeTV.setText(savedInstanceState.getString(PROGRESS_TIME));
 				
-				durationTV.setText("" + duration/1000);
+				durationTV.setText("" + Util.millisecondsToMinutesSeconds(duration));
 				sb_musicProgress.setMax((int)duration);
 				
 				if(isPause)
@@ -155,7 +134,7 @@ public class PlayerActivity extends Activity {
 				sessionId = b.getLong(DbAdapter.T_SESSION_SESSIONID);
     	
 ////////////////////////////////////////////////////////
-/// prelevo dati dal database /////////////////////////
+////////// prelevo dati dal database //////////////////
 ///////////////////////////////////////////////////////
 
 				// apro la connessione al db
@@ -184,22 +163,16 @@ public class PlayerActivity extends Activity {
 				// se la sessione non ha almeno un asse selezionato la riproduzione non può avvenire
 				if(!(axis_x || axis_y || axis_z)) 
 				{
-						Toast.makeText(this, "Selezionare almeno un asse", Toast.LENGTH_SHORT).show();
-						finish();
-				}
-				
-				// creo array con la lunghezza degli assi selezionati
-				int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
-				sample = new int[(nSample > 0 ? nSample : 1)];
-				
-				// TODO: verificare che funzioni anche con 1 campione
-				if(false & nSample < 15) 
-				{
-						Toast.makeText(this, "Pochi campioni, selezionare un'altro asse", Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
 						finish();
 				}
 				else
 				{
+					// creo array con la lunghezza degli assi selezionati
+					int nSample = (axis_x ? data_x.length : 0) + (axis_y ? data_y.length : 0) + (axis_z ? data_z.length : 0);
+					sample = new int[(nSample > 0 ? nSample : 1)];
+					
+					// creo array sample da riprodurre
 					int z=0;
 					if(axis_x)
 						for(int i = 0; i<data_x.length; i++)
@@ -223,7 +196,7 @@ public class PlayerActivity extends Activity {
 								z++;
 							}
 					
-					Log.w("sample tot:", ""+z);
+					Log.w("PlayerActivity", "sample tot: "+z);
 					
 					play.setEnabled(false);
 					pause.setEnabled(true);
@@ -247,15 +220,22 @@ public class PlayerActivity extends Activity {
 					};
 					t.start();
 				
-				duration = MusicUpsampling.duration(upsampling, sample.length, 44100);
-				
-				// avvio subito la riproduzione della musica
-				intentPlayer.putExtra(ACC_DATA, sample);
-				intentPlayer.putExtra(UPSAMPLING, upsampling);
-				startService(intentPlayer);
+					duration = MusicUpsampling.duration(upsampling, sample.length, PlayerTrack.SOUND_RATE_48000);
+					
+					// avvio subito la riproduzione della musica
+					intentPlayer.putExtra(ACC_DATA, sample);
+					intentPlayer.putExtra(UPSAMPLING, upsampling);
+					startService(intentPlayer);
 				}
-	
 			}
+			
+			// blocco lo spostamento della seekBar
+			sb_musicProgress.setOnTouchListener(new OnTouchListener(){
+		        @Override
+		        public boolean onTouch(View v, MotionEvent event) {
+		            return true;
+		        }
+		    });
 			
 			thumbnail.setImageBitmap(bmp);
 			
@@ -267,20 +247,32 @@ public class PlayerActivity extends Activity {
 			play.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(isPause)
+					/* delay per permettere al servizio di mettersi in pausa correttamente
+					 * previene problemi nel caso venga premuto pausa e play velocemente
+					*/
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					// verifica che lo speacker non stia riproducendo altra musica
+					if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive())
 					{
-						isPause = false;
-						
-						// manda il comando di avvio per essere sicuri che il servizio non sia stato chiuso
-//						startService(intentPlayer);
-						
-						Intent intent = new Intent(NOTIFICATION);
-						intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
-						sendBroadcast(intent);
-						
-						inizialized = true;
-						play.setEnabled(false);
-						pause.setEnabled(true);
+						if(isPause){
+							isPause = false;
+							
+							// invio comando di pausa
+							Intent intent = new Intent(NOTIFICATION);
+							intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
+							sendBroadcast(intent);
+							
+							play.setEnabled(false);
+							pause.setEnabled(true);
+						}
+					}
+					else{
+						Toast.makeText(v.getContext(), getString(R.string.notify_speaker_occuped), Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -291,11 +283,11 @@ public class PlayerActivity extends Activity {
 				public void onClick(View v) {
 					isPause = true;
 					
+					// invio comando di pausa
 					Intent intent = new Intent(NOTIFICATION);
 					intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.PAUSE_MUSIC);
 					sendBroadcast(intent);
 					
-					inizialized = false;
 					play.setEnabled(true);
 					pause.setEnabled(false);
 				}
@@ -305,17 +297,7 @@ public class PlayerActivity extends Activity {
 			stop.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-//					Intent intent = new Intent(NOTIFICATION);
-//					intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
-//					sendBroadcast(intent);
-//					stopService();
-//					try {
-//						Thread.sleep(200);
-//					} catch (InterruptedException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//					finish();
+					// stoppo la musica e chiudi activity
 					onBackPressed();
 				}
 			});
@@ -325,7 +307,8 @@ public class PlayerActivity extends Activity {
 				@Override
 				public void onClick(View view) {
 					pause.performClick();
-					Intent i = new Intent(view.getContext(), FileExplore.class);
+					// avvio il fileExplorer per esportazione
+					Intent i = new Intent(view.getContext(), FileExplorer.class);
 					i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 					view.getContext().startActivity(i);
 				}
@@ -351,31 +334,17 @@ public class PlayerActivity extends Activity {
     protected void onResume() {
     	super.onResume();
     	setMaxDuration();
-//    	registerReceiver(receiver, new IntentFilter(PlayerTrack.NOTIFICATION));
-    }
-	    
-    @Override
-    protected void onPause() {
-    	super.onPause();
-//    	unregisterReceiver(receiver);
     }
     
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	// forza la chiusura del servizio
-//    	stopService();
-    	inizialized = false;
-//    	if(countDownTimer != null)
-//			countDownTimer.cancel();
     }
     
     @Override
 	public void onBackPressed() {
-	    super.onBackPressed();
 	    stopService(); // stoppa il servizio della musica
-//	    if(countDownTimer != null)
-//			countDownTimer.cancel();
+	    super.onBackPressed();
     }
     
     @Override
@@ -383,49 +352,32 @@ public class PlayerActivity extends Activity {
     {
     	savedInstanceState.putLong(SESSION_ID, sessionId);
     	savedInstanceState.putString(SESSION_NAME, sessionName.getText().toString());
-    	savedInstanceState.putBoolean(INIZIALIZED, inizialized);
-    	savedInstanceState.putBoolean(PlayerTrack.PAUSE, isPause);
+    	savedInstanceState.putBoolean(PAUSE, isPause);
     	savedInstanceState.putInt(UPSAMPLING, upsampling);
     	savedInstanceState.putIntArray(SAMPLE, sample);
     	savedInstanceState.putString(IMAGE, image);
-    	savedInstanceState.putLong(PlayerTrack.DURATION, duration);
+    	savedInstanceState.putLong(DURATION, duration);
     	savedInstanceState.putParcelable(INTENT_PLAYER, intentPlayer);
     	savedInstanceState.putString(PROGRESS_TIME, currentTimeTV.getText().toString());
     	super.onSaveInstanceState(savedInstanceState);
     }
     
+    /*** imposta la durata massima della seekBar e della TextView***/
     public void setMaxDuration(){
-    	durationTV.setText("" + duration/1000);
+    	durationTV.setText("" + Util.millisecondsToMinutesSeconds(duration));
     	sb_musicProgress.setMax((int)duration);
     }
     
-//    public void loadCountDownTimer()
-//    {
-//    	elapsed = remaining_millis;
-//    	countDownTimer = new CountDownTimer(remaining_millis, 5) {
-//			public void onTick(long millisUntilFinished) {
-//				long time_elapsed = duration - (millisUntilFinished + elapsed);
-//				currentTimeTV.setText("" + ((double)((elapsed + time_elapsed) / 1000)));
-//				sb_musicProgress.setProgress((int)(time_elapsed + elapsed));
-//				remaining_millis = millisUntilFinished;
-//			}
-//			
-//			public void onFinish() {
-//				currentTimeTV.setText("" + (remaining_millis/1000));
-//				sb_musicProgress.setProgress((int)remaining_millis);
-//				
-//				loadCountDownTimer();
-//				countDownTimer.start();
-//			}
-//		};
-//    }
-
     /*** stoppa il servizio in modo automatico ***/
     public void stopService(){
     	Intent intent = new Intent(NOTIFICATION);
 		intent.putExtra(PlayerTrack.COMMAND, PlayerTrack.STOP_MUSIC);
 		sendBroadcast(intent);
-		
-//		stopService(intentPlayer);
+		// un piccolo delay per permettere al servizio di stopparsi correttamente
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
     }
 }

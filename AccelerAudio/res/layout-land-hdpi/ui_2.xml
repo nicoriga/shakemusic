@@ -119,14 +119,20 @@
                 android:text="@string/creation_date"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <TextView
-            android:id="@+id/UI2_TV_ModifiedDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="60dp"
-            android:text="@string/modified_date"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
+        	<TextView
+	            android:id="@+id/UI2_TV_ModifiedDate"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="60dp"
+	            android:text="@string/modified_date"
+	            android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		</TableRow>
+		
+        <TableRow
+            android:id="@+id/UI2_TR2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
             <Button
                 android:id="@+id/UI2_button_play"
                 android:layout_width="wrap_content"

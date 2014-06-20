@@ -2,49 +2,58 @@ package com.acceleraudio.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 import android.app.ProgressDialog;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * contiene algoritmo di upsampling e metodo per la calcolare la durata
+ */
 public class MusicUpsampling
 {
+	// serve per bloccare la scrittura delle note nel file
 	public static boolean isRunning;
 	
 	/**
 	 * scrive audio PCM nel file di output
 	 * 
 	 * @param out file su cui viene scritto audio PCM
-	 * @param sample_rate sample rate espresso in Hz
+	 * @param sound_rate sound rate espresso in Hz
 	 * @param upsampling la quantità di upsampling scelta
 	 * @param sample array di campioni
 	 * @param pd progressDialog su cui mostrare il progresso di salvataggio
 	 * @return 
 	 * @throws IOException nel caso sussistesse un problema nella scrittura sul file
 	 */
-	public static int note(OutputStream out, int sample_rate, int upsampling, int[] sample, ProgressDialog pd) throws IOException
+	public static int note(OutputStream out, int sound_rate, int upsampling, int[] sample, ProgressDialog pd, RandomAccessFile raf) throws IOException
 	{
 		// setta dimensione buffer
-		int buffsize = AudioTrack.getMinBufferSize(sample_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		int buffsize = upsampling + AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         short sampleS[] = new short[buffsize];
         int musicSize = buffsize * sample.length;
         int amp = 10000;
-        double twoph = Math.PI*2; // 2pi grego
-        double fr; // frequenza
-        double ph = 0.0; // pi greco
+        double twophi = Math.PI*2; // 2pi grego
+        double fr, increment, angle = 0.0;
         ByteBuffer byteBuff = ByteBuffer.allocate(buffsize*2);
         isRunning = true;
         
         for(int x=0; x < sample.length && isRunning; x++){
-        	// modifica la frequenza con i campioni prelevati dall'accelerometro
-        	fr =  262 + (Math.abs(sample[x])*100);
+        	fr =  362 + (Math.abs(sample[x])*100); // modifica la frequenza con i campioni prelevati dall'accelerometro
+        	increment = twophi*fr/sound_rate;
         	for(int i=0; i < buffsize; i++){
-        		sampleS[i] = (short) (amp*Math.sin(ph));
-        		ph += twoph*fr/sample_rate;
+        		sampleS[i] = (short) (amp*Math.sin(angle));
+        		angle += increment;
         		byteBuff.putShort(Short.reverseBytes(sampleS[i]));
         	}
-        	out.write(byteBuff.array());
+        	raf.write(byteBuff.array());
         	byteBuff.clear();
         	if(pd!=null)pd.setProgress(x);
         }
@@ -56,14 +65,15 @@ public class MusicUpsampling
 	 * 
 	 * @param upsampling quantita di upsampling scelta
 	 * @param num_sample numero di campioni
-	 * @param sample_rate sample rate espresso in Hz
+	 * @param sound_rate sound rate espresso in Hz
 	 * @return durata della riproduzione in millisecondi
 	 */
-	public static long duration(int upsampling, int num_sample, int sample_rate)
+	public static long duration(int upsampling, int num_sample, int sound_rate)
 	{
-		int buffsize = AudioTrack.getMinBufferSize(sample_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 		buffsize += upsampling;
-		return ((num_sample* buffsize)/sample_rate)*1000;
+		double length = ((double)(num_sample * buffsize)/sound_rate)*1000;
+		return (long)length;
 		
 	}
 	

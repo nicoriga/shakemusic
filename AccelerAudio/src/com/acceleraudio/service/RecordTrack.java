@@ -12,6 +12,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * servizio per registrare i campioni dall'accelerometro
+ */
 public class RecordTrack extends IntentService{
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.recordtrack";
@@ -30,6 +38,8 @@ public class RecordTrack extends IntentService{
 	private float noise = 1.0f;
 	private float oldX, oldY, oldZ;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
+	
+	/*** gestore evento registrazione dati accelerometro ***/
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
         public void onSensorChanged(SensorEvent event) {
         	
@@ -47,14 +57,11 @@ public class RecordTrack extends IntentService{
 	    			
 	    		} else {
 	    			
-//	    			float deltaX = Math.abs(oldX - x);
-//	    			float deltaY = Math.abs(oldY - y);
-//	    			float deltaZ = Math.abs(oldZ - z);
-	    			
 	    			float deltaX = oldX - x;
 	    			float deltaY = oldY - y;
 	    			float deltaZ = oldZ - z;
 	    			
+	    			// verifico se il nuovo valore supera il rumore
 	    			if (Math.abs(deltaX) < noise)
 	    			{
 	    				deltaX = (float) 0.0;
@@ -66,11 +73,12 @@ public class RecordTrack extends IntentService{
 	    				synchronized (this) {
 							RecordActivity.sample++;
 							RecordActivity.x = (int) Math.abs(deltaX);
-							RecordActivity.data_x.add(deltaX);
+							RecordActivity.data_x.add(deltaX); // aggiungo il valore registrato
 							RecordActivity.updateSample();
 						}
 	    			}
 	    			
+	    			// verifico se il nuovo valore supera il rumore
 	    			if (Math.abs(deltaY) < noise)
 	    			{
 	    				deltaY = (float) 0.0;
@@ -82,11 +90,12 @@ public class RecordTrack extends IntentService{
 	    				synchronized (this) {
 							RecordActivity.sample++;
 							RecordActivity.y = (int) Math.abs(deltaY);
-							RecordActivity.data_y.add(deltaY);
+							RecordActivity.data_y.add(deltaY); // aggiungo il valore registrato
 							RecordActivity.updateSample();
 						}
 	    			}
 	    			
+	    			// verifico se il nuovo valore supera il rumore
 	    			if (Math.abs(deltaZ) < noise)
 	    			{
 	    				deltaZ = (float) 0.0;
@@ -98,7 +107,7 @@ public class RecordTrack extends IntentService{
 	    				synchronized (this) {
 							RecordActivity.sample++;
 							RecordActivity.z = (int) Math.abs(deltaZ);
-							RecordActivity.data_z.add(deltaZ);
+							RecordActivity.data_z.add(deltaZ); // aggiungo il valore registrato
 							RecordActivity.updateSample();
 						}
 	    			}
@@ -113,8 +122,6 @@ public class RecordTrack extends IntentService{
         
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // TODO Auto-generated method stub
-
         }
     };
 
@@ -129,17 +136,21 @@ public class RecordTrack extends IntentService{
 			isRecording = true;
 			noise = intent.getFloatExtra(NOISE, 1.0f);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
    	  
     	try {
 			sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+			
 			// verifica presenza accelerometro
 			if (accelerometer != null) 
 			{
 				sensorManager.registerListener(mySensorEventListener, accelerometer, intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL));
+				
+				/* imposto che il servizio di registrazione si autochiuda allo scadere del tempo prefissato
+				 * nelle preferenze
+				 * */
 				long endTime = System.currentTimeMillis() + RecordActivity.remaining_time;
 				while (isRecording && System.currentTimeMillis() < endTime) {
 					synchronized (this) {

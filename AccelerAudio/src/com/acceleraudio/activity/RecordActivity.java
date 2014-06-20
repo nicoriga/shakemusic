@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.acceleraudio.database.DbAdapter;
 import com.acceleraudio.service.RecordTrack;
+import com.acceleraudio.util.AvailableSpace;
 import com.acceleraudio.util.ImageBitmap;
 import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
@@ -27,6 +28,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * permette di registrare una nuova sessione 
+ */
 public class RecordActivity extends Activity {
 	
 	public static String SAMPLE_RATE = "recordActivity.sample_rate";
@@ -41,8 +50,6 @@ public class RecordActivity extends Activity {
 	private static EditText nameSession;
 	public static TextView  rec_sample, time_remaining;
 	private static ProgressBar progressBarX , progressBarY, progressBarZ;
-	// essendo pubblici e statici, i dati non vengono persi durante la rotazione del display
-	// TODO verificare che questo sia il metodo piu adatto di procedere
 	public static ArrayList<Float> data_x, data_y, data_z;
 	public static int sample, x, y, z;
 	private DbAdapter dbAdapter;
@@ -78,7 +85,6 @@ public class RecordActivity extends Activity {
 			progressBarX = (ProgressBar) findViewById(R.id.UI3_PB_X);
 			progressBarY = (ProgressBar) findViewById(R.id.UI3_PB_Y);
 			progressBarZ = (ProgressBar) findViewById(R.id.UI3_PB_Z);
-			//setProgressBarMax((int)accelerometro.getMaximumRange());
 			setProgressBarMax(20);
 			resetProgressBar();
 			rec_sample.setText("" + sample);
@@ -86,10 +92,6 @@ public class RecordActivity extends Activity {
 			pauseSession.setEnabled(false);
 			stopSession.setEnabled(false);
 			
-//////////////////////////////////////////////////////////
-///////////// prelevo le impostazioni predefinite ////////
-//////////////////////////////////////////////////////////
-
 			if (savedInstanceState != null)
 			{
 				resetProgressBar();
@@ -121,6 +123,7 @@ public class RecordActivity extends Activity {
 				sample_rate = pref.getInt(PreferencesActivity.SAMPLE_RATE, SensorManager.SENSOR_DELAY_NORMAL);
 				remaining_time = pref.getInt(PreferencesActivity.TIMER_SECONDS, 5)*1000;
 				
+				// inizializza variabili
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
 				data_z = new ArrayList<Float>();
@@ -152,6 +155,7 @@ public class RecordActivity extends Activity {
 					intentRecord.putExtra(RecordTrack.SENSOR_DELAY, sample_rate);
 					startService(intentRecord);
 					
+					// countDown che stoppa la registazione a tempo scaduto
 					countDownTimer = new CountDownTimer(remaining_time, 1000) {
 						public void onTick(long millisUntilFinished) {
 							remaining_time = millisUntilFinished;
@@ -209,24 +213,33 @@ public class RecordActivity extends Activity {
 					if(countDownTimer != null) countDownTimer.cancel();
 					resetProgressBar();
 					
-					// Verifica che siano stati presi dati dall'accelerometro
-					if(data_x.size() > 15 || data_y.size() > 15 || data_z.size() > 15)
+					// verifica che ci sia spazio disponibile per salvare i dati
+					if(AvailableSpace.getinternalAvailableSpace(AvailableSpace.SIZE_MB)>1)
 					{
-						saveAccelerometerData();
-						// avvio la SessionInfoActivity
-						Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
-						i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
-						v.getContext().startActivity(i);
-						finish();
+						// verifica che sia abbia registrato almeno un campione
+						if((data_x.size()+ data_y.size() + data_z.size()) > 0)
+						{
+							saveAccelerometerData();
+							// avvio la SessionInfoActivity
+							Intent i = new Intent(v.getContext(), SessionInfoActivity.class);
+							i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
+							v.getContext().startActivity(i);
+							finish();
+						}
+						else
+						{
+							Toast.makeText(v.getContext(), getString(R.string.error_low_recorded_data), Toast.LENGTH_SHORT).show();
+							
+							if(remaining_time == 0) finish(); // se non ci sono dati da salvare chiude l'activity
+							
+							/* se si hanno registrato pochi campioni mettere in pausa
+							 * in modo da permettere all'utente di registrarne ancora
+							 * */
+							pauseSession.performClick();
+						}
 					}
 					else
-					{
-						Toast.makeText(v.getContext(), getString(R.string.error_low_recorded_data), Toast.LENGTH_SHORT).show();
-						if(remaining_time == 0) finish(); // se non ci sono dati da salvare quindi chiude l'activity
-						// se si hanno registrato pochi campioni mettere in pausa
-						// in modo da permettere all'utente di registrarne ancora
-						pauseSession.performClick();
-					}
+						Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
 				}
 			});
 			
@@ -267,6 +280,7 @@ public class RecordActivity extends Activity {
 ////////////////Metodi Utili  //////////////////////////
 ////////////////////////////////////////////////////////
 
+    /**** SALVA LA NUOVA SESSIONE NEL DATABASE ****/
     public void saveAccelerometerData(){
 		try {
 			
@@ -290,20 +304,27 @@ public class RecordActivity extends Activity {
 				name = nameSession.getText().toString();
 			else
 			{
+				// nome sessione di default
 				name = "Registrazione_" + (dbAdapter.getMaxId()+1);
 			}
 			
 			// inserisco i dati della sessione nel database
 			sessionId = dbAdapter.createSession( name, "", (pref.getBoolean(PreferencesActivity.AXIS_X, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Y, true)? 1:0), (pref.getBoolean(PreferencesActivity.AXIS_Z, true)? 1:0), pref.getInt(PreferencesActivity.UPSAMPLING, 0), x_sb.toString(), y_sb.toString(), z_sb.toString(), data_x.size(), data_y.size(), data_z.size() );
 			
-			//costruzione immagine
-	        Log.w("save Session", "...creata");
-	        final Bitmap bmpT = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-			ImageBitmap.color(bmpT, data_x, data_y, data_z, (int)sessionId);	
-			String encodedImage = ImageBitmap.encodeImage(bmpT);
-			Log.w("save Session", "...codificata");
-			dbAdapter.updateSessionImage(sessionId, encodedImage);
-			Log.w("save Session", "sessione inserita");
+			// solo nel caso inserimento della sessione vada a buon fine
+			if (sessionId > -1) {
+				//costruzione immagine
+				Log.w("save Session", "...creata");
+				final Bitmap bmpT = Bitmap.createBitmap(200, 200,Bitmap.Config.ARGB_8888);
+				ImageBitmap.color(bmpT, data_x, data_y, data_z, (int) sessionId);
+				String encodedImage = ImageBitmap.encodeImage(bmpT);
+				Log.w("save Session", "...codificata");
+				dbAdapter.updateSessionImage(sessionId, encodedImage);
+				Log.w("save Session", "sessione inserita");
+			}
+			else
+				Toast.makeText(this, getString(R.string.error_database_insert_new_session), Toast.LENGTH_SHORT).show();
+			
 			// chiudo la connessione al db
 			dbAdapter.close();
 			
@@ -313,10 +334,6 @@ public class RecordActivity extends Activity {
 		}
     }
 
-//////////////////////////////
-///// METODI AUSILIARI //////
-/////////////////////////////
-    
     /*** aggiorna il numero di sample e le progressBar, nell'interfaccia ***/
     public static void updateSample(){
 		rec_sample.setText("" + sample);

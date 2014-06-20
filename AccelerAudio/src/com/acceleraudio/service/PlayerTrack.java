@@ -12,27 +12,33 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * servizio per la riproduzione dei campioni dell'acceleremetro
+ * effettua la creazione delle note da riprodurre in runtime
+ */
 public class PlayerTrack extends IntentService{
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.playertrack";
-	public static final String DURATION = "com.acceleraudio.service.playertrack.duration";
 	public static final String COMMAND = "com.acceleraudio.service.playertrack.command";
-	public static final String PLAY = "com.acceleraudio.service.playertrack.play";
-	public static final String PAUSE = "com.acceleraudio.service.playertrack.pause";
-	public static final String STOP = "com.acceleraudio.service.playertrack.stop";
-	public static final String PLAYBACK_POSITION = "com.acceleraudio.service.playertrack.playbackPosition";
 	public static final int PLAY_MUSIC = 0;
 	public static final int PAUSE_MUSIC = 1;
 	public static final int STOP_MUSIC = 2;
-//	private Thread t;
-	private int sound_rate, playbackHeadPosition;
+	public static final int SOUND_RATE_48000 = 48000;
+	
+	private int sound_rate;
 	private boolean isRunning, inizialized ;
 	private int[] sample;
 	int x, upsampling;
 	private long duration;
 	private AudioTrackTimer audioTrackTimer;
+	
+	/*** ricevitore dei comandi di riproduzione ***/
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
     	
     	@Override
@@ -42,16 +48,10 @@ public class PlayerTrack extends IntentService{
     			if(intent.hasExtra(COMMAND)){
     				int command = bundle.getInt(PlayerTrack.COMMAND);
     					if(command == PAUSE_MUSIC)
-    					{
-    						audioTrackTimer.pause(x);
-    						playbackHeadPosition = audioTrackTimer.getPlaybackHeadPosition();
-//    						Intent intentPause = new Intent(NOTIFICATION);
-//			        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
-//			        		intentPause.putExtra(PLAYBACK_POSITION, playbackHeadPosition);
-//					        sendBroadcast(intentPause);
-    					} else if(command == PLAY_MUSIC){
+    						pause();
+    					else if(command == PLAY_MUSIC)
     						resume();
-    					} else if(command == STOP_MUSIC)
+    					else if(command == STOP_MUSIC)
 							stop();
     			}
     		}
@@ -69,17 +69,18 @@ public class PlayerTrack extends IntentService{
 		sample = intent.getIntArrayExtra(PlayerActivity.ACC_DATA);
 //		if(sample == null) onDestroy();
 		Log.w("PlayerTrack", "sample: " +sample.length);
-		sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 48000);
-		upsampling = intent.getIntExtra(PlayerActivity.UPSAMPLING, 1);
+		sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, SOUND_RATE_48000);
+		upsampling = intent.getIntExtra(PlayerActivity.UPSAMPLING, 0);
 		
 		duration = MusicUpsampling.duration(upsampling, sample.length, sound_rate);
 		Log.w("PlayerTrack", "duration " +duration);
 		
 		isRunning = true;
 		
-		 // setta dimensione buffer
+		// setta dimensione buffer
         final int buffsize = AudioTrackTimer.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         
+        // imposta la quantita di upsampling
         int sizeBuff = buffsize + upsampling;
         
     	// crea oggetto audiotrack
@@ -91,22 +92,19 @@ public class PlayerTrack extends IntentService{
         Intent intentS = new Intent(PlayerActivity.NOTIFICATION);
 		intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
 		sendBroadcast(intentS);
-		// loop musicale 
 		
-		short samples1[] = new short[sizeBuff];
+		// array dei campioni in riproduzione
+		short samples[] = new short[sizeBuff];
 		
         int amp = 10000;
         double twophi = Math.PI*2; // 2pi grego
-        double fr; // frequenza
-        double phi = 0.0; // pi greco
+        double fr, increment, angle = 0.0;
         
-//        Intent intentPlay = new Intent(NOTIFICATION);
-//        intentPlay.putExtra(DURATION, duration);
-//        intentPlay.putExtra(PLAY, PLAY_MUSIC);
-//        sendBroadcast(intentPlay);
         inizialized = true;
         
+        // loop musicale
         while(isRunning){
+        	// nel caso venga messa in pausa la riproduzione, viene fermato anche algoritmo di creazione campioni
         	if(audioTrackTimer.getPlayState() == AudioTrackTimer.PLAYSTATE_PAUSED)
 				try {
 					synchronized (this) {
@@ -115,39 +113,27 @@ public class PlayerTrack extends IntentService{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-        	// modifica la frequenza con i campioni prelevati dall'accelerometro
-        	fr =  362 + (Math.abs(sample[x])*100);
+        	// creazione campioni
+        	fr =  362 + (Math.abs(sample[x])*100); // modifica la frequenza con i campioni prelevati dall'accelerometro
+        	increment = twophi*fr/sound_rate;
         	for(int i=0; i < sizeBuff; i++){
-        		samples1[i] = (short) (amp*Math.sin(phi));
-        		phi += twophi*fr/sound_rate;
+        		samples[i] = (short) (amp*Math.sin(angle));
+        		angle += increment;
         	}
-        	audioTrackTimer.write(samples1, 0, sizeBuff);
+        	audioTrackTimer.write(samples, 0, sizeBuff);
         	x++;
+        	
+        	// se arrivato all'ultimo campione
         	if(x == sample.length) 
-        		{
-        		// stoppo e riavvio il coutdowntimer
-//	        		Intent intentPause = new Intent(NOTIFICATION);
-//	        		intentPause.putExtra(PAUSE, PAUSE_MUSIC);
-//			        sendBroadcast(intentPause);
-        			x = 0;
-        			Log.w("PlayerTrack", "restart loop " +sample.length);
-        			try {
-    					synchronized (this) {
-    						this.wait(400);
-    						audioTrackTimer.stop();
-    						this.wait(300);
-    						intentS = new Intent(PlayerActivity.NOTIFICATION);
-    						intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
-    						sendBroadcast(intentS);
-    					}
-    				} catch (InterruptedException e) {
-    					e.printStackTrace();
-    				}
-//        			intentPlay.putExtra(DURATION, duration);
-//        			intentPlay.putExtra(PLAY, PLAY_MUSIC);
-//			        sendBroadcast(intentPlay);
-			        
-        		}
+        	{
+        		// mette il puntatore al primo campione
+    			x = 0;
+    			
+    			/* questo messaggio compare un attimo prima della fine della musica
+    			 * perchè si entra in questo if prima che audioTrack finisca di riprodurre la musica
+    			*/
+    			Log.w("PlayerTrack", "restart loop " +sample.length);
+        	}
         }	
         
         audioTrackTimer.stop();
@@ -158,7 +144,7 @@ public class PlayerTrack extends IntentService{
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "Play started", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Play started", Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent,flags,startId);
     }
     
@@ -166,24 +152,29 @@ public class PlayerTrack extends IntentService{
     public void onDestroy() {
     	super.onDestroy();
     	unregisterReceiver(receiver);
-
-    	Toast.makeText(this, "Play stop", Toast.LENGTH_SHORT).show();
+//    	Toast.makeText(this, "Play stop", Toast.LENGTH_SHORT).show();
     	
     }
     
+    /*** riprende la riproduzione della musica ***/
     public void resume()
     {
     	synchronized (this) {
 			this.notify();
-//			audioTrack.setPlaybackHeadPosition(playbackHeadPosition);
 			if(inizialized)audioTrackTimer.play();
-			
-//			Intent intentPlay = new Intent(NOTIFICATION);
-//			intentPlay.putExtra(PLAY, PLAY_MUSIC);
-//	        sendBroadcast(intentPlay);
 		}
     }
     
+    /*** mette in pausa la riproduzione ***/
+    public void pause()
+    {
+    	synchronized (this) {
+			this.notify();
+			audioTrackTimer.pause(x);
+		}
+    }
+    
+    /*** stoppa la riproduzione della musica e induce l'autochiusura del servizio ***/
     public void stop()
     {
     	synchronized (this) {

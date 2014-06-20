@@ -5,11 +5,13 @@ import com.acceleraudio.util.Util;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +30,15 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * permette di modificare le impostazioni della sessione
+ * inoltre si può esportare la sessione in WAV o avviare il player musicale 
+ */
 public class SessionInfoActivity extends Activity {
 	
 	private static String SESSION_ID = "sessionInfoActivity.session_id";
@@ -123,6 +134,7 @@ public class SessionInfoActivity extends Activity {
 				
 			}
 			
+			// decodifica immagine
 			t = new Thread("Thumbnail_Decoding"){
 				public void run() {
 					// setta la priorità massia del thread
@@ -130,10 +142,8 @@ public class SessionInfoActivity extends Activity {
 		            
 		            // converto la stringa in una immagine bitmap
 		    		byte[] decodedImgByteArray = Base64.decode(image, Base64.DEFAULT);
-//		    		final Bitmap bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
 		    		bmp = BitmapFactory.decodeByteArray(decodedImgByteArray, 0, decodedImgByteArray.length);
 					
-		    		
 					runOnUiThread(new Runnable() {
 		                @Override
 		                public void run() {
@@ -147,9 +157,10 @@ public class SessionInfoActivity extends Activity {
 			thumbnail.setImageBitmap(bmp);
 			
 /////////////////////////////////////////////////////////
-////////////aggiungo listener cambio info ///////////////
+/////////// aggiungo listener cambio info ///////////////
 ////////////////////////////////////////////////////////
 
+			/*** aggiorno modifice nome sessione nel database ***/
 			et_sessionName.addTextChangedListener(new TextWatcher() {
 				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -165,6 +176,7 @@ public class SessionInfoActivity extends Activity {
 				}
 			});
 			
+			/*** aggiorno assi selezionati ***/
 			final OnCheckedChangeListener axis_change = new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -175,6 +187,7 @@ public class SessionInfoActivity extends Activity {
 			axis_y.setOnCheckedChangeListener(axis_change);
 			axis_z.setOnCheckedChangeListener(axis_change);
 			
+			/*** aggiorno upsampling selezionato ***/
 			final OnItemSelectedListener spinner_change = new OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> arg0, View v, int arg2, long arg3) {
@@ -220,10 +233,15 @@ public class SessionInfoActivity extends Activity {
 					}
 					else
 					{
-						// avvio la PlayerActivity
-						Intent i = new Intent(v.getContext(), PlayerActivity.class);
-						i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
-						v.getContext().startActivity(i);
+						// verifico che lo speacker non sia occupato
+						if(!((AudioManager)getSystemService(Context.AUDIO_SERVICE)).isMusicActive()){
+							// avvio la PlayerActivity
+							Intent i = new Intent(v.getContext(), PlayerActivity.class);
+							i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
+							v.getContext().startActivity(i);
+						}
+						else
+							Toast.makeText(v.getContext(), getString(R.string.notify_speaker_occuped), Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -232,7 +250,7 @@ public class SessionInfoActivity extends Activity {
 			 export.setOnClickListener(new View.OnClickListener() {
 				 @Override
 				 public void onClick(View view) {
-					 Intent i = new Intent(view.getContext(), FileExplore.class);
+					 Intent i = new Intent(view.getContext(), FileExplorer.class);
 					 i.putExtra(DbAdapter.T_SESSION_SESSIONID, sessionId);
 					 view.getContext().startActivity(i);
 				 }
@@ -288,12 +306,21 @@ public class SessionInfoActivity extends Activity {
 				dbAdapter.open();
 				
 				// aggiorno i dati delle preferenze
-				if(v.getId() == et_sessionName.getId())
-					dbAdapter.updateSessionName(sessionId, et_sessionName.getText().toString());
+				if(v.getId() == et_sessionName.getId()){
+					// verifico che aggiornamento vada a buon fine
+					if(!dbAdapter.updateSessionName(sessionId, et_sessionName.getText().toString()))
+						Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
+				}
 				else
 				{
-					dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString())));
-					date_change.setText(getString(R.string.modified_date) + " " + dbAdapter.getDate());
+					// verifico che aggiornamento vada a buon fine
+					if(dbAdapter.updateSession(sessionId, et_sessionName.getText().toString(), (axis_x.isChecked()? 1 : 0), (axis_y.isChecked()? 1 : 0), (axis_z.isChecked()? 1 : 0), Integer.parseInt((sp_upsampling.getSelectedItem().toString()))))
+					{
+						// aggiorno la data solo se vengono modificati i parametri musicali della sessione
+						date_change.setText(getString(R.string.modified_date) + " " + dbAdapter.getDate());
+					}
+					else
+						Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
 				}
 				// chiudo la connessione al db
 				dbAdapter.close();

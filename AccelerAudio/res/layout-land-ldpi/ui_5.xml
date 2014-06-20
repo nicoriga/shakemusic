@@ -72,35 +72,6 @@
 		        android:layout_height="wrap_content"
 		        android:text="@string/duration"
 		        android:textAppearance="?android:attr/textAppearanceMedium" />
-	        
-		            
-		        <LinearLayout
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:orientation="horizontal" 
-		            android:gravity="center"
-		            android:layout_marginTop="10dp">
-	        
-		            <Button
-				        android:id="@+id/UI5_BT_minuteMinus"
-				        android:layout_width="60dp"
-				        android:layout_height="40dp"
-				        android:text="@string/minus" />
-		            
-		            <EditText
-		                android:id="@+id/UI5_ET_minute"
-		                android:layout_width="60dp"
-		                android:layout_height="40dp"
-		                android:inputType="number"
-		                android:text="@string/minute"/>
-	
-		            <Button
-				        android:id="@+id/UI5_BT_minutePlus"
-				        android:layout_width="60dp"
-				        android:layout_height="40dp"
-				        android:text="@string/plus" />          
-		            
-		        </LinearLayout>
 		        
 				<LinearLayout
 		            android:layout_width="wrap_content"
