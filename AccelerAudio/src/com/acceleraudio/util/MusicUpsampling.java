@@ -35,7 +35,7 @@ public class MusicUpsampling
 	public static int note(OutputStream out, int sound_rate, int upsampling, int[] sample, ProgressDialog pd) throws IOException
 	{
 		// setta dimensione buffer
-		int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		int buffsize = upsampling + AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         short sampleS[] = new short[buffsize];
         int musicSize = buffsize * sample.length;
         int amp = 10000;
