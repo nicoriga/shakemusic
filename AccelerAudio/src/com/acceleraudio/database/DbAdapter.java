@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.text.format.DateFormat;
 
 /**
  * @author Nicola Rigato
@@ -101,9 +102,7 @@ public class DbAdapter {
 	 */
 	public String getDate() 
 	{
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-        Date date = new Date();
-        return dateFormat.format(date);
+        return DateFormat.format("dd-MM-yyyy kk:mm:ss", new java.util.Date()).toString();
 	}
 	
 	/*** creazione valori nuova sessione: con immagine sottoforma di stringa ***/
