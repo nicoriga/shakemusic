@@ -68,6 +68,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="53dp"
         android:text="@string/session_name"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="30sp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ImageButton

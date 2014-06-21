@@ -21,6 +21,7 @@
     <string name="notify_start_recording">inizio a registrare</string>
     <string name="notify_stop_recording">stop registrazione</string>
     <string name="notify_file_exist">File già presente: Vuoi sovrascrivere?</string>
+    <string name="notify_speaker_occuped">Speacker Occupato</string>
     
     <string name="error_no_selected_session">SELEZIONA UNA SESSIONE</string>
     <string name="error_no_session_name">INSERISCI NOME SESSIONE</string>
@@ -34,6 +35,8 @@
     <string name="error_database_insert_new_session">Errore Database: inserimento sessione</string>
     <string name="error_database_rename_session">Errore database: rinomina sessione</string>
     <string name="error_database_update_change">Database: Errore caricamento modifiche </string>
+    <string name="error_database_duplicate_session">Errore duplicazione sessioni </string>
+    <string name="error_database_delete_session">Database: Errore Eliminazione sessioni </string>
 	<string name="error_memory_low">Memoria diponibile insufficente </string>
 	<string name="error_write_privileges">Impossibile salvare in questa cartella </string>
 	<string name="error_read_privileges">Impossibile aprire questa cartella</string>
