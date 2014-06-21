@@ -87,7 +87,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 			getDir(root);
 			
 			// visualizzo lo spazio disponibile
-			Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ R.string.notify_MB_Avaiable, Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ getString(R.string.notify_MB_Avaiable), Toast.LENGTH_LONG).show();
 			
 			/*** imposto azione quando viene premuto il tasto per iniziare l'esportazione del file wav ***/
 			save.setOnClickListener(new OnClickListener() {
