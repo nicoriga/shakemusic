@@ -53,7 +53,7 @@ public class AudioTrackTimer extends AudioTrack {
 		isPlaying = true;
 		if(duration > 0) {
 			elapsed = remaining_millis;
-			timer = new MyTimer(remaining_millis, 100);
+			timer = new MyTimer(remaining_millis, 10);
 			timer.start();
 		}
 	}
@@ -109,7 +109,7 @@ public class AudioTrackTimer extends AudioTrack {
 		public void onFinish() {
 			remaining_millis = duration;
 			if(isPlaying){
-				timer = new MyTimer(remaining_millis, 100);
+				timer = new MyTimer(remaining_millis, 10);
 				timer.start();
 			}
 		}
