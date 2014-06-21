@@ -297,14 +297,17 @@ public class DbAdapter {
 			ContentValues values = createContentValuesSession( name, image, axis_x, axis_y, axis_z, upsampling, creation_date, getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
 			long sessionId = database.insertOrThrow(DATABASE_TABLE_SESSION, null, values);
 			
-			Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-			//costruzione immagine
-			ImageBitmap.color(bmp, sensor_data_x.split(" ", 200), sensor_data_y.split(" ", 200), sensor_data_z.split(" ", 200), (int)sessionId);	
-			image = ImageBitmap.encodeImage(bmp);
-			updateSessionImage(sessionId, image);
-			RecordedSession s=new RecordedSession(sessionId, name, getDate(), image, totSample);
-			
-			return s;
+			if(sessionId>-1){
+				Bitmap bmp = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+				//costruzione immagine
+				ImageBitmap.color(bmp, sensor_data_x.split(" ", 200), sensor_data_y.split(" ", 200), sensor_data_z.split(" ", 200), (int)sessionId);	
+				image = ImageBitmap.encodeImage(bmp);
+				updateSessionImage(sessionId, image);
+				RecordedSession s=new RecordedSession(sessionId, name, getDate(), image, totSample);
+				return s;
+			}
+			else
+				return null;
 		}
 		else
 		{

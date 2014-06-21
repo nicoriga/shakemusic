@@ -146,7 +146,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			
 			// Verifico se si è registrata una nuova sessione
 			// in quel caso aggiungo la nuova sessione alla lista
-			if(lastId != maxId)
+			if(lastId < maxId)
 			{
 				lastId = maxId;
 				
@@ -204,9 +204,6 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 	@Override
 	public void onPause(){
 		super.onPause();
-//		select_mode = false;
-//		totSample = 0;
-//		adaperListCheck.resetSelectedSession();
 	}
 	
 	@Override
