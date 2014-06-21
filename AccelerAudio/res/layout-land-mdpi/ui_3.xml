@@ -57,33 +57,78 @@
 		    		android:layout_width="fill_parent"
 		    		android:layout_height="fill_parent"
 		    		android:orientation="vertical" >
-		        
-			        <ProgressBar
-			            android:id="@+id/UI3_PB_Z"
-			            style="?android:attr/progressBarStyleHorizontal"
-			            android:layout_width="400dp"
-			            android:layout_height="wrap_content"
-			            android:minHeight="40dip"
-			            android:minWidth="400dip"
-			            android:progress="40" />
 
-			        <ProgressBar
-			            android:id="@+id/UI3_PB_Y"
-			            style="?android:attr/progressBarStyleHorizontal"
-			            android:layout_width="400dp"
-			            android:layout_height="wrap_content"
-			            android:minHeight="40dip"
-			            android:minWidth="400dip"
-			            android:progress="80" />
-			        
-			        <ProgressBar
-			            android:id="@+id/UI3_PB_X"
-			            style="?android:attr/progressBarStyleHorizontal"
-			            android:layout_width="400dp"
-			            android:layout_height="wrap_content"
-			            android:minHeight="40dip"
-			            android:minWidth="400dip"
-			            android:progress="20" />
+			        <TableRow
+			            android:id="@+id/tableRow9"
+			            android:layout_width="match_parent"
+			            android:layout_height="wrap_content" >
+
+			            <TextView
+			                android:id="@+id/textView1"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/z"
+			                android:paddingRight="5dp"
+			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			            <ProgressBar
+			                android:id="@+id/UI3_PB_Z"
+			                style="?android:attr/progressBarStyleHorizontal"
+			                android:layout_width="382dp"
+			                android:layout_height="wrap_content"
+			                android:minHeight="40dip"
+			                android:minWidth="382dp"
+			                android:progress="40" />
+
+			        </TableRow>
+
+			        <TableRow
+			            android:id="@+id/tableRow10"
+			            android:layout_width="match_parent"
+			            android:layout_height="wrap_content" >
+
+			            <TextView
+			                android:id="@+id/TextView01"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/y"
+			                android:paddingRight="5dp"
+			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			            <ProgressBar
+			                android:id="@+id/UI3_PB_Y"
+			                style="?android:attr/progressBarStyleHorizontal"
+			                android:layout_width="382dp"
+			                android:layout_height="wrap_content"
+			                android:minHeight="40dip"
+			                android:minWidth="382dp"
+			                android:progress="80" />
+
+			        </TableRow>
+
+			        <TableRow
+			            android:id="@+id/tableRow11"
+			            android:layout_width="match_parent"
+			            android:layout_height="wrap_content" >
+
+			            <TextView
+			                android:id="@+id/TextView02"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:text="@string/x"
+			                android:paddingRight="5dp"
+			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			            <ProgressBar
+			                android:id="@+id/UI3_PB_X"
+			                style="?android:attr/progressBarStyleHorizontal"
+			                android:layout_width="382dp"
+			                android:layout_height="wrap_content"
+			                android:minHeight="40dip"
+			                android:minWidth="382dp"
+			                android:progress="20" />
+
+			        </TableRow>
 
 		        </LinearLayout>
 	        </TableRow>

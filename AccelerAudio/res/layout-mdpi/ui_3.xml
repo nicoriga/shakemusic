@@ -97,7 +97,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/UI3_TV_label_RecordedSamples"
+        android:layout_alignLeft="@+id/UI3_BT_stop"
         android:layout_below="@+id/UI3_TV_label_RecordedSamples"
         android:layout_marginTop="60dp"
         android:minHeight="40dip"
@@ -132,5 +132,33 @@
         android:layout_alignRight="@+id/UI3_BT_pause"
         android:text="@string/zero"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI3_PB_Z"
+        android:layout_alignLeft="@+id/UI3_TV_label_RecordedSamples"
+        android:layout_toLeftOf="@+id/UI3_PB_Z"
+        android:text="@string/z"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI3_PB_Y"
+        android:layout_alignLeft="@+id/textView1"
+        android:text="@string/y"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/TextView02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3_TV_timeRemaning"
+        android:layout_alignLeft="@+id/TextView01"
+        android:text="@string/x"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

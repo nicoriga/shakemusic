@@ -260,7 +260,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					context.startActivity(i);
 				}
 				else
-					Toast.makeText(this, "Speacker occupato", Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, R.string.notify_speaker_occuped, Toast.LENGTH_SHORT).show();
 				return true;
 			
 			case 1:

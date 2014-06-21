@@ -280,6 +280,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						finish();
 					}
 			}).show();
 		
