@@ -168,10 +168,7 @@ public class PlayerTrack extends IntentService{
     /*** mette in pausa la riproduzione ***/
     public void pause()
     {
-    	synchronized (this) {
-			this.notify();
-			audioTrackTimer.pause(x);
-		}
+    	audioTrackTimer.pause(x);
     }
     
     /*** stoppa la riproduzione della musica e induce l'autochiusura del servizio ***/
