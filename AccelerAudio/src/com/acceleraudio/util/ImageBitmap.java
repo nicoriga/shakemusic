@@ -29,11 +29,11 @@ public class ImageBitmap
 	 * @param data_x valori dall'asse X
 	 * @param data_y valori dall'asse Y
 	 * @param data_z valori dall'asse Z
-	 * @param sessionId id della sessione
+	 * @param id id della sessione
 	 */
-	public static void color(Bitmap bmp, String[] data_x, String[] data_y, String[] data_z, int sessionId)
+	public static void color(Bitmap bmp, String[] data_x, String[] data_y, String[] data_z, int id)
 	{
-		sessionId++;
+		id++;
 		int _x = 1, _y = 1, _z = 1;
 		double val;
 		
@@ -54,9 +54,9 @@ public class ImageBitmap
 						try {
 							//Log.w("valore x:", "-"+data_x[_x]+"-");
 							if(data_x[_x].length()>0) val = (double)Float.parseFloat(data_x[_x]);
-							else val = sessionId;
+							else val = id;
 						} catch (NumberFormatException e) {
-							val = sessionId;
+							val = id;
 							e.printStackTrace();
 						}	
 						break;
@@ -67,9 +67,9 @@ public class ImageBitmap
 							_y++;
 						try {
 							if(data_y[_y].length()>0) val = (double)Float.parseFloat(data_y[_y]);
-							else val = sessionId;
+							else val = id;
 						} catch (NumberFormatException e) {
-							val = sessionId;
+							val = id;
 							e.printStackTrace();
 						}										
 						break;
@@ -81,15 +81,15 @@ public class ImageBitmap
 							_z++;
 						try {
 							if(data_z[_z].length()>0) val = (double)Float.parseFloat(data_z[_z]);
-							else val = sessionId;
+							else val = id;
 						} catch (NumberFormatException e) {
-							val = sessionId;
+							val = id;
 							e.printStackTrace();
 						}	
 					break;
 					
 					case 3:
-						val = sessionId;
+						val = id;
 					break;
 
 					default:
@@ -97,7 +97,7 @@ public class ImageBitmap
 				}
 				
 				
-				int v = (int)(val*sessionId);
+				int v = (int)(val*id);
 				bmp.setPixel(x, y, Color.argb(250, (int)v*100%255, (int)v*50%255, (int)v*150%255));
 				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
 				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
@@ -300,4 +300,5 @@ public class ImageBitmap
 		byte[] b = imgByteArray.toByteArray();
 		return Base64.encodeToString(b, Base64.DEFAULT);
 	}
+	
 }
