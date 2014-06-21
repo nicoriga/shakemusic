@@ -66,6 +66,7 @@ public class PreferencesActivity extends Activity {
 			secondsUp = (Button) findViewById(R.id.UI5_BT_secondPlus);
 			secondsDown = (Button) findViewById(R.id.UI5_BT_secondMinus);
 			secondsET = (EditText) findViewById(R.id.UI5_ET_second);
+			secondsET.setFocusable(false);
     		
 			/*** Popolo lo spinner: velocita campionamentov***/
 			ArrayAdapter<CharSequence> adapterSampleRate = ArrayAdapter.createFromResource(this, R.array.sample_rate, android.R.layout.simple_spinner_item);
