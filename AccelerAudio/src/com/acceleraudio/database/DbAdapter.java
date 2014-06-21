@@ -156,7 +156,8 @@ public class DbAdapter {
 	 */
 	public long createSession(String name, String image, int axis_x, int axis_y, int axis_z, int upsampling,  String sensor_data_x, String sensor_data_y, String sensor_data_z, int n_data_x, int n_data_y, int n_data_z ) 
 	{
-		ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, getDate(), getDate(), sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
+		String date = getDate();
+		ContentValues values = createContentValuesSession(name, image, axis_x, axis_y, axis_z, upsampling, date, date, sensor_data_x, sensor_data_y, sensor_data_z, n_data_x, n_data_y, n_data_z );
 		return database.insertOrThrow(DATABASE_TABLE_SESSION, null, values);
 	}
 		
