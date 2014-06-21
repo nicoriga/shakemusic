@@ -67,7 +67,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 	private Thread t;
 	private ProgressDialog pd;
 	private Activity a;
-	private boolean isExporting = false;
+	private boolean isExporting = false, mounted = false;
 	private final int soundRate = 48000 ;
 	private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
 	private RandomAccessFile newSparseFile;
@@ -86,6 +86,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 		// verifico che la memoria sia caricata
 		String state = Environment.getExternalStorageState();
 		if( state.equals(Environment.MEDIA_MOUNTED) ){
+			mounted = true;
 			root = Environment.getExternalStorageDirectory().getPath();
 			getDir(root);
 			
@@ -294,6 +295,16 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 				}
 			});
 		}
+		else
+			// messaggio di notifica se non è presente la memoria su cui si deve esportare
+			new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.error_no_external_memory)
+				.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+					}
+			}).show();
 		
 		/*** imposto azione nel caso venga premuto un elemento della lista ***/
 		list.setOnItemClickListener(new OnItemClickListener() {
@@ -343,7 +354,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
     @Override
     public void onResume(){
     	super.onResume();
-    	getDir(myPath.getText().toString().substring(10));
+    	if(mounted)getDir(myPath.getText().toString().substring(10));
     }
 	
     // compila la lista in base al percorso dato come parametro

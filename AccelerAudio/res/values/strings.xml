@@ -42,6 +42,7 @@
 	<string name="error_write_privileges">Impossibile salvare in questa cartella </string>
 	<string name="error_read_privileges">Impossibile aprire questa cartella</string>
 	<string name="error_too_sample">Troppi campioni: deselezionare una sessione</string>
+	<string name="error_no_external_memory">Nessuna memoria su cui scrivere</string>
     
 	<string-array name="upsampling_array">
         <item>0</item>

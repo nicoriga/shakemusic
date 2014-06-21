@@ -127,6 +127,7 @@ public class RecordActivity extends Activity {
 				data_x = new ArrayList<Float>();
 				data_y = new ArrayList<Float>();
 				data_z = new ArrayList<Float>();
+				
 				sample = 0;
 				rec_sample.setText("0");
 				x = 0;
