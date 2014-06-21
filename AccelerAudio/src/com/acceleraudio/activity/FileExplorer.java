@@ -218,10 +218,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 										.setNegativeButton(getString(R.string.rename), new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int which) {
-												FragmentManager fm = getSupportFragmentManager();
-											    RenameDialog rd = new RenameDialog();
-											    rd.setSessionInfo(0, sessionName + ".wav");
-											    rd.show(fm, "rename_dialog");
+												displayRenameDialog();
 											}
 										})
 										.setNeutralButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -392,13 +389,8 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 				t.start();
 			}
 			else
-			{
 				// avvio un'altro dialog per rinominare 
-				FragmentManager fm = getSupportFragmentManager();
-			    RenameDialog rd = new RenameDialog();
-			    rd.setSessionInfo(0, sessionName + ".wav");
-			    rd.show(fm, "rename_dialog");
-			}
+				displayRenameDialog();
 		}
 		else
 		{
@@ -407,7 +399,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 		}
 	}
 	
-	// inizializzo il progress dialog
+	/*** inizializzo il progress dialog ***/
 	public void loadProgressDialog(){
 		
 		pd = new ProgressDialog(FileExplorer.this);
@@ -433,5 +425,14 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 				getDir(savePath);
 			}
 		});
+	}
+	
+	/*** visualizza il dialog per rinominare la sessione ***/
+	public void displayRenameDialog(){
+		// avvio un'altro dialog per rinominare 
+		FragmentManager fm = getSupportFragmentManager();
+	    RenameDialog rd = new RenameDialog();
+	    rd.setSessionInfo(0, sessionName);
+	    rd.show(fm, "rename_dialog");
 	}
 }

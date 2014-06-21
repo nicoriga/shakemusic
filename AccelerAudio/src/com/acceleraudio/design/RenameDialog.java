@@ -58,6 +58,8 @@ public class RenameDialog extends DialogFragment {
         cancel = (Button) view.findViewById(R.id.rename_cancel);
         getDialog().setTitle("Rinomina la sessione");
         
+        if(oldName!= null)newName.setText(oldName);
+        
         if (savedInstanceState != null)
 		{
         	position = savedInstanceState.getInt(POSITION);
