@@ -142,9 +142,10 @@ public class Util{
     {
 	    int seconds = (int) (milliseconds / 1000) % 60 ;
 	    int minutes = (int) ((milliseconds / (1000*60)) % 60);
-	    float temp = (float) milliseconds / 1000;
-	    int decimalSeconds = (int) (((temp+0.001)*10)%10);
-	    return (minutes>9? minutes: "0"+minutes) + ":" + (seconds>9? seconds: "0"+seconds) + "." + decimalSeconds;
+	    int decimalSeconds = (int) ((((milliseconds / 1000.0)+0.001)*10)%10);
+	    String m = (minutes>9? ""+minutes: "0"+minutes);
+	    String s = (seconds>9? ""+seconds: "0"+seconds);
+	    return m + ":" + s + "." + decimalSeconds;
     }
 }
 
