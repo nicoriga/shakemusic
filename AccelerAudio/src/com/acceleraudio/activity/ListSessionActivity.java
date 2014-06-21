@@ -122,7 +122,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			}
 			
 		} catch (Exception e) {
-			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_interface_load, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}
@@ -187,7 +187,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 			registerForContextMenu(list);	
 		
 		} catch (SQLException e) {
-			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_database, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			if(cursor != null & !cursor.isClosed())
 				cursor.close();
@@ -195,7 +195,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				dbAdapter.close();
 			finish();
 		} catch (RuntimeException e) {
-			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_interface_load, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} 
@@ -236,7 +236,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 		if (v.getId()==R.id.UI1_LV_listSession) 
 		{
 			context = v.getContext();
-			menu.setHeaderTitle(getString(R.string.option));
+			menu.setHeaderTitle(R.string.option);
 			String[] menuItems = {getString(R.string.play), getString(R.string.duplicate), getString(R.string.export), getString(R.string.rename), getString(R.string.delete)};
 			for (int i = 0; i<menuItems.length; i++) {
 				menu.add(Menu.NONE, i, i, menuItems[i]);
@@ -288,13 +288,13 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 										lastId = s.getId();
 									}
 									else
-										Toast.makeText(context, getString(R.string.error_database_duplicate_session), Toast.LENGTH_SHORT).show();
+										Toast.makeText(context, R.string.error_database_duplicate_session, Toast.LENGTH_SHORT).show();
 										
 								} catch (SQLException e) {
 									e.printStackTrace();
 									if(!dbAdapter.isOpen())
 										dbAdapter.close();
-									Toast.makeText(context, getString(R.string.error_database_duplicate_session), Toast.LENGTH_SHORT).show();
+									Toast.makeText(context, R.string.error_database_duplicate_session, Toast.LENGTH_SHORT).show();
 								} catch (NullPointerException e) {
 									e.printStackTrace();
 								}
@@ -310,7 +310,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					t.start();
 				}
 				else
-					Toast.makeText(this, getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, R.string.error_memory_low, Toast.LENGTH_SHORT).show();
 				return true;
 			
 			case 2:
@@ -333,7 +333,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				focusPosition = (info.position == 0 ? 0 : info.position-1);
 				dbAdapter.open();
 				if(!dbAdapter.deleteSession(sessions.get(info.position).getId()))
-					Toast.makeText(context, getString(R.string.error_database_delete_session), Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, R.string.error_database_delete_session, Toast.LENGTH_SHORT).show();
 				dbAdapter.close();
 				sessions.remove(info.position);
 				adaperList.notifyDataSetChanged();
@@ -369,11 +369,11 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 						sessions.get(position).setName(sessionName);
 					}
 					else
-						Toast.makeText(this, getString(R.string.error_database_rename_session), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, R.string.error_database_rename_session, Toast.LENGTH_SHORT).show();
 					dbAdapter.close();
 					adaperList.notifyDataSetChanged();
 				} catch (SQLException e) {
-					Toast.makeText(this, getString(R.string.error_database_rename_session), Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, R.string.error_database_rename_session, Toast.LENGTH_SHORT).show();
 					e.printStackTrace();
 					if(!dbAdapter.isOpen())
 						dbAdapter.close();
@@ -427,7 +427,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 				if (accelerometer == null)
 				{
 					newSession.setEnabled(false);
-					Toast.makeText(v.getContext(), getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
+					Toast.makeText(v.getContext(), R.string.error_no_accelerometer, Toast.LENGTH_SHORT).show();
 				}
 				// verifico spazio libero nella memoria interna
 				else if(AvailableSpace.getinternalAvailableSpace(AvailableSpace.SIZE_MB)>1)
@@ -439,7 +439,7 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 					v.getContext().startActivity(i);
 				}
 				else
-					Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
+					Toast.makeText(v.getContext(), R.string.error_memory_low, Toast.LENGTH_SHORT).show();
 			}
 		});
 		
@@ -494,10 +494,10 @@ public class ListSessionActivity extends FragmentActivity  implements RenameDial
 							adaperListCheck.resetSelectedSession();
 						}
 						else
-							Toast.makeText(view.getContext(), "troppi campioni", Toast.LENGTH_SHORT).show();
+							Toast.makeText(view.getContext(), R.string.error_too_sample, Toast.LENGTH_SHORT).show();
 					}
 					else
-						Toast.makeText(view.getContext(), getString(R.string.error_no_selected_session), Toast.LENGTH_SHORT).show();
+						Toast.makeText(view.getContext(), R.string.error_no_selected_session, Toast.LENGTH_SHORT).show();
 				}
 			});
 			

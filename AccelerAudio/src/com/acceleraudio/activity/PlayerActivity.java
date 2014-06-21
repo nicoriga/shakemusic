@@ -163,7 +163,7 @@ public class PlayerActivity extends Activity {
 				// se la sessione non ha almeno un asse selezionato la riproduzione non può avvenire
 				if(!(axis_x || axis_y || axis_z)) 
 				{
-						Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, R.string.error_no_axis_selected, Toast.LENGTH_SHORT).show();
 						finish();
 				}
 				else
@@ -272,7 +272,7 @@ public class PlayerActivity extends Activity {
 						}
 					}
 					else{
-						Toast.makeText(v.getContext(), getString(R.string.notify_speaker_occuped), Toast.LENGTH_SHORT).show();
+						Toast.makeText(v.getContext(), R.string.notify_speaker_occuped, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -315,15 +315,15 @@ public class PlayerActivity extends Activity {
 			});
 			
 		} catch (NumberFormatException e) {
-			Toast.makeText(this, getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_number_format, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} catch (SQLException e) {
-			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_database, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} catch (RuntimeException e) {
-			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_interface_load, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}

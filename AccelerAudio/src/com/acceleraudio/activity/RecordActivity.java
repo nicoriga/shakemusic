@@ -228,7 +228,7 @@ public class RecordActivity extends Activity {
 						}
 						else
 						{
-							Toast.makeText(v.getContext(), getString(R.string.error_low_recorded_data), Toast.LENGTH_SHORT).show();
+							Toast.makeText(v.getContext(), R.string.error_low_recorded_data, Toast.LENGTH_SHORT).show();
 							
 							if(remaining_time == 0) finish(); // se non ci sono dati da salvare chiude l'activity
 							
@@ -239,12 +239,12 @@ public class RecordActivity extends Activity {
 						}
 					}
 					else
-						Toast.makeText(v.getContext(), getString(R.string.error_memory_low), Toast.LENGTH_SHORT).show();
+						Toast.makeText(v.getContext(), R.string.error_memory_low, Toast.LENGTH_SHORT).show();
 				}
 			});
 			
 		} catch (RuntimeException e) {
-			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_interface_load, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}
@@ -323,13 +323,13 @@ public class RecordActivity extends Activity {
 				Log.w("save Session", "sessione inserita");
 			}
 			else
-				Toast.makeText(this, getString(R.string.error_database_insert_new_session), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.error_database_insert_new_session, Toast.LENGTH_SHORT).show();
 			
 			// chiudo la connessione al db
 			dbAdapter.close();
 			
 		} catch (SQLException e) {
-			Toast.makeText(this, getString(R.string.error_database_insert_new_session), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_database_insert_new_session, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 		}
     }

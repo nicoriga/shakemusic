@@ -90,7 +90,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 			getDir(root);
 			
 			// visualizzo lo spazio disponibile
-			Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ " MB disponibili", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), Float.toString(AvailableSpace.getExternalAvailableSpace(AvailableSpace.SIZE_MB))+ R.string.notify_MB_Avaiable, Toast.LENGTH_LONG).show();
 			
 			/*** imposto azione quando viene premuto il tasto per iniziare l'esportazione del file wav ***/
 			save.setOnClickListener(new OnClickListener() {
@@ -133,7 +133,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 								// controllo che la sessione avesse almeno un asse selezionato
 								if(!(axis_x || axis_y || axis_z)) 
 								{
-									Toast.makeText(getApplicationContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), R.string.error_no_axis_selected, Toast.LENGTH_SHORT).show();
 									finish();
 								}
 								
@@ -219,7 +219,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 									else
 									{
 										// avvio un dialog per gestire il nome di salvataggio del file
-										new AlertDialog.Builder(v.getContext()).setTitle(getString(R.string.notify_file_exist))
+										new AlertDialog.Builder(v.getContext()).setTitle(R.string.notify_file_exist)
 										.setIcon(android.R.drawable.ic_dialog_alert)
 										.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 											@Override
@@ -256,7 +256,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 								else
 									new AlertDialog.Builder(v.getContext())
 										.setIcon(android.R.drawable.ic_dialog_alert)
-										.setTitle(getString(R.string.error_memory_low))
+										.setTitle(R.string.error_memory_low)
 										.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 											@Override
 											public void onClick(DialogInterface dialog, int which) {
@@ -272,7 +272,7 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 							// messaggio di notifica se non si hanno i privilegi di scrittura
 							new AlertDialog.Builder(v.getContext())
 								.setIcon(android.R.drawable.ic_dialog_alert)
-								.setTitle(getString(R.string.error_write_privileges))
+								.setTitle(R.string.error_write_privileges)
 								.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog, int which) {

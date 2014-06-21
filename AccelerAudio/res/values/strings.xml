@@ -22,6 +22,7 @@
     <string name="notify_stop_recording">stop registrazione</string>
     <string name="notify_file_exist">File già presente: Vuoi sovrascrivere?</string>
     <string name="notify_speaker_occuped">Speacker Occupato</string>
+    <string name="notify_MB_Avaiable">MB disponibili</string>
     
     <string name="error_no_selected_session">SELEZIONA UNA SESSIONE</string>
     <string name="error_no_session_name">INSERISCI NOME SESSIONE</string>
@@ -40,6 +41,7 @@
 	<string name="error_memory_low">Memoria diponibile insufficente </string>
 	<string name="error_write_privileges">Impossibile salvare in questa cartella </string>
 	<string name="error_read_privileges">Impossibile aprire questa cartella</string>
+	<string name="error_too_sample">Troppi campioni: deselezionare una sessione</string>
     
 	<string-array name="upsampling_array">
         <item>0</item>

@@ -180,12 +180,12 @@ public class MergeSessionActivity extends Activity{
 						}
 					}
     				else
-    					Toast.makeText(v.getContext(), getString(R.string.error_no_session_name), Toast.LENGTH_SHORT).show();
+    					Toast.makeText(v.getContext(), R.string.error_no_session_name, Toast.LENGTH_SHORT).show();
     			}
     		});
     		
 		} catch (Exception e) {
-			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_interface_load, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}

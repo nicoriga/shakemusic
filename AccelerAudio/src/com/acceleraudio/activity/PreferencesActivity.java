@@ -146,7 +146,7 @@ public class PreferencesActivity extends Activity {
 			});
 			
 		} catch (RuntimeException e) {
-			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_interface_load, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		}
@@ -158,7 +158,7 @@ public class PreferencesActivity extends Activity {
     	// impedisce di non selezionare nessun asse 
 	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
 		{
-				Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.error_no_axis_selected, Toast.LENGTH_SHORT).show();
 		}
 	    else
 	    	finish();

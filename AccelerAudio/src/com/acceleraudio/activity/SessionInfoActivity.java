@@ -215,7 +215,7 @@ public class SessionInfoActivity extends Activity {
 					// impedisco di tornare indietro se non viene selezionato almeno un asse
 					if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
 					{
-						Toast.makeText(v.getContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+						Toast.makeText(v.getContext(), R.string.error_no_axis_selected, Toast.LENGTH_SHORT).show();
 					}
 					else
 						onBackPressed();
@@ -229,7 +229,7 @@ public class SessionInfoActivity extends Activity {
 					// impedisco di riprodurre se non viene selezionato almeno un asse
 					if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
 					{
-						Toast.makeText(v.getContext(), getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+						Toast.makeText(v.getContext(), R.string.error_no_axis_selected, Toast.LENGTH_SHORT).show();
 					}
 					else
 					{
@@ -241,7 +241,7 @@ public class SessionInfoActivity extends Activity {
 							v.getContext().startActivity(i);
 						}
 						else
-							Toast.makeText(v.getContext(), getString(R.string.notify_speaker_occuped), Toast.LENGTH_SHORT).show();
+							Toast.makeText(v.getContext(), R.string.notify_speaker_occuped, Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -259,13 +259,13 @@ public class SessionInfoActivity extends Activity {
 			 dataLoaded = true;
 		
 		} catch (SQLException e) {
-			Toast.makeText(this, getString(R.string.error_database), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_database, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			if(cursor != null & !cursor.isClosed())cursor.close();
 			if(!dbAdapter.isOpen())dbAdapter.close();
 			finish();
 		} catch (RuntimeException e) {
-			Toast.makeText(this, getString(R.string.error_interface_load), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.error_interface_load, Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			finish();
 		} 
@@ -276,7 +276,7 @@ public class SessionInfoActivity extends Activity {
 		// impedisce di tornare indietro se non viene selezionato nessun asse
 	    if(!(axis_x.isChecked() || axis_y.isChecked() || axis_z.isChecked())) 
 		{
-				Toast.makeText(this, getString(R.string.error_no_axis_selected), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.error_no_axis_selected, Toast.LENGTH_SHORT).show();
 		}
 	    else
 	    	finish();
@@ -309,7 +309,7 @@ public class SessionInfoActivity extends Activity {
 				if(v.getId() == et_sessionName.getId()){
 					// verifico che aggiornamento vada a buon fine
 					if(!dbAdapter.updateSessionName(sessionId, et_sessionName.getText().toString()))
-						Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, R.string.error_database_update_change, Toast.LENGTH_SHORT).show();
 				}
 				else
 				{
@@ -320,17 +320,17 @@ public class SessionInfoActivity extends Activity {
 						date_change.setText(getString(R.string.modified_date) + " " + dbAdapter.getDate());
 					}
 					else
-						Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, R.string.error_database_update_change, Toast.LENGTH_SHORT).show();
 				}
 				// chiudo la connessione al db
 				dbAdapter.close();
 				
 			} catch (NumberFormatException e) {
-				Toast.makeText(this, getString(R.string.error_number_format), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.error_number_format, Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			} catch (SQLException e) {
 				if(dbAdapter.isOpen()) dbAdapter.close();
-				Toast.makeText(this, getString(R.string.error_database_update_change), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.error_database_update_change, Toast.LENGTH_SHORT).show();
 				e.printStackTrace();
 			}
 		}
