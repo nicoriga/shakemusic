@@ -2,7 +2,6 @@ package com.acceleraudio.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 import android.app.ProgressDialog;
@@ -33,7 +32,7 @@ public class MusicUpsampling
 	 * @return 
 	 * @throws IOException nel caso sussistesse un problema nella scrittura sul file
 	 */
-	public static int note(OutputStream out, int sound_rate, int upsampling, int[] sample, ProgressDialog pd, RandomAccessFile raf) throws IOException
+	public static int note(OutputStream out, int sound_rate, int upsampling, int[] sample, ProgressDialog pd) throws IOException
 	{
 		// setta dimensione buffer
 		int buffsize = upsampling + AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
@@ -53,7 +52,7 @@ public class MusicUpsampling
         		angle += increment;
         		byteBuff.putShort(Short.reverseBytes(sampleS[i]));
         	}
-        	raf.write(byteBuff.array());
+        	out.write(byteBuff.array());
         	byteBuff.clear();
         	if(pd!=null)pd.setProgress(x);
         }

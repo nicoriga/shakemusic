@@ -3,7 +3,6 @@ package com.acceleraudio.activity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +49,6 @@ import com.malunix.acceleraudio.R;
  */
 public class FileExplorer extends FragmentActivity implements RenameDialogListener{
 	
-	private static String TEMP_FILE_NAME = "acceleraudio.wav.temp";
-	
 	private List<String> item = null, path = null;
 	private String root, sessionName, savePath;
 	private ListView list;
@@ -70,7 +67,6 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 	private boolean isExporting = false, mounted = false;
 	private final int soundRate = 48000 ;
 	private final int buffsize = AudioTrack.getMinBufferSize(soundRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-	private RandomAccessFile newSparseFile;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -170,11 +166,6 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 				 			        
 //									Util.lockOrientation(a, v.getRootView());
 									
-									// crea un file vuoto con la lunghezza del file WAV da esportare
-									newSparseFile = new RandomAccessFile(savePath + "/" + TEMP_FILE_NAME,"rw");
-									newSparseFile.setLength(totalDataLenght());
-									newSparseFile.seek(0);
-									
 									// inizializzo la finestra di caricamento
 									loadProgressDialog();
 
@@ -185,22 +176,17 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 											setPriority(Thread.MIN_PRIORITY);
 											
 											try {
-//												myFile.createNewFile();
-												
-												// rinomina il file temporaneo con il nome del file da esportare
-												new File(savePath + "/" + TEMP_FILE_NAME).renameTo(myFile);
+												myFile.createNewFile();
 												
 												FileOutputStream fOut = new FileOutputStream(myFile);
 												long totalAudioLen = totalAudioLenght();
 												int channels = 1;
 												// scrivo header wav nel file
-												Wav.WriteWaveFileHeader(totalAudioLen, soundRate, channels, fOut,newSparseFile);
+												Wav.WriteWaveFileHeader(totalAudioLen, soundRate, channels, fOut);
 												// scrivo 
-												MusicUpsampling.note(fOut, soundRate, upsampling, sample, pd, newSparseFile);
+												MusicUpsampling.note(fOut, soundRate, upsampling, sample, pd);
 												if(fOut != null) 
 													fOut.close();
-												if(newSparseFile != null) 
-													newSparseFile.close();
 												pd.dismiss();
 //												Util.unlockOrientation(a);
 												isExporting = false;
@@ -242,12 +228,6 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 											@Override
 											public void onClick(DialogInterface dialog, int which) {
 												isExporting = false;
-												new File(savePath + "/" + TEMP_FILE_NAME).delete();
-												try {
-													if(newSparseFile != null) newSparseFile.close();
-												} catch (IOException e) {
-													e.printStackTrace();
-												}
 											}
 										}).show();
 									}
@@ -424,12 +404,6 @@ public class FileExplorer extends FragmentActivity implements RenameDialogListen
 		{
 			pd.dismiss();
 			isExporting = false;
-			new File(savePath + "/" + TEMP_FILE_NAME).delete();
-			try {
-				if(newSparseFile != null)newSparseFile.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	
