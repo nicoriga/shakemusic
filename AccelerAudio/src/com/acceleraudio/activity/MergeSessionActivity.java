@@ -8,9 +8,9 @@ import com.acceleraudio.util.RecordedSession;
 import com.malunix.acceleraudio.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Color;
@@ -18,7 +18,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -65,7 +67,7 @@ public class MergeSessionActivity extends Activity{
     	setContentView(R.layout.ui_1);
     	dbAdapter = new DbAdapter(this);
     	pref = PreferenceManager.getDefaultSharedPreferences(this);
-    	
+
     	Bundle b = getIntent().getExtras();
     	sessionIdList = b.getLongArray(DbAdapter.T_SESSION_SESSIONID);
     	
@@ -88,54 +90,58 @@ public class MergeSessionActivity extends Activity{
     		
     		// gestore eventi touch
     		gestureListener = new ListView.OnTouchListener() {
-    		        public boolean onTouch(View v, MotionEvent event) {
-    		        	int action = event.getAction();
-    		            if(Math.abs(event.getX()) < convertDpToPixel(getOffsetSwipe()))
-    		        		return false;
-    		        	try {
-							switch(action)
-							{
-								// quando viene messo il dito nello schermo viene salvata la posizione della
-								// riga dove avviene la pressione
-								case MotionEvent.ACTION_DOWN:
-									start_pointToPosition = list.pointToPosition((int)event.getX(), (int)event.getY());
-									start_position = getChildXy(event);
-									if(start_position != ListView.INVALID_POSITION){
-										list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
-									}
-									break;
-								// quando si rimuove il dito dallo schermo avviene lo spostamento della sessione
-								// nella posizione di arrivo
-								case MotionEvent.ACTION_CANCEL: 
-								case MotionEvent.ACTION_UP:
-									if(start_position >= 0)
-									{
-							            stop_pointToPosition = list.pointToPosition((int)event.getX(), (int)event.getY());
+    			public boolean onTouch(View v, MotionEvent event) {
+    				int action = event.getAction();
+    				if(Math.abs(event.getX()) < convertDpToPixel(getOffsetSwipe())){
+    					if(start_position>=0)list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
+    					if(previus_position>=0)list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+    					return false;
+    				}
+    					
+		        	try {
+						switch(action)
+						{
+							// quando viene messo il dito nello schermo viene salvata la posizione della
+							// riga dove avviene la pressione
+							case MotionEvent.ACTION_DOWN:
+								start_pointToPosition = list.pointToPosition((int)event.getX(), (int)event.getY());
+								start_position = getChildXy(event);
+								if(start_position != ListView.INVALID_POSITION){
+									list.getChildAt(start_position).setBackgroundColor(Color.YELLOW);
+								}
+								break;
+							// quando si rimuove il dito dallo schermo avviene lo spostamento della sessione
+							// nella posizione di arrivo
+							case MotionEvent.ACTION_CANCEL: 
+							case MotionEvent.ACTION_UP:
+								if(start_position >= 0)
+								{
+						            stop_pointToPosition = list.pointToPosition((int)event.getX(), (int)event.getY());
 //							            stop_position = getChildXy(event);
-							            moveListRowTo(start_pointToPosition, stop_pointToPosition);
-							            list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
-							            list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+						            moveListRowTo(start_pointToPosition, stop_pointToPosition);
+						            list.getChildAt(start_position).setBackgroundColor(Color.WHITE);
+						            list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+								}
+								break;
+							case MotionEvent.ACTION_HOVER_ENTER:
+							case MotionEvent.ACTION_MOVE:
+								// coloro la riga dove si trova il dito
+								int position = getChildXy(event);
+								if(position >= 0 && position != start_position && start_position >= 0)
+									{
+										list.getChildAt(position).setBackgroundColor(Color.GREEN);
+										if(previus_position >= 0 && previus_position != position)list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
+										previus_position = position;
 									}
-									break;
-								case MotionEvent.ACTION_HOVER_ENTER:
-								case MotionEvent.ACTION_MOVE:
-									// coloro la riga dove si trova il dito
-									int position = getChildXy(event);
-									if(position >= 0 && position != start_position && start_position >= 0)
-										{
-											list.getChildAt(position).setBackgroundColor(Color.GREEN);
-											if(previus_position >= 0 && previus_position != position)list.getChildAt(previus_position).setBackgroundColor(Color.WHITE);
-											previus_position = position;
-										}
-									break;
-								default:
-									break;
-							}
-						} catch (NullPointerException e) {
-							e.printStackTrace();
+								break;
+							default:
+								break;
 						}
+					} catch (NullPointerException e) {
+						e.printStackTrace();
+					}
     		        	return true;
-    		       }
+    		    }
     		};
     		list.setOnTouchListener(gestureListener);
     		
@@ -258,20 +264,16 @@ public class MergeSessionActivity extends Activity{
 	}
 	
 	/*** restituisce l'offset in base alla rotazione dello schermo ***/
-    public int getOffsetSwipe()
-    {
-    	int orientation = getResources().getConfiguration().orientation;
-		
-    	switch(orientation){
-    		case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-    		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
-    			return SWIPE_OFFSET_PORTRAIT;
-    		case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-    		case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
-    			return SWIPE_OFFSET_LANDSCAPE;
-    			// nel caso si trovi in reverse-landscape nelle API 8
-    		default:
-    			return SWIPE_OFFSET_LANDSCAPE;
-    	}
-    }
+	public int getOffsetSwipe()
+	{
+	    int rotation = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+	    switch (rotation) {
+	    case Surface.ROTATION_0:
+	    case Surface.ROTATION_180:
+	    	return SWIPE_OFFSET_PORTRAIT;
+	    case Surface.ROTATION_90:
+	    default:
+	    	return SWIPE_OFFSET_LANDSCAPE;
+	    }
+	}
 }
