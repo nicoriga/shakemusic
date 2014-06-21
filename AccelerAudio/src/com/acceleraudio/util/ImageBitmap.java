@@ -145,7 +145,7 @@ public class ImageBitmap
 				{
 					case 0:		//pesco da x
 						if(_x+1 >= data_x.size())
-							_x = 1;
+							_x = 0;
 						else
 						{
 							_x++;
@@ -160,7 +160,7 @@ public class ImageBitmap
 						break;
 					case 1: 	//pesco da y
 						if(_y+1 >= data_y.size())
-							_y = 1;
+							_y = 0;
 						else
 						{
 							_y++;
@@ -175,7 +175,7 @@ public class ImageBitmap
 					
 					case 2:		//pesco da z
 						if(_z+1 >= data_z.size())
-							_z = 1;
+							_z = 0;
 						else
 						{
 							_z++;
@@ -193,7 +193,7 @@ public class ImageBitmap
 					break;
 
 					default:
-					val = 1;
+					val = 0;
 				}
 				
 				
