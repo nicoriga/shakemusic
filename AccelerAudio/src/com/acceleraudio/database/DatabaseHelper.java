@@ -4,6 +4,14 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * classe per la gestione del dabatase
+ */
 public class DatabaseHelper extends SQLiteOpenHelper {
          
 	private static final String DATABASE_NAME = "AccelerAudio.db";

@@ -2,6 +2,7 @@ package com.acceleraudio.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 import android.app.ProgressDialog;
@@ -18,6 +19,7 @@ import android.media.AudioTrack;
  */
 public class MusicUpsampling
 {
+	// serve per bloccare la scrittura delle note nel file
 	public static boolean isRunning;
 	
 	/**
@@ -31,10 +33,10 @@ public class MusicUpsampling
 	 * @return 
 	 * @throws IOException nel caso sussistesse un problema nella scrittura sul file
 	 */
-	public static int note(OutputStream out, int sound_rate, int upsampling, int[] sample, ProgressDialog pd) throws IOException
+	public static int note(OutputStream out, int sound_rate, int upsampling, int[] sample, ProgressDialog pd, RandomAccessFile raf) throws IOException
 	{
 		// setta dimensione buffer
-		int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+		int buffsize = upsampling + AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
         short sampleS[] = new short[buffsize];
         int musicSize = buffsize * sample.length;
         int amp = 10000;
@@ -44,15 +46,14 @@ public class MusicUpsampling
         isRunning = true;
         
         for(int x=0; x < sample.length && isRunning; x++){
-        	// modifica la frequenza con i campioni prelevati dall'accelerometro
-        	fr =  362 + (Math.abs(sample[x])*100);
+        	fr =  362 + (Math.abs(sample[x])*100); // modifica la frequenza con i campioni prelevati dall'accelerometro
         	increment = twophi*fr/sound_rate;
         	for(int i=0; i < buffsize; i++){
         		sampleS[i] = (short) (amp*Math.sin(angle));
         		angle += increment;
         		byteBuff.putShort(Short.reverseBytes(sampleS[i]));
         	}
-        	out.write(byteBuff.array());
+        	raf.write(byteBuff.array());
         	byteBuff.clear();
         	if(pd!=null)pd.setProgress(x);
         }
