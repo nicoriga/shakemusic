@@ -288,7 +288,7 @@ public class ImageBitmap
 	}
 	
 	/**
-	 * codficca immagine
+	 * codifica immagine
 	 * 
 	 * @param bmp immagine da codificare in base64
 	 * @return
