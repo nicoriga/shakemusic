@@ -10,8 +10,18 @@ import android.widget.EditText;
 
 import com.malunix.acceleraudio.R;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * dialog personalizzato per rinominare il nome della sessione
+ */
 public class RenameDialog extends DialogFragment {
 
+	public static String POSITION = "renameDialog.position";
+	
 	private int position;
 	private String oldName;
     private EditText newName;
@@ -20,12 +30,22 @@ public class RenameDialog extends DialogFragment {
     public RenameDialog() {
     }
     
+    /**
+     * imposta le informazioni della sessione
+     * 
+     * @param position posizione della listView
+     * @param name nome della sessione
+     */
     public void setSessionInfo(int position, String name)
     {
     	this.position = position;
-    	oldName = name;
+    	this.oldName = name;
     }
     
+    /**
+     * listener della chiusura del dialog
+     *
+     */
     public interface RenameDialogListener {
         void onFinishRenameDialog(int sessionId, String newName, boolean confirm);
     }
@@ -37,6 +57,13 @@ public class RenameDialog extends DialogFragment {
         confirm = (Button) view.findViewById(R.id.rename_confirm);
         cancel = (Button) view.findViewById(R.id.rename_cancel);
         getDialog().setTitle("Rinomina la sessione");
+        
+        if(oldName!= null)newName.setText(oldName);
+        
+        if (savedInstanceState != null)
+		{
+        	position = savedInstanceState.getInt(POSITION);
+		}
         
         /**** confermo la rinomina ****/
         confirm.setOnClickListener(new View.OnClickListener() {
@@ -58,4 +85,25 @@ public class RenameDialog extends DialogFragment {
         
         return view;
     }
+    
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) 
+    {
+		savedInstanceState.putInt(POSITION, position);
+    	super.onSaveInstanceState(savedInstanceState);
+    }
+
+    /**
+     * @param name il nome da scrivere nella textView
+     */
+    public void setText(String name) {
+    	newName.setText(name);
+	}
+    
+	/**
+	 * @param title imposto il titolo del dialog
+	 */
+	public void setTitle(String title) {
+		getDialog().setTitle(title);
+	}
 }

@@ -1,6 +1,7 @@
 package com.acceleraudio.util;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,31 +9,44 @@ import android.graphics.Color;
 import android.util.Base64;
 import android.util.Log;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * classe per la creazione del Thumbnail
+ */
 public class ImageBitmap 
 {
 	
-	/*
+	/**
 	 * Metodo per colorare una bitmap
-	 * Bitmap bmp: la bitmap da colorare
-	 * data_x: valori dall'asse x
-	 * data_y: valori dall'asse y
-	 * data_z: valori dall'asse z
+	 * 
+	 * dati sottoforma di stringa
+	 * 
+	 * @param bmp la bitmap da colorare
+	 * @param data_x valori dall'asse X
+	 * @param data_y valori dall'asse Y
+	 * @param data_z valori dall'asse Z
+	 * @param id id della sessione
 	 */
 	public static void color(Bitmap bmp, String[] data_x, String[] data_y, String[] data_z, int id)
 	{
+		id++;
 		int _x = 1, _y = 1, _z = 1;
 		double val;
 		
 		//algoritmo di colorazione
 		for (int y = 0; y < bmp.getHeight(); y++) 			//selezione la riga
         {
-			for (int x = 0; x < bmp.getWidth()-9; x++) 		//seleziona la colonna e quindi il pixel
+			for (int x = 0; x < bmp.getWidth(); x++) 		//seleziona la colonna e quindi il pixel
 			{
 				int p = x/10;
 				int r = y/10;
 				switch ((p+r)%4) 
 				{
-					case 0:		//pesco da x	attenzione il primo valore 
+					case 0:		//pesco da x
 						if(_x+1 >= data_x.length)
 							_x = 0;
 						else
@@ -84,19 +98,119 @@ public class ImageBitmap
 				
 				
 				int v = (int)(val*id);
-				//bmp.setPixel(x, y, colorSelect(v%12));
-				bmp.setPixel(x, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
-				bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				bmp.setPixel(x, y, Color.argb(250, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				x--;
+			}
+			_x = 1;
+			_y = 1;
+			_z = 1;
+        }
+	}
+	
+	/**
+	 * Metodo per colorare una bitmap
+	 * 
+	 * dati sottoforma di ArrayList
+	 * 
+	 * @param bmp la bitmap da colorare
+	 * @param data_x valori dall'asse X
+	 * @param data_y valori dall'asse Y
+	 * @param data_z valori dall'asse Z
+	 * @param sessionId id della sessione
+	 */
+	public static void color(Bitmap bmp, ArrayList<Float> data_x, ArrayList<Float> data_y, ArrayList<Float> data_z, int id)
+	{
+		id++;
+		int _x = 1, _y = 1, _z = 1;
+		double val = 1;
+		
+		//algoritmo di colorazione
+		for (int y = 0; y < bmp.getHeight(); y++) 			//selezione la riga
+        {
+			for (int x = 0; x < bmp.getWidth(); x++) 		//seleziona la colonna e quindi il pixel
+			{
+				int p = x/10;
+				int r = y/10;
+				switch ((p+r)%4) 
+				{
+					case 0:		//pesco da x
+						if(_x+1 >= data_x.size())
+							_x = 0;
+						else
+						{
+							_x++;
+							try {
+								
+								val = (double) data_x.get(_x);
+							} catch (NumberFormatException e) {
+								val = id;
+								e.printStackTrace();
+							}
+						}
+						break;
+					case 1: 	//pesco da y
+						if(_y+1 >= data_y.size())
+							_y = 0;
+						else
+						{
+							_y++;
+							try {
+								val = (double) data_y.get(_y);
+							} catch (NumberFormatException e) {
+								val = id;
+								e.printStackTrace();
+							}
+						}
+						break;
+					
+					case 2:		//pesco da z
+						if(_z+1 >= data_z.size())
+							_z = 0;
+						else
+						{
+							_z++;
+							try {
+								val = (double) data_z.get(_z);
+							} catch (NumberFormatException e) {
+								val = id;
+								e.printStackTrace();
+							}
+						}
+					break;
+					
+					case 3:
+						val = id;
+					break;
+
+					default:
+					val = 0;
+				}
 				
+				
+				int v = (int)(val*id);
+				
+				bmp.setPixel(x, y, Color.argb(250, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				if( x < bmp.getWidth()) bmp.setPixel(x++, y, Color.argb(200, (int)v*100%255, (int)v*50%255, (int)v*150%255));
+				x--;
 			}
 			_x = 1;
 			_y = 1;
@@ -105,12 +219,13 @@ public class ImageBitmap
 	}
 
 	
-	/*
+	/**
 	 * Metodo per colorare una bitmap in modo standard
-	 * Bitmap bmp: la bitmap da colorare
-	 * data_x: valori dall'asse x
-	 * data_y: valori dall'asse y
-	 * data_z: valori dall'asse z
+	 * 
+	 * @param bmp la bitmap da colorare
+	 * @param data_x valori dall'asse x
+	 * @param data_y valori dall'asse y
+	 * @paramd ata_z valori dall'asse z
 	 */
 	public static void colorStandard(Bitmap bmp, String[] data_x, String[] data_y, String[] data_z)
 	{
@@ -154,28 +269,12 @@ public class ImageBitmap
 		}
 	}
 	
-//	private static int colorSelect(int val)
-//	{
-//		switch(val)
-//		{
-//			case 0: return Color.BLACK; 
-//			case 1: return Color.BLUE;
-//			case 2: return Color.CYAN;
-//			case 3: return Color.DKGRAY;
-//			case 4: return Color.GRAY;
-//			case 5: return Color.GREEN;
-//			case 6: return Color.LTGRAY;
-//			case 7: return Color.MAGENTA;
-//			case 8: return Color.RED;
-//			case 9: return Color.WHITE;
-//			case 10: return Color.YELLOW;
-//			case 11: return Color.TRANSPARENT;
-//			default: return Color.TRANSPARENT;
-//		}
-//		 
-//	}
-	
-	
+	/**
+	 * decodifica immagine
+	 * 
+	 * @param image codificata in base64
+	 * @return
+	 */
 	public static Bitmap decodeImage(String image)
 	{
 		try {
@@ -188,6 +287,12 @@ public class ImageBitmap
 		}	
 	}
 	
+	/**
+	 * codifica immagine
+	 * 
+	 * @param bmp immagine da codificare in base64
+	 * @return
+	 */
 	public static String encodeImage(Bitmap bmp)
 	{
 		ByteArrayOutputStream imgByteArray = new ByteArrayOutputStream();  
@@ -195,4 +300,5 @@ public class ImageBitmap
 		byte[] b = imgByteArray.toByteArray();
 		return Base64.encodeToString(b, Base64.DEFAULT);
 	}
+	
 }

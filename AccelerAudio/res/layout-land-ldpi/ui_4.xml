@@ -14,7 +14,7 @@
             android:id="@+id/UI4_TV_sessionName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nome Sessione"
+            android:text="@string/session_name"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
     </TableRow>
@@ -37,10 +37,10 @@
             android:showDividers="none" >
             
 	        <TextView
-	            android:id="@+id/UI4textView2"
+	            android:id="@+id/UI4_TV_initialTimer"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:text="01:25"
+	            android:text="@string/timer_end"
 	            android:textAppearance="?android:attr/textAppearanceMedium" />
 	        
 	  	</LinearLayout>
@@ -54,10 +54,10 @@
             android:showDividers="none" >
 	        
 	        <TextView
-	            android:id="@+id/UI4textView1"
+	            android:id="@+id/UI4_TV_finalTimer"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:text="00:00"
+	            android:text="@string/time_00_00"
 	            android:textAppearance="?android:attr/textAppearanceMedium" />
 	        
 	  	</LinearLayout>
@@ -73,10 +73,9 @@
         android:layout_marginRight="10dp" >
         
 		<SeekBar
-	        android:id="@+id/UI4seekBar1"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"/>
-        
+		    android:id="@+id/UI4_SB_musicProgress"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" />
 
     </TableRow>
     
@@ -92,7 +91,8 @@
             android:id="@+id/UI4_IV_thumbnail"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/ic_launcher"
+            android:contentDescription="@string/thumbnail" />
         
          <LinearLayout
             android:layout_width="match_parent"
@@ -108,17 +108,19 @@
 		            android:showDividers="none"
 		            android:gravity="center">
         
-            	    <Button
+            	    <ImageButton
 			            android:id="@+id/UI4_BT_play"
 			            android:layout_width="100dp"
 			            android:layout_height="wrap_content"
-			            android:text="Play" />
+			            android:contentDescription="@string/play"
+            			android:src="@drawable/play_player" />
             	    
-            	    <Button
+            	    <ImageButton
 			            android:id="@+id/UI4_BT_stop"
 			            android:layout_width="100dp"
 			            android:layout_height="wrap_content"
-			            android:text="Stop" />
+			            android:contentDescription="@string/stop"
+            			android:src="@drawable/stop_player" />
 
 				</LinearLayout>
             
@@ -129,17 +131,18 @@
 		            android:showDividers="none"
 		            android:gravity="center">         
 
-			        <Button
+			        <ImageButton
 			            android:id="@+id/UI4_BT_pause"
 			            android:layout_width="100dp"
 			            android:layout_height="wrap_content"
-			            android:text="Pause" />
+			            android:contentDescription="@string/pause"
+            			android:src="@drawable/pause_player" />
 			
 			        <Button
-				        android:id="@+id/UI4ButtonEsporta"
-				        android:layout_width="100dp"
-				        android:layout_height="wrap_content"
-				        android:text="Esporta" />
+			            android:id="@+id/UI4_BT_export"
+			            android:layout_width="100dp"
+			            android:layout_height="wrap_content"
+			            android:text="@string/export" />
 			        
         		</LinearLayout>
 		</LinearLayout>		        
@@ -154,14 +157,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp" 
         android:weightSum="1.0">
-		
-        
-		
    	</TableRow>
     
-    
-    
-    
-    	
-
 </LinearLayout>

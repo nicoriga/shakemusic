@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/UI3_TV_SessionName"
-        android:text="Record" />
+        android:text="@string/record" />
 
     <Button
         android:id="@+id/UI3_BT_stop"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/UI3_BT_record"
         android:layout_alignRight="@+id/UI3_TV_SessionName"
-        android:text="Stop" />
+        android:text="@string/stop" />
 
     <ProgressBar
         android:id="@+id/UI3_PB_Z"
@@ -62,7 +62,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="66dp"
-        android:text="Campioni Registrati:"
+        android:text="@string/recorded_samples"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/UI3_BT_stop"
         android:layout_toLeftOf="@+id/UI3_PB_Z"
-        android:text="Pause" />
+        android:text="@string/pause" />
 
     <EditText
         android:id="@+id/UI3_ET_SessionName"
@@ -81,7 +81,9 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="14dp"
         android:layout_toRightOf="@+id/UI3_TV_SessionName"
-        android:ems="10" />
+        android:ems="10"
+        android:inputType="text"
+        android:singleLine="true" />
 
     <TextView
         android:id="@+id/UI3_TV_SessionName"
@@ -90,7 +92,7 @@
         android:layout_alignBaseline="@+id/UI3_ET_SessionName"
         android:layout_alignBottom="@+id/UI3_ET_SessionName"
         android:layout_alignParentLeft="true"
-        android:text="Nome Sessione"
+        android:text="@string/session_name"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -100,51 +102,25 @@
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/UI3_PB_Z"
         android:layout_marginTop="85dp"
-        android:text="Medium Text"
+        android:text="@string/zero"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <RadioGroup
-        android:id="@+id/UI3_orientation"
+    <TextView
+        android:id="@+id/TextView01"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@+id/UI3_BT_stop"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/UI3_PB_Z"
-        android:orientation="vertical" >
-                
-	    <RadioButton
-	        android:id="@+id/UI3_RB_landscape"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Landscape" 
-	        android:checked="true" />
-	
-	    
-	    <RadioButton
-	        android:id="@+id/UI3_RB_portrait"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="Portrait" />
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3_TV_label_RecordedSamples"
+        android:layout_alignLeft="@+id/UI3_TV_label_RecordedSamples"
+        android:text="@string/remaining_time"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-	</RadioGroup>
-    
     <TextView
         android:id="@+id/UI3_TV_timerRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/UI3_BT_record"
-        android:layout_alignBottom="@+id/UI3_BT_record"
-        android:layout_alignLeft="@+id/UI3_orientation"
-        android:text="0"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Button
-        android:id="@+id/UI3_BT_save"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignRight="@+id/UI3_TV_RecordedSamples"
         android:layout_below="@+id/UI3_ET_SessionName"
-        android:text="Salva" />
+        android:text="@string/zero"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

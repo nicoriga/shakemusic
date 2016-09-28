@@ -1,18 +1,95 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">AccelerAudio</string>
-    <string name="cancel">Cancel</string>
+    <string name="time_00_00">00:00</string>
+    <string name="thumbnail">Thumbnail</string>
+    <string name="session_name">Nome Sessione</string>
+    <string name="play">Riproduci</string>
+    <string name="resume">Riprendi</string>
+    <string name="pause">Pausa</string>
+    <string name="stop">Stop</string>
+    <string name="duplicate">Duplica</string>
+    <string name="export">Esporta</string>
+    <string name="rename">Rinomina</string>
+    <string name="delete">Elimina</string>
+    <string name="option">Opzioni</string>
+    <string name="confirm">Conferma</string>
+    <string name="cancel">Annulla</string>
     <string name="note">Note</string>
     <string name="lineare">Lineare</string>
-    <string name="no_axis_error">Selezionare almeno un asse</string>
+    
+    <string name="notify_start_recording">inizio a registrare</string>
+    <string name="notify_stop_recording">stop registrazione</string>
+    <string name="notify_file_exist">File già presente: Vuoi sovrascrivere?</string>
+    <string name="notify_speaker_occuped">Speacker Occupato</string>
+    <string name="notify_MB_Avaiable">MB disponibili</string>
+    
+    <string name="error_no_selected_session">SELEZIONA UNA SESSIONE</string>
+    <string name="error_no_session_name">INSERISCI NOME SESSIONE</string>
+    <string name="error_no_recorded_data">Nessun campione registrato</string>
+    <string name="error_low_recorded_data">Pochi campioni registrati</string>
+    <string name="error_number_format">Errore: formato numero</string>
+    <string name="error_no_axis_selected">Selezionare almeno un asse</string>
+    <string name="error_no_accelerometer">Errore: Accelerometro non presente</string>
+    <string name="error_interface_load">Errore Caricamento Interfaccia</string>
+    <string name="error_database">Errore Database</string>
+    <string name="error_database_insert_new_session">Errore Database: inserimento sessione</string>
+    <string name="error_database_rename_session">Errore database: rinomina sessione</string>
+    <string name="error_database_update_change">Database: Errore caricamento modifiche </string>
+    <string name="error_database_duplicate_session">Errore duplicazione sessioni </string>
+    <string name="error_database_delete_session">Database: Errore Eliminazione sessioni </string>
+	<string name="error_memory_low">Memoria diponibile insufficente </string>
+	<string name="error_write_privileges">Impossibile salvare in questa cartella </string>
+	<string name="error_read_privileges">Impossibile aprire questa cartella</string>
+	<string name="error_too_sample">Troppi campioni: deselezionare una sessione</string>
+	<string name="error_no_external_memory">Nessuna memoria su cui scrivere</string>
+    
 	<string-array name="upsampling_array">
-        <item>Note</item>
-        <item>Lineare</item>
+        <item>0</item>
+        <item>1500</item>
+        <item>3000</item>
     </string-array>
 	<string-array name="sample_rate">
 		<item >Lento</item>
 		<item >Normale</item>
 		<item >Veloce</item>
 	</string-array>
+	
+	<string name="preferences">Preferenze</string>
+	<string name="next">Avanti</string>
+	<string name="new_session">Nuova Sessione</string>
+	<string name="merge">Unisci</string>
+	<string name="merge_session">Unisci Sessioni</string>
+	<string name="list_session">Lista Sessioni</string>
+	<string name="axes_select">Seleziona Assi:</string>
+	<string name="x">X</string>
+	<string name="y">Y</string>
+	<string name="z">Z</string>
+	<string name="upsampling">Upsampling</string>
+	<string name="creation_date">Data Creazione:</string>
+	<string name="modified_date">Data Modifica:</string>
+	<string name="record">Record</string>
+	<string name="remaining_time">Tempo Rimanente:</string>
+	<string name="recorded_samples">Campioni Registrati:</string>
+	<string name="sample">sample</string>
+	<string name="landscape">Landscape</string>
+	<string name="portrait">Portrait</string>
+	<string name="save">Salva</string>
+	<string name="zero">0</string>
+	<string name="timer_start">00:00</string>
+	<string name="timer_end">1:24</string>
+	<string name="standard_record_option">Opzioni Di Registrazione Predefinite</string>
+	<string name="axes">Assi:</string>
+	<string name="duration">Durata Massima</string>
+	<string name="frequency">Frequenza di Campionamento</string>
+	<string name="minus">-</string>
+	<string name="plus">+</string>
+	<string name="time">Tempo</string>
+	<string name="minute">1</string>
+	<string name="second">0</string>
+	<string name="campionamento">Campionamento</string>
+	<string name="iconSwipe">iconaSwipe</string>
+	<string name="yes">si</string>
+	<string name="ok">OK</string>
 	
 </resources>

@@ -1,22 +1,62 @@
 package com.acceleraudio.service;
 
 import com.acceleraudio.activity.PlayerActivity;
+import com.acceleraudio.util.MusicUpsampling;
+
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioFormat;
 import android.media.AudioManager;
-import android.media.AudioTrack;
+import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * servizio per la riproduzione dei campioni dell'acceleremetro
+ * effettua la creazione delle note da riprodurre in runtime
+ */
 public class PlayerTrack extends IntentService{
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.playertrack";
-	private Thread t;
+	public static final String COMMAND = "com.acceleraudio.service.playertrack.command";
+	public static final int PLAY_MUSIC = 0;
+	public static final int PAUSE_MUSIC = 1;
+	public static final int STOP_MUSIC = 2;
+	public static final int SOUND_RATE_48000 = 48000;
+	
 	private int sound_rate;
-	private boolean isRunning ;
-	private int[] sample = {10};
+	private boolean isRunning, inizialized ;
+	private int[] sample;
 	int x, upsampling;
+	private long duration;
+	private AudioTrackTimer audioTrackTimer;
+	
+	/*** ricevitore dei comandi di riproduzione ***/
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+    	
+    	@Override
+        public void onReceive(Context context, Intent intent) {
+    		Bundle bundle = intent.getExtras();
+    		if (bundle != null) {
+    			if(intent.hasExtra(COMMAND)){
+    				int command = bundle.getInt(PlayerTrack.COMMAND);
+    					if(command == PAUSE_MUSIC)
+    						pause();
+    					else if(command == PLAY_MUSIC)
+    						resume();
+    					else if(command == STOP_MUSIC)
+							stop();
+    			}
+    		}
+        }
+    };
     
     public PlayerTrack (){
     	super("PlayerTrack");
@@ -24,102 +64,119 @@ public class PlayerTrack extends IntentService{
     
     @Override
     protected void onHandleIntent(Intent intent) {
-    	try {
-    		
-    		sample = intent.getIntArrayExtra(PlayerActivity.ACC_DATA);
-			Log.w("PlayerTrack", "sample: " +sample.length);
-			x = intent.getIntExtra(PlayerActivity.MUSIC_CURSOR, 0);
-			sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, 44100);
-			upsampling = intent.getIntExtra(PlayerActivity.UPSAMPLING, 1);
-			isRunning = true;
-			
-			t = new Thread() {
-			    public void run() {
-			    	// setta la priorità massia del thread
-			        setPriority(Thread.MAX_PRIORITY);
-			        
-			    	 // setta dimensione buffer
-			        int buffsize = AudioTrack.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-			        // crea oggetto audiotrack
-			        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sound_rate, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, buffsize, AudioTrack.MODE_STREAM);
-			
-			        short samples[] = new short[buffsize];
-			        int amp = 10000;
-			        double twoph = Math.PI*2; // 2pi grego
-			        double fr; // frequenza
-			        double ph = 0.0; // pi greco
-			
-			        // avvia l'audio
-			        audioTrack.play();
-			  
-			        switch(upsampling){
-			        	case 1:
-			        		// loop musicale con note
-					        while(isRunning){
-					        	// modifica la frequenza con i campioni prelevati dall'accelerometro
-					        	fr =  262 + sample[x];
-					        	for(int i=0; i < buffsize; i++){
-					        		samples[i] = (short) (amp*Math.sin(ph));
-					        		ph += twoph*fr/sound_rate;
-					        	}
-					        	audioTrack.write(samples, 0, buffsize);
-					        	x++;
-					        	if(x == sample.length) x = 0;
-					        	
-					        }	
-			        		break;
-			        	case 2: 
-			        		// loop musicale con upscaling lineare
-					        while(isRunning){
-					        	for (int z = 0; z < 10000; z++) {
-									// modifica la frequenza con i campioni prelevati dall'accelerometro
-									for (int i = 0; i < buffsize; i++) {
-										samples[i] = (short) (sample[x+i]*100);
-									}
-									audioTrack.write(samples, 0, buffsize);
-								}
-								x++;
-					        	if(x == sample.length) x = 0;
-					        }
-					        break;
-			        	default:
-			        		break;
-			        }
-			        
-			        audioTrack.stop();
-			        audioTrack.release();
-			    }
-			};
-			t.run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    	registerReceiver(receiver, new IntentFilter(PlayerActivity.NOTIFICATION));
+    	
+		sample = intent.getIntArrayExtra(PlayerActivity.ACC_DATA);
+//		if(sample == null) onDestroy();
+		Log.w("PlayerTrack", "sample: " +sample.length);
+		sound_rate = intent.getIntExtra(PlayerActivity.SOUND_RATE, SOUND_RATE_48000);
+		upsampling = intent.getIntExtra(PlayerActivity.UPSAMPLING, 0);
+		
+		duration = MusicUpsampling.duration(upsampling, sample.length, sound_rate);
+		Log.w("PlayerTrack", "duration " +duration);
+		
+		isRunning = true;
+		
+		// setta dimensione buffer
+        final int buffsize = AudioTrackTimer.getMinBufferSize(sound_rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        
+        // imposta la quantita di upsampling
+        int sizeBuff = buffsize + upsampling;
+        
+    	// crea oggetto audiotrack
+        audioTrackTimer = new AudioTrackTimer(AudioManager.STREAM_MUSIC, sound_rate, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT, sizeBuff, AudioTrackTimer.MODE_STREAM, upsampling, sample.length);
+        
+        // avvia l'audio
+        audioTrackTimer.play();
+        audioTrackTimer.stop();
+        Intent intentS = new Intent(PlayerActivity.NOTIFICATION);
+		intentS.putExtra(PlayerTrack.COMMAND, PlayerTrack.PLAY_MUSIC);
+		sendBroadcast(intentS);
+		
+		// array dei campioni in riproduzione
+		short samples[] = new short[sizeBuff];
+		
+        int amp = 10000;
+        double twophi = Math.PI*2; // 2pi grego
+        double fr, increment, angle = 0.0;
+        
+        inizialized = true;
+        
+        // loop musicale
+        while(isRunning){
+        	// nel caso venga messa in pausa la riproduzione, viene fermato anche algoritmo di creazione campioni
+        	if(audioTrackTimer.getPlayState() == AudioTrackTimer.PLAYSTATE_PAUSED)
+				try {
+					synchronized (this) {
+						this.wait();
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+        	// creazione campioni
+        	fr =  362 + (Math.abs(sample[x])*100); // modifica la frequenza con i campioni prelevati dall'accelerometro
+        	increment = twophi*fr/sound_rate;
+        	for(int i=0; i < sizeBuff; i++){
+        		samples[i] = (short) (amp*Math.sin(angle));
+        		angle += increment;
+        	}
+        	audioTrackTimer.write(samples, 0, sizeBuff);
+        	x++;
+        	
+        	// se arrivato all'ultimo campione
+        	if(x == sample.length) 
+        	{
+        		// mette il puntatore al primo campione
+    			x = 0;
+    			
+    			/* questo messaggio compare un attimo prima della fine della musica
+    			 * perchè si entra in questo if prima che audioTrack finisca di riprodurre la musica
+    			*/
+    			Log.w("PlayerTrack", "restart loop " +sample.length);
+        	}
+        }	
+        
+        audioTrackTimer.stop();
+        audioTrackTimer.release();
+        inizialized = false;
+        		
     }
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "Play started", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Play started", Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent,flags,startId);
     }
     
     @Override
     public void onDestroy() {
     	super.onDestroy();
+    	unregisterReceiver(receiver);
+//    	Toast.makeText(this, "Play stop", Toast.LENGTH_SHORT).show();
     	
-    	isRunning = false;
-    	
-    	try {
-    		t.join();
-    	} 
-    	catch (InterruptedException e) {
-    		e.printStackTrace();
-    	}
-    	
-    	Toast.makeText(this, "Play stop", Toast.LENGTH_SHORT).show();
-    	
-    	Intent intent = new Intent(NOTIFICATION);
-        intent.putExtra(PlayerActivity.MUSIC_CURSOR, x);
-        sendBroadcast(intent);
     }
-
+    
+    /*** riprende la riproduzione della musica ***/
+    public void resume()
+    {
+    	synchronized (this) {
+			this.notify();
+			if(inizialized)audioTrackTimer.play();
+		}
+    }
+    
+    /*** mette in pausa la riproduzione ***/
+    public void pause()
+    {
+    	audioTrackTimer.pause(x);
+    }
+    
+    /*** stoppa la riproduzione della musica e induce l'autochiusura del servizio ***/
+    public void stop()
+    {
+    	synchronized (this) {
+			this.notify();
+			isRunning = false;
+		}
+    }
 }

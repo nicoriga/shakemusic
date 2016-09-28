@@ -14,19 +14,19 @@
 	        android:id="@+id/UI1_BT_newSession"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Nuovo" />
+	        android:text="@string/new_session" />
 	
 	    <Button
 	        android:id="@+id/UI1_BT_mergeSession"        
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Unisci" />
+	        android:text="@string/merge_session" />
 	
 	    <Button
 	        android:id="@+id/UI1_BT_preferences"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Preferenze" />
+	        android:text="@string/preferences" />
 	
 	</LinearLayout>
 

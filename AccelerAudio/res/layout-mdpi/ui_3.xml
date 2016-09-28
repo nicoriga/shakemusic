@@ -1,183 +1,164 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:gravity="center|center_horizontal"
-    android:orientation="vertical" >
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.acceleraudio.activity.RecordActivity" >
 
-    <TableRow
-        android:id="@+id/UI3_TR1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:layout_weight="0.05" >
-
-        <TextView
-            android:id="@+id/UI3_TV_SessionName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginLeft="20dp"
-            android:text="Nome Sessione"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="25sp" />
-
-        <EditText
-            android:id="@+id/UI3_ET_SessionName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:ems="10" >
-
-            <requestFocus />
-        </EditText>
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI3_TR2"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="30dp"
-        android:layout_weight="0.04" >
-
-        <TextView
-            android:id="@+id/UI3_TV_label_RecordedSamples"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginLeft="20dp"
-            android:text="Campioni Registrati:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="25sp" />
-
-        <TextView
-            android:id="@+id/UI3_TV_RecordedSamples"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="25sp" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI3_TR3"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/UI3_PB_Y"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.02" >
+        android:layout_alignLeft="@+id/UI3_PB_Z"
+        android:layout_below="@+id/UI3_PB_Z"
+        android:minHeight="40dip"
+        android:minWidth="400dip"
+        android:progress="80" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="15dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:showDividers="none" >
+    <Button
+        android:id="@+id/UI3_BT_stop"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_alignBaseline="@+id/UI3_BT_record"
+        android:layout_alignBottom="@+id/UI3_BT_record"
+        android:layout_toLeftOf="@+id/UI3_BT_record"
+        android:text="@string/stop"
+        android:drawableRight="@drawable/stop_icon"
+        android:drawablePadding="4dp" />
 
-            <ProgressBar
-                android:id="@+id/UI3_PB_Z"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:minHeight="40dip"
-                android:minWidth="200dip"
-                android:progress="40" />
+    <Button
+        android:id="@+id/UI3_BT_pause"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_alignBaseline="@+id/UI3_BT_record"
+        android:layout_alignBottom="@+id/UI3_BT_record"
+        android:layout_toRightOf="@+id/UI3_BT_record"
+        android:text="@string/pause"
+        android:drawableRight="@drawable/pause_icon" />
 
-            <ProgressBar
-                android:id="@+id/UI3_PB_Y"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:minHeight="40dip"
-                android:minWidth="200dip"
-                android:progress="80" />
+    <EditText
+        android:id="@+id/UI3_ET_SessionName"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI3_TV_SessionName"
+        android:layout_below="@+id/UI3_TV_SessionName"
+        android:ellipsize="end"
+        android:ems="10"
+        android:inputType="text" >
 
-            <ProgressBar
-                android:id="@+id/UI3_PB_X"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:minHeight="40dip"
-                android:minWidth="200dip"
-                android:progress="20" />
-        </LinearLayout>
+        <requestFocus />
+    </EditText>
 
-        <Button
-            android:id="@+id/UI3_BT_save"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="100dp"
-            android:layout_height="75dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="50dp"
-            android:text="Salva" />
+    <TextView
+        android:id="@+id/UI3_TV_SessionName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/UI3_BT_stop"
+        android:layout_marginTop="31dp"
+        android:text="@string/session_name"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    </TableRow>
+    <Button
+        android:id="@+id/UI3_BT_record"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="107dp"
+        android:drawableRight="@drawable/record_icon"
+        android:text="@string/record" />
+
+    <ProgressBar
+        android:id="@+id/UI3_PB_X"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI3_PB_Y"
+        android:layout_below="@+id/UI3_PB_Y"
+        android:minHeight="40dip"
+        android:minWidth="400dip"
+        android:progress="20" />
+
+    <TextView
+        android:id="@+id/UI3_TV_timeRemaning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI3_PB_X"
+        android:layout_below="@+id/UI3_PB_X"
+        android:layout_marginTop="95dp"
+        android:text="@string/remaining_time"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ProgressBar
+        android:id="@+id/UI3_PB_Z"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI3_BT_stop"
+        android:layout_below="@+id/UI3_TV_label_RecordedSamples"
+        android:layout_marginTop="60dp"
+        android:minHeight="40dip"
+        android:minWidth="400dip"
+        android:progress="40" />
+
+    <TextView
+        android:id="@+id/UI3_TV_label_RecordedSamples"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/UI3_ET_SessionName"
+        android:layout_below="@+id/UI3_ET_SessionName"
+        android:layout_marginTop="45dp"
+        android:text="@string/recorded_samples"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/UI3_TV_RecordedSamples"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3_PB_Z"
+        android:layout_alignRight="@+id/UI3_BT_pause"
+        android:text="@string/zero"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/UI3_TV_timerRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Medium Text"
+        android:layout_alignBaseline="@+id/UI3_TV_timeRemaning"
+        android:layout_alignBottom="@+id/UI3_TV_timeRemaning"
+        android:layout_alignRight="@+id/UI3_BT_pause"
+        android:text="@string/zero"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TableRow
-        android:id="@+id/UI3_TR4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="50dp"
-        android:layout_weight="0.02"
-        android:gravity="center_horizontal" >
-
-        <Button
-            android:id="@+id/UI3_BT_stop"
-            android:layout_width="100dp"
-            android:layout_height="75dp"
-            android:text="Stop" />
-
-        <Button
-            android:id="@+id/UI3_BT_record"
-            android:layout_width="100dp"
-            android:layout_height="75dp"
-            android:layout_marginBottom="52dp"
-            android:text="Record" />
-
-        <Button
-            android:id="@+id/UI3_BT_pause"
-            android:layout_width="100dp"
-            android:layout_height="75dp"
-            android:text="Pause" />
-
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI3_TR5"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center|center_horizontal"
-        android:layout_weight="0.29" >
-        
-        <RadioGroup
-        android:id="@+id/UI3_orientation"
+    <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI3_PB_Z"
+        android:layout_alignLeft="@+id/UI3_TV_label_RecordedSamples"
+        android:layout_toLeftOf="@+id/UI3_PB_Z"
+        android:text="@string/z"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <RadioButton
-            android:id="@+id/UI3_RB_landscape"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal|fill_horizontal"
-            android:layout_marginLeft="180dp"
-            android:checked="true"
-            android:text="Landscape" />
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/UI3_PB_Y"
+        android:layout_alignLeft="@+id/textView1"
+        android:text="@string/y"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <RadioButton
-            android:id="@+id/UI3_RB_portrait"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Portrait" />
-		</RadioGroup>
+    <TextView
+        android:id="@+id/TextView02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/UI3_TV_timeRemaning"
+        android:layout_alignLeft="@+id/TextView01"
+        android:text="@string/x"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    </TableRow>
-
-</LinearLayout>
+</RelativeLayout>

@@ -1,6 +1,7 @@
 package com.acceleraudio.service;
 
 import com.acceleraudio.activity.RecordActivity;
+import com.malunix.acceleraudio.R;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -11,6 +12,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.Toast;
 
+/**
+ * @author Nicola Rigato
+ * @author Luca Del Salvador
+ * @author Marco Tessari
+ * @author Gruppo: Malunix
+ *
+ * servizio per registrare i campioni dall'accelerometro
+ */
 public class RecordTrack extends IntentService{
 	
 	public static final String NOTIFICATION = "com.acceleraudio.service.recordtrack";
@@ -26,9 +35,11 @@ public class RecordTrack extends IntentService{
 	private boolean initialized, isRecording;
 	private SensorManager sensorManager;
 	private Sensor accelerometer;
-	private float noise = 1.2f;
+	private float noise = 1.0f;
 	private float oldX, oldY, oldZ;
 	Intent intent = new Intent(NOTIFICATION_RECORD);
+	
+	/*** gestore evento registrazione dati accelerometro ***/
 	final SensorEventListener mySensorEventListener = new SensorEventListener() { 
         public void onSensorChanged(SensorEvent event) {
         	
@@ -46,11 +57,12 @@ public class RecordTrack extends IntentService{
 	    			
 	    		} else {
 	    			
-	    			float deltaX = Math.abs(oldX - x);
-	    			float deltaY = Math.abs(oldY - y);
-	    			float deltaZ = Math.abs(oldZ - z);
+	    			float deltaX = oldX - x;
+	    			float deltaY = oldY - y;
+	    			float deltaZ = oldZ - z;
 	    			
-	    			if (deltaX < noise)
+	    			// verifico se il nuovo valore supera il rumore
+	    			if (Math.abs(deltaX) < noise)
 	    			{
 	    				deltaX = (float) 0.0;
 	    				RecordActivity.x = (int) deltaX;
@@ -60,13 +72,14 @@ public class RecordTrack extends IntentService{
 	    			{
 	    				synchronized (this) {
 							RecordActivity.sample++;
-							RecordActivity.x = (int) deltaX;
-							RecordActivity.data_x.add(deltaX);
+							RecordActivity.x = (int) Math.abs(deltaX);
+							RecordActivity.data_x.add(deltaX); // aggiungo il valore registrato
 							RecordActivity.updateSample();
 						}
 	    			}
 	    			
-	    			if (deltaY < noise)
+	    			// verifico se il nuovo valore supera il rumore
+	    			if (Math.abs(deltaY) < noise)
 	    			{
 	    				deltaY = (float) 0.0;
 	    				RecordActivity.y = (int) deltaY;
@@ -76,13 +89,14 @@ public class RecordTrack extends IntentService{
 	    			{
 	    				synchronized (this) {
 							RecordActivity.sample++;
-							RecordActivity.y = (int) deltaY;
-							RecordActivity.data_y.add(deltaY);
+							RecordActivity.y = (int) Math.abs(deltaY);
+							RecordActivity.data_y.add(deltaY); // aggiungo il valore registrato
 							RecordActivity.updateSample();
 						}
 	    			}
 	    			
-	    			if (deltaZ < noise)
+	    			// verifico se il nuovo valore supera il rumore
+	    			if (Math.abs(deltaZ) < noise)
 	    			{
 	    				deltaZ = (float) 0.0;
 	    				RecordActivity.z = (int) deltaZ;
@@ -92,8 +106,8 @@ public class RecordTrack extends IntentService{
 	    			{
 	    				synchronized (this) {
 							RecordActivity.sample++;
-							RecordActivity.z = (int) deltaZ;
-							RecordActivity.data_z.add(deltaZ);
+							RecordActivity.z = (int) Math.abs(deltaZ);
+							RecordActivity.data_z.add(deltaZ); // aggiungo il valore registrato
 							RecordActivity.updateSample();
 						}
 	    			}
@@ -108,8 +122,6 @@ public class RecordTrack extends IntentService{
         
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // TODO Auto-generated method stub
-
         }
     };
 
@@ -119,21 +131,27 @@ public class RecordTrack extends IntentService{
     
     @Override
     protected void onHandleIntent(Intent intent) {
-    	initialized = false;
-    	isRecording = true;
-    	noise = intent.getFloatExtra(NOISE, 1.0f);
+    	try {
+			initialized = false;
+			isRecording = true;
+			noise = intent.getFloatExtra(NOISE, 1.0f);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
    	  
     	try {
 			sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+			
 			// verifica presenza accelerometro
 			if (accelerometer != null) 
 			{
-				sensorManager.registerListener(mySensorEventListener,
-						accelerometer, intent.getIntExtra(SENSOR_DELAY,
-								SensorManager.SENSOR_DELAY_NORMAL));
-				long endTime = System.currentTimeMillis()
-						+ RecordActivity.remaining_time;
+				sensorManager.registerListener(mySensorEventListener, accelerometer, intent.getIntExtra(SENSOR_DELAY, SensorManager.SENSOR_DELAY_NORMAL));
+				
+				/* imposto che il servizio di registrazione si autochiuda allo scadere del tempo prefissato
+				 * nelle preferenze
+				 * */
+				long endTime = System.currentTimeMillis() + RecordActivity.remaining_time;
 				while (isRecording && System.currentTimeMillis() < endTime) {
 					synchronized (this) {
 						try {
@@ -153,7 +171,7 @@ public class RecordTrack extends IntentService{
 			else
 				initialized = false;
 		} catch (Exception e) {
-			Toast.makeText(this, "Errore: accelerometro", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.error_no_accelerometer), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 			initialized = false;
 		}
@@ -161,7 +179,7 @@ public class RecordTrack extends IntentService{
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "start recording", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.notify_start_recording), Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent,flags,startId);
     }
     
@@ -172,7 +190,7 @@ public class RecordTrack extends IntentService{
     	synchronized (this) {
 			this.notify();
 		}
-		Toast.makeText(this, "stop recording", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, getString(R.string.notify_stop_recording), Toast.LENGTH_SHORT).show();
     	
     }
     

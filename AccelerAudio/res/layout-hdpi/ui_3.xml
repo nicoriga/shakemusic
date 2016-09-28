@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/UI3_BT_record"
         android:layout_alignRight="@+id/UI3_TV_SessionName"
-        android:text="Stop" />
+        android:text="@string/stop" />
 
     <ProgressBar
         android:id="@+id/UI3_PB_Y"
@@ -42,7 +42,8 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="14dp"
         android:layout_toRightOf="@+id/UI3_TV_SessionName"
-        android:ems="10" />
+        android:ems="10"
+        android:inputType="text" />
 
     <TextView
         android:id="@+id/UI3_TV_SessionName"
@@ -51,7 +52,7 @@
         android:layout_alignBaseline="@+id/UI3_ET_SessionName"
         android:layout_alignBottom="@+id/UI3_ET_SessionName"
         android:layout_alignParentLeft="true"
-        android:text="Nome Sessione"
+        android:text="@string/session_name"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ProgressBar
@@ -73,7 +74,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="52dp"
-        android:text="Record" />
+        android:text="@string/record" />
 
     <Button
         android:id="@+id/UI3_BT_pause"
@@ -82,7 +83,7 @@
         android:layout_alignBaseline="@+id/UI3_BT_stop"
         android:layout_alignBottom="@+id/UI3_BT_stop"
         android:layout_alignRight="@+id/UI3_PB_X"
-        android:text="Pause" />
+        android:text="@string/pause" />
 
     <TextView
         android:id="@+id/UI3_TV_label_RecordedSamples"
@@ -91,7 +92,7 @@
         android:layout_alignBaseline="@+id/UI3_TV_RecordedSamples"
         android:layout_alignBottom="@+id/UI3_TV_RecordedSamples"
         android:layout_toLeftOf="@+id/UI3_BT_pause"
-        android:text="Campioni Registrati:"
+        android:text="@string/recorded_samples"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -102,50 +103,27 @@
         android:layout_below="@+id/UI3_ET_SessionName"
         android:layout_marginRight="16dp"
         android:layout_marginTop="23dp"
-        android:text="Medium Text"
+        android:text="@string/zero"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/UI3_TV_timerRemaning"
+        android:layout_alignBottom="@+id/UI3_TV_timerRemaning"
+        android:layout_alignLeft="@+id/UI3_TV_label_RecordedSamples"
+        android:text="@string/remaining_time"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/UI3_TV_timerRemaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/UI3_BT_stop"
-        android:layout_marginBottom="23dp"
-        android:layout_toRightOf="@+id/UI3_BT_stop"
-        android:text="0"
+        android:layout_alignLeft="@+id/UI3_TV_RecordedSamples"
+        android:layout_below="@+id/UI3_PB_X"
+        android:layout_marginTop="15dp"
+        android:text="@string/zero"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Button
-        android:id="@+id/UI3_BT_save"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/UI3_PB_X"
-        android:layout_alignParentRight="true"
-        android:text="Salva" />
-
-    <RadioGroup
-        android:id="@+id/UI3_orientation"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:orientation="horizontal" >
-
-        <RadioButton
-            android:id="@+id/UI3_RB_landscape"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Landscape" />
-
-        <RadioButton
-            android:id="@+id/UI3_RB_portrait"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Portrait" />
-
-    </RadioGroup>
 
 </RelativeLayout>

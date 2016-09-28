@@ -6,7 +6,8 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/> 
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> 
 
     <application
         android:allowBackup="true"
@@ -20,11 +21,13 @@
             </intent-filter>
         </activity>
         <activity android:name="com.acceleraudio.activity.SessionInfoActivity"></activity>
+        <activity android:name="com.acceleraudio.activity.FileExplorer" android:configChanges="orientation"></activity>
         <activity android:name="com.acceleraudio.activity.PlayerActivity"></activity>
         <activity android:name="com.acceleraudio.activity.PreferencesActivity"></activity>
-        <activity android:name="com.acceleraudio.activity.RecordActivity"></activity>
+        <activity android:name="com.acceleraudio.activity.RecordActivity" ></activity>
         <service android:name="com.acceleraudio.service.PlayerTrack"></service>
         <service android:name="com.acceleraudio.service.RecordTrack"></service>
+        <activity android:name="com.acceleraudio.activity.MergeSessionActivity"></activity>
         
     </application>
 

@@ -14,156 +14,163 @@
             android:id="@+id/UI2_BT_listsession"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Lista Sessioni" />
+            android:text="@string/list_session" />
+
     </LinearLayout>
 
+    
+        <TableRow
+	        android:id="@+id/UI2_tableRow1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content">
+	
+	        <TextView
+	            android:id="@+id/UI2_textView_titolo_sessione"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="10dp"
+	            android:text="@string/session_name"
+	            android:textAppearance="?android:attr/textAppearanceLarge" />
+	
+	        <EditText
+	            android:id="@+id/UI2_ET_sessionTitle"
+	            android:layout_width="500dp"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="20dp"
+	            android:ems="10"
+	            android:inputType="text"
+	            android:singleLine="true" />
+
+    	</TableRow>
+
     <TableRow
-        android:id="@+id/UI2_tableRow1"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp" >
-
-        <TextView
-            android:id="@+id/UI2_TV_sessionTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Nome Sessione"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <EditText
-            android:id="@+id/UI2_ET_sessionTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:ems="10" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI2_TR1"
+        android:id="@+id/UI2_tableRow2"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginTop="20dp" >
+        android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/UI2_TV_axes"
+            android:id="@+id/UI2_textView_assi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:text="Seleziona Assi:"
+            android:layout_marginLeft="10dp"
+            android:text="@string/axes_select"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/UI2_TR3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" >
-
+        
         <CheckBox
             android:id="@+id/UI2_CB_X"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="X" />
+            android:layout_marginLeft="30dp"
+            android:text="@string/x" />
 
         <CheckBox
             android:id="@+id/UI2_CB_Y"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:text="Y" />
+            android:text="@string/y" />
 
         <CheckBox
             android:id="@+id/UI2_CB_Z"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:text="Z" />
+            android:text="@string/z" />
     </TableRow>
 
     <TableRow
-        android:id="@+id/UI2_TR4"
-        android:layout_width="500dp"
-        android:layout_height="70dp">
+        android:id="@+id/UI2_tableRow3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" >
 
+        
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/UI2_tableRow4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+		
+       	<LinearLayout
+   	        android:layout_width="match_parent"
+   	        android:layout_height="wrap_content"
+   	        android:layout_marginLeft="60dp"
+   	        android:layout_marginTop="30dp"
+   	        android:gravity="center_vertical"
+   	        android:orientation="vertical"
+   	        android:showDividers="none" >
+            
+        	<TextView
+	            android:id="@+id/UI2_textView_upsampling"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/upsampling"
+	            android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	        <Spinner
+	            android:id="@+id/UI2_SP_upsampling"
+	            android:layout_width="150dp"
+	            android:layout_height="wrap_content" />
+	        
+        
         <TextView
-            android:id="@+id/UI2_TV_upsampling"
+        android:id="@+id/UI2_TV_creationDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/creation_date"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+        
+        <TextView
+            android:id="@+id/UI2_TV_ModifiedDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="30dp"
-            android:text="Upsampling"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="@string/modified_date"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+            
+        </LinearLayout>
 
-        <Spinner
-            android:id="@+id/UI2_SP_upsampling"
-            android:layout_width="300dp"
-            android:layout_marginLeft="30dp"
-            android:layout_height="wrap_content" />
+	        
+	        <ImageView
+	            android:id="@+id/UI2_IV_thumbnail"
+	            android:layout_width="200dp"
+	            android:layout_height="200dp"
+	            android:src="@drawable/ic_launcher" 
+	            android:layout_marginLeft="200dp" 
+	            android:contentDescription="@string/thumbnail"
+	            />
+ 
     </TableRow>
 
     <TableRow
-        android:id="@+id/UI2_TR5"
+        android:id="@+id/tableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="right">
-
-        <ImageView
-            android:id="@+id/UI2_IV_thumbnail"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_gravity="right"
-            android:layout_marginLeft="20dp"
-            android:src="@drawable/ic_launcher" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/UI2_TV_creationDate"
+        android:gravity="center"
+        android:layout_marginTop="10dp" >
+    
+        <Button
+                android:id="@+id/UI2_button_play"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:text="Data Creazione:"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/UI2_TV_ModifiedDate"
+                android:layout_height="60dp"
+                android:layout_marginRight="40dp"
+                android:text="@string/play"
+                android:drawableRight="@drawable/play_icon"
+                android:drawablePadding="4dp" />
+        
+        <Button
+                android:id="@+id/UI2_button_export"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
-                android:text="Data Modifica:"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TableRow
-                android:id="@+id/UI2_tableRow6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_gravity="right" >
-
-                <Button
-                    android:id="@+id/UI2_button_play"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:layout_marginRight="40dp"
-                    android:text="Riproduci" />
-
-                <Button
-                    android:id="@+id/UI2_button_export"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:layout_marginRight="40dp"
-                    android:text="Esporta" />
-
-            </TableRow>
-
-        </LinearLayout>
+                android:layout_height="60dp"
+                android:layout_marginRight="40dp"
+                android:text="@string/export"
+                android:drawableRight="@drawable/export_icon"
+                android:drawablePadding="4dp"  />
+    
     </TableRow>
+
 </LinearLayout>

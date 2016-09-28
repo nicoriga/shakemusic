@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:background="#929395"
+	    android:orientation="horizontal" >
+	
+	    <Button
+	        android:id="@+id/UI1_BT_newSession"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/new_session" />
+	
+	    <Button
+	        android:id="@+id/UI1_BT_mergeSession"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/merge_session" />
+	
+	    <Button
+	        android:id="@+id/UI1_BT_preferences"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/preferences" />
+	
+	</LinearLayout>
+
+    <ListView
+        android:id="@+id/UI1_LV_listSession"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tableRow2"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="50dp" />
+
+     <TableRow
+         android:id="@+id/tableRow2"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentLeft="true"
+         android:layout_alignParentRight="true"
+         android:background="#929395" >
+         
+         <Button
+	         android:id="@+id/UI1_BT_next"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:text="@string/next" />
+
+         <Button
+             android:id="@+id/UI1_BT_cancel"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/cancel" />
+
+         <LinearLayout
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent"
+             android:layout_marginLeft="10dp"
+             android:orientation="vertical"
+             android:gravity="right" >
+             
+	             <ProgressBar
+	                 android:id="@+id/UI1S_PB_totSample"
+	                 style="?android:attr/progressBarStyleHorizontal"
+	                 android:layout_width="fill_parent"
+	                 android:layout_height="30dp"
+	                 android:layout_marginRight="32dp"
+	                 android:layout_marginTop="7dp" />
+             
+         </LinearLayout>
+         
+     </TableRow>
+
+</RelativeLayout>
